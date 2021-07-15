@@ -1,6 +1,6 @@
 # Good-To-Know
 
-**Parameters:**
+**Parameters:**  
 a) Area-of-interest (aoi) is defined Large area -> focus area or State (Province) -> village / suburb.
 b) Your aoi must be exist in osm as either a [way or relation](https://wiki.openstreetmap.org/wiki/Elements); and the type must explicitly be [set](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L4)
 c) Set [metadata](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L21-L31) for the City Model. Without is the dataset has no value.
@@ -21,7 +21,7 @@ The script handles the projection and clipping to an aoi. If your focus area fal
 a) [PyVista](https://www.pyvista.org/) is [built-in](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py#L415) and will execute after the triangulation; before the 3D City Model is created. This is to visualize the terrain surface. I have left [line 242 of osm3DCode](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py#L242) as an aid.
 You need to verify if the building footprints have been removed from the terrain surface. The two images illustrate an example were a specific vector had to be excluded. 
 
-<img src="img/fp01.png" alt="alt text" width="250" height="250"><img src="img/fp02.png" alt="alt text" width="250" height="250">
+<img src="img/fp01.png" alt="alt text" width="250" height="250">  <img src="img/fp02.png" alt="alt text" width="250" height="250">
 
 b) [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) is non-commercial.
 
