@@ -1,0 +1,36 @@
+{
+    "Larea": "Western Cape",
+    "Farea": "Mamre",
+    "osm_type": "relation",
+    
+    "crs": "EPSG:32733",
+
+    "ori-gjson_out": "./data/fp_ru.geojson",
+    "gjson-proj_out": "./data/fp_proj_ru.geojson",
+    "gjson-z_out": "./data/fp_proj_z_ru.geojson",
+    
+    "aoi": "./data/aoi_ru.geojson",
+    "aoi_prj": "./data/aoi_proj_ru.geojson",
+    
+    "in_raster": "./raster/LO19_050M_3318CB.tif",
+    "nodata": 3.402823466385289e+38,
+    "projClip_raster": "./raster/3318CB_clip_utm33s.tif",
+
+    "xyz": "./raster/rasElev_ru.xyz",
+        
+    "cjsn_out": "./result/citjsn_rural3d.json",
+    "cjsn_Title": "LoD1 City model of rural village",
+    "cjsn_RefDate": "2021-07-31",
+    "cjsn_Locatn": "Cape Town, South Africa",
+    "cjsn_refSystm": "urn:ogc:def:crs:EPSG::32733",
+    "cjsn_contName": "arkriger", 
+    "cjsn_cont": "www.linkedin.com/in/adrian-kriger", 
+    "cjsn_contType": "private",
+    "github": "https://github.com/AdrianKriger/osm_LoD1_3Dbuildings",
+    "cjsn_UpOut": "./result/citjsnV1_rural3d.json",
+    "obj2_75D": "./result/obj275D_rural3d.obj",
+    
+    "inter": "True",
+    "int-gjson_out": "./data/fp_h_ru.geojson",
+    "intact": "./result/interactive_ru.html"
+}
