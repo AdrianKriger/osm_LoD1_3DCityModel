@@ -11,7 +11,7 @@ dem - in South Africa if you are using the [National geo-spatial information](ht
 vector - A [snap routine](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py#L231-L238) reduces the number of vertices within 0.2-m on the osm vector layer. 
 
 **Precision:**  
-Processing is executed in Universal Transverse Mercator. You can choose the [zone](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L6). Be aware a floating-point precision error might arise.
+I've chosen to process in Universal Transverse Mercator. You can choose another [crs](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L6). Be aware a floating-point precision error might arise.
 
 **Raster dem:**  
 a) The [osm3Dcput_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L15) specifies the raster I used in the example. [osm3Dmamre_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/extra/osm3Dmamre_param.json#L15) specifies another. These datasets, and more, are [available](http://www.ngi.gov.za/index.php/online-shop/what-is-itis-portal).  
