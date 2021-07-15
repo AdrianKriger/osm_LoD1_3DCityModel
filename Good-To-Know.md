@@ -25,11 +25,11 @@ You need to verify if the building footprints have been removed from the terrain
 
 b) [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) is non-commercial.
 
-**Alternatives**
+**Alternatives**  
 [BlenderGIS](https://github.com/domlysz/BlenderGIS) and [QGIS](https://qgis.org/en/site/) offers some (if not all and more) of this functionality.
 
-**[The Penultimate Truth](https://en.wikipedia.org/wiki/The_Penultimate_Truth)**
+**[The Penultimate Truth](https://en.wikipedia.org/wiki/The_Penultimate_Truth)**  
 It not very efficient.
 
-**Lastly***
+**Lastly**  
 Please don't burden the osm server with requests for an extreme amount of data.
