@@ -13,7 +13,7 @@ We generate a LoD1 City Model (buildings and terrain) from volunteered public da
 **NOTE:** *This workflow is not meant to scale.*  
 Requests for an extreme amount of data from the [osm](https://en.wikipedia.org/wiki/OpenStreetMap) server is destructive to the entire community. Village, Suburb and Campus analysis only please. For a larger area (city, state) consider harvesting data via `.pbf` ([geofabric](https://download.geofabrik.de/index.html) or [planet](https://planet.osm.org/)) - raise an issue and we can work on an alternate processing strategy.
 
-Set parameters with a basic [json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json) to execute [osm3DCode](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py) through [osm3DMain](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DMain.py).
+Set parameters with a basic [json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json) to execute [osm3DCode](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py) through [osm3DMain](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DMain.py).  
 Output includes:  
         a) a 2.75D surface mesh (buildings connected to terrain);  
         b) a semantically rich LoD1 City Model (information rich buillding models seperate from the ground; but when connected form a water-tight surface<sup>*</sup>); and  
