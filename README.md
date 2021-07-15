@@ -1,6 +1,6 @@
 # Level-of-Detail 1 (LoD1) 3D City Model from [OpenStreetMap](https://en.wikipedia.org/wiki/OpenStreetMap) (osm) vector and raster Digital Elevation Model (dem).
 
-<img src="img/CityJSON_Ninja_cput.png" alt="alt text" width="700" height="400">
+<img src="img/CityJSON_Ninja_cput.png" alt="alt text" width="700" height="400" style=centerme>
 
 This repository is inspired by [3dfier](https://tudelft3d.github.io/3dfier/minimal_data_requirements.html); product of the [3D geoinformation group](https://3d.bk.tudelft.nl/)  at [TUDelft](https://www.tudelft.nl/)
 
