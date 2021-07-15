@@ -15,12 +15,12 @@ Requests for an extreme amount of data from the [osm](https://en.wikipedia.org/w
 
 Set parameters with a basic [json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json) to execute [osm3DCode](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py) through [osm3DMain](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DMain.py).  
 Output includes:  
-- a 2.75D surface mesh (buildings connected to terrain);  
-- a semantically rich LoD1 City Model (information rich buillding models seperate from the ground; but when connected form a water-tight surface<sup>*</sup>); and  
+- a 2.75D surface mesh *(buildings connected to terrain)*;  
+- a semantically rich LoD1 City Model *(information rich buillding models seperate from the ground; but when connected form a water-tight surface<sup>*</sup>)*; and  
 - an interactive .html.
 
 If your interest is a dynamic visualization only; [interactiveOnly.ipynb](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/interactiveOnly.ipynb) will produce c) without a) and b).
 
 <sup>*</sup> *- the goal is a topologically correct surface. I have not tested this for all possibilities. If the result you achive is not; you are welcome to raise an issue. I depend on you to help me improve.* 
 
-Please read the Good-To-Know.
+Please read the [Good-To-Know](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/Good-To-Know.md).
