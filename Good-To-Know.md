@@ -18,8 +18,8 @@ a) The [osm3Dcput_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityMod
 b) The script handles the projection and clipping to an aoi. If your focus area falls on the boundary of two raster sheets - you are welcome to an issue so we can expand the fucntionallity to `glob` a folder, reproject, clip and continue. Bear in mind the *NOTE.*
 
 **Triangulation:**  
-a) [PyVista](https://www.pyvista.org/) is [built-in](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py#L415) and will execute after the triangulation; before the 3D City Model is created. This is to visualize the terrain surface. I have left [line 242 of osm3DCode](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py#L242) as an aid.
-You need to verify if the building footprints have been removed from the terrain surface. The two images illustrate an example were a specific vector had to be accounted for. 
+a) [PyVista](https://www.pyvista.org/) is [built-in](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py#L415) and will execute after the triangulation; before the 3D City Model is created. This is to visualize the terrain. I have left [line 242 of osm3DCode](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py#L242) as an aid.
+You need to verify if the building footprints have been removed from the surface. The two images illustrate an example were a specific vector had to be accounted for or the result would not be topologically correct (water-tight with no holes nor gaps).
 
 <img src="img/fp01.png" alt="alt text" width="250" height="250">  <img src="img/fp02.png" alt="alt text" width="250" height="250">
 
