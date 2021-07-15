@@ -23,7 +23,7 @@ You need to verify if the building footprints have been removed from the surface
 
 <img src="img/fp01.png" alt="alt text" width="250" height="250">  <img src="img/fp02.png" alt="alt text" width="250" height="250">
 
-b) [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) is non-commercial.
+b) Shewchuck's [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) may not be sold or included in commercial products without a license.
 
 **Alternatives:**  
 [BlenderGIS](https://github.com/domlysz/BlenderGIS) and [QGIS](https://qgis.org/en/site/) offers some (if not all and more) of this functionality.
