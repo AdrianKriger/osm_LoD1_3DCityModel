@@ -29,7 +29,7 @@ b) [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) is non-commercial.
 [BlenderGIS](https://github.com/domlysz/BlenderGIS) and [QGIS](https://qgis.org/en/site/) offers some (if not all and more) of this functionality.
 
 **[The Penultimate Truth:](https://en.wikipedia.org/wiki/The_Penultimate_Truth)**  
-It not very efficient.
+Its not very efficient.
 
 **Lastly:**  
 Please don't burden the osm server with requests for an extreme amount of data.
