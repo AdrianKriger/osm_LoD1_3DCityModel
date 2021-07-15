@@ -1,0 +1,37 @@
+{
+    "Larea": "Western Cape",
+    "Farea": "Cape Peninsula University of Technology (Bellville Campus)",
+    "osm_type": "way",
+    
+    "crs": "EPSG:32733",
+
+    "ori-gjson_out": "./data/fp.geojson",
+    "gjson-proj_out": "./data/fp_proj.geojson",
+    "gjson-z_out": "./data/fp_proj_z.geojson",
+    
+    "aoi": "./data/aoi.geojson",
+    "aoi_prj": "./data/aoi_proj.geojson",
+    
+    "in_raster": "./raster/LO19_050M_3318DC.tif",
+    "nodata": 3.402823466385289e+38,
+    "projClip_raster": "./raster/3318DC_clip_utm33s.tif",
+
+    "xyz": "./raster/rasElev.xyz",
+    
+    "cjsn_out": "./result/citjsn_3d.json",
+    "cjsn_Title": "LoD1 City model of Cape Peninsula University of Technology (Bellville Campus)",
+    "cjsn_RefDate": "2021-07-31",
+    "cjsn_Locatn": "Cape Town, South Africa",
+    "cjsn_refSystm": "urn:ogc:def:crs:EPSG::32733",
+    "cjsn_contName": "arkriger", 
+    "cjsn_cont": "www.linkedin.com/in/adrian-kriger", 
+    "cjsn_contType": "private",
+    "github": "https://github.com/AdrianKriger/osm_LoD1_3Dbuildings",
+    "cjsn_UpOut": "./result/citjsnV1_3d.json",
+    "obj2_75D": "./result/obj275D_3d.obj",
+    
+    "inter": "True",
+    "int-gjson_out": "./data/fp_h.geojson",
+    "intact": "./result/interactive.html"
+
+}
