@@ -223,7 +223,6 @@ def getosmBld(jparams):
     """
     read osm buildings to gdf, extract the representative_point() for each polygon
     and create a basic xyz_df;
-    - reduce the precision of the holes
     """
     dis = gpd.read_file(jparams['gjson-z_out'])
     dis.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
@@ -303,6 +302,38 @@ def getBldVertices(dis):
                         segs[key] = 1
                     else:
                         segs[key] += 1
+         ##-- if polygon has interior (ground in couryard)                
+        for interior in row.geometry.interiors:
+            oring, z = list(interior.coords), row['g_height']
+            rounded_z = round(z, dps)
+            coords_rounded = []
+            #po = []
+            for x, y in oring:
+                rounded_x = round(x, dps)
+                rounded_y = round(y, dps)
+                coords_rounded.append((rounded_x, rounded_y, rounded_z))
+                all_coords.append([rounded_x, rounded_y, rounded_z])
+            #oring.pop()
+            #for x, y in oring:
+                #all_coords.append([rounded_x, rounded_y, rounded_z])
+            for i in range(0, len(coords_rounded)-1):
+                        x1, y1, z1 = coords_rounded[i]
+                        x2, y2, z2 = coords_rounded[i+1]
+                        # deduplicate lines which overlap but go in different directions
+                        if (x1 < x2):
+                            key = (x1, y1, x2, y2)
+                        else:
+                            if (x1 == x2):
+                                if (y1 < y2):
+                                    key = (x1, y1, x2, y2)
+                                else:
+                                    key = (x2, y2, x1, y1)
+                            else:
+                                key = (x2, y2, x1, y1)
+                        if key not in segs:
+                            segs[key] = 1
+                        else:
+                            segs[key] += 1
     
     c = pd.DataFrame.from_dict(segs, orient="index").reset_index()
     c.rename(columns={'index':'coords'}, inplace=True)
@@ -485,6 +516,7 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
     cm["metadata"] = {
     "datasetTitle": jparams['cjsn_Title'],
     "datasetReferenceDate": jparams['cjsn_RefDate'],
+    "dataSource": jparams['cjsn_source'],
     "geographicLocation": jparams['cjsn_Locatn'],
     "referenceSystem": jparams['cjsn_refSystm'],
     "geographicalExtent": [
