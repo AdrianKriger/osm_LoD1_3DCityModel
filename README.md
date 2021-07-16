@@ -10,8 +10,12 @@ Its paper: `Ledoux H, Biljecki F, Dukai B, Kumar K, Peters R, Stoter J, and Comm
 
 We generate a LoD1 City Model (buildings and terrain) from volunteered public data with elevation from a raster dem.
 
+---
+
 **NOTE:** *This workflow is not meant to scale.*  
 Requests for an extreme amount of data from the [osm](https://en.wikipedia.org/wiki/OpenStreetMap) server is destructive to the entire community. Village, Suburb and Campus analysis only please. For a larger area (city, state) consider harvesting data via `.pbf` ([geofabric](https://download.geofabrik.de/index.html) or [planet](https://planet.osm.org/)) - raise an issue and we can work on an alternate processing strategy.
+
+---
 
 Set parameters with a basic [json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json) to execute [osm3DCode](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py) through [osm3DMain](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DMain.py).  
 Input a raster DEM. Script will call the osm server.  
