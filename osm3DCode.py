@@ -509,7 +509,7 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
     #-- create the JSON data structure for the City Model
     cm = {}
     cm["type"] = "CityJSON"
-    cm["version"] = "0.9"
+    cm["version"] = "1.0"
     cm["CityObjects"] = {}
     cm["vertices"] = []
     #-- Metadata is added manually
@@ -652,9 +652,9 @@ def extrude_walls(ring, height, ground, allsurfaces, cm):
     t = len(cm['vertices'])
     allsurfaces.append([[t-4, t-3, t-2, t-1]])
     
-def upgradecjio(jparams):
+def write275obj(jparams):
     """
-    upgrade cityjson to V1.0 and export 2.75D wavefront.obj surface
+    export 2.75D wavefront.obj surface
     """
     #up = 'cjio {0} upgrade_version save {1}'.format(jparams['cjsn_out'],
                                                     #jparams['cjsn_UpOut'])
@@ -663,11 +663,10 @@ def upgradecjio(jparams):
     #obj = 'cjio {0} export --format=obj {1}'.format(jparams['cjsn_UpOut'],
                                                     #jparams['obj2_75D'])
     #os.system(obj)
-    cm = cityjson.load(jparams['cjsn_out'])
-    cm.upgrade_version("1.0")
-    cityjson.save(cm, jparams['cjsn_UpOut'])
+    #cm = cityjson.load(jparams['cjsn_out'])
+    #cityjson.save(cm, jparams['cjsn_UpOut'])
     
-    cm1 = cityjson.load(jparams['cjsn_UpOut'])
+    cm1 = cityjson.load(jparams['cjsn_out'])
     with open(jparams['obj2_75D'], 'w+') as f:
         re = cm1.export2obj()
         f.write(re.getvalue())
