@@ -21,6 +21,7 @@
     "cjsn_out": "./result/citjsn_3d.json",
     "cjsn_Title": "LoD1 City model of Cape Peninsula University of Technology (Bellville Campus)",
     "cjsn_RefDate": "2021-07-31",
+    "cjsn_source": "OpenStreetMap vector and National Geo-spatial Information raster DEM",
     "cjsn_Locatn": "Cape Town, South Africa",
     "cjsn_refSystm": "urn:ogc:def:crs:EPSG::32733",
     "cjsn_contName": "arkriger", 
@@ -28,7 +29,7 @@
     "cjsn_contType": "private",
     "github": "https://github.com/AdrianKriger/osm_LoD1_3Dbuildings",
     "cjsn_UpOut": "./result/citjsnV1_3d.json",
-    "obj2_75D": "./result/obj275D_3d.obj",
+    "obj2_75D": "./result/obj275D_cput3d.obj",
     
     "inter": "True",
     "int-gjson_out": "./data/fp_h.geojson",
