@@ -1,4 +1,4 @@
-# Level-of-Detail 1 (LoD1) 3D City Model from [OpenStreetMap](https://en.wikipedia.org/wiki/OpenStreetMap) (osm) vector and raster Digital Elevation Model (dem).
+# Level-of-Detail 1 (LoD1) 3D City Model from [OpenStreetMap](https://en.wikipedia.org/wiki/OpenStreetMap) (osm) and raster Digital Elevation Model (dem).
 
 <p align="center">
   <img width="450" height="250" src="img/CityJSON_Ninja_cput.png">
