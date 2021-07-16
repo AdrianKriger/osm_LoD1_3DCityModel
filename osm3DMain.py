@@ -11,11 +11,11 @@ import json
 from osm3DCode import requestOsmBld, projVec, requestOsmAoi, write_interactive, \
     prepareDEM, assignZ, getosmBld, writegjson, getosmArea, getXYZ, getBldVertices, \
         getAOIVertices, appendCoords, createSgmts, executeDelaunay, pvPlot, writeObj, \
-            output_citysjon, createXYZ, upgradecjio
+            output_citysjon, createXYZ, write275obj
     
 def main():
     try:
-        jparams = json.load(open('osm3Dmamre_param.json'))
+        jparams = json.load(open('osm3Dcput_param.json'))
     except:
         print("ERROR: something is wrong with the param.json file.")
         sys.exit()
@@ -65,10 +65,10 @@ def main():
     maxz = df3['z'].max()
     #writeObj(pts, t, 'wvft_cput3d.obj') ~ this will write the terrain surface only
     output_citysjon(extent, minz, maxz, t, pts, jparams)
-    upgradecjio(jparams)
+    write275obj(jparams)
     
-    #if jparams['inter'] == 'True':
-        #write_interactive(area, jparams)
+    if jparams['inter'] == 'True':
+        write_interactive(area, jparams)
 
 if __name__ == "__main__":
     main()
