@@ -1,7 +1,7 @@
 # Good-To-Know
 
 **Parameters:**  
-a) Area-of-interest (aoi) is defined `Large area -> focus area` or `State (Province) -> village / suburb`.    
+a) Area-of-interest (aoi) is defined `Large area -> focus area` or `State (Province) -> village / campus`.    
 b) Your aoi must be exist in osm as either a [way or relation](https://wiki.openstreetmap.org/wiki/Elements); and the type must explicitly be [set](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L4).  
 c) Define [metadata](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L21-L31) for the City Model. Without it the dataset has no value.    
 d) Although interactive is set to ['True'](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L33); I recommend 'False'. Create the .html with [interactiveOnly](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/interactiveOnly.ipynb). This allows for greater control to include additional features unique to your aoi.
