@@ -2,7 +2,7 @@
 
 **Parameters:**  
 a) Area-of-interest (aoi) is defined `Large area -> focus area` or `State (Province) -> village / campus`.    
-b) Your aoi must be exist in osm as either a [way or relation](https://wiki.openstreetmap.org/wiki/Elements); and the type must explicitly be [set](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L4).  
+b) Your aoi must exist in osm as either a [way or relation](https://wiki.openstreetmap.org/wiki/Elements); and the type must explicitly be [set](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L4).  
 c) Define [metadata](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L21-L31) for the City Model. Without it the dataset has no value.    
 d) Although interactive is set to ['True'](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L33); I recommend 'False'. Create the .html with [interactiveOnly](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/interactiveOnly.ipynb). This allows for greater control to include additional features unique to your aoi.
 
@@ -14,7 +14,7 @@ vector - A [snap routine](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/b
 I've chosen to process in Universal Transverse Mercator. You can choose another [crs](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L6). Be aware a floating-point precision error might arise.
 
 **Raster dem:**  
-a) The [osm3Dcput_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L15) specifies the raster I used in the example. [osm3Dmamre_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/extra/osm3Dmamre_param.json#L15) specifies another. These datasets, and more, are [available](http://www.ngi.gov.za/index.php/online-shop/what-is-itis-portal).  
+a) The [osm3Dcput_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L15) defines the raster I used in the example. [osm3Dmamre_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/extra/osm3Dmamre_param.json#L15) defines another. These datasets, and more, are [available](http://www.ngi.gov.za/index.php/online-shop/what-is-itis-portal).  
 b) The script handles the projection and clipping to an aoi. If your focus area falls on the boundary of two raster sheets - you are welcome to raise an issue so we can expand the functionality to `glob` a folder, reproject, **merge**, clip and continue. Bear in mind the **NOTE.**
 
 **Triangulation:**  
