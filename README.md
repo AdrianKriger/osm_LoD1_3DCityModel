@@ -1,4 +1,5 @@
-<h1 align="center">LoD1 3D City Model from volunteered public data and a raster Digital Elevation Model.
+<h1 align="center">LoD1 3D City Model from volunteered public data  
+  and a raster Digital Elevation Model.
 </h1> 
 <p align="center">
   <img width="750" height="450" src="img/CityJSON_Ninja_cput.png">
