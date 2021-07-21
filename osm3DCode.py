@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # env/osm3D
 """
-Created on Tue Jul  6 14:10:33 2021
+code to create LoD1 3D City Model from volunteered public data (OpenStreetMap) with 
+elevation via a raster DEM.
 
-@author: arkriger
+@author: arkriger - July 2021
+@github: https://github.com/AdrianKriger/osm_LoD1_3DCityModel
 """
 import os
 from itertools import chain
@@ -90,8 +92,7 @@ def projVec(outfile, infile, crs):
 
 def requestOsmAoi(jparams):
     """
-    request osm area
-    - save
+    request osm area - save
     """
     query = """
     [out:json][timeout:30];
@@ -131,7 +132,7 @@ def prepareDEM(extent, jparams):
       
 def createXYZ(fout, fin):
     """
-    read raster and extract a xyz
+    read raster and extract an xyz
     """
     xyz = gdal.Translate(fout,
                          fin,
@@ -243,7 +244,7 @@ def getosmBld(jparams):
     # create a point representing the hole within each building  
     dis['x'] = dis.representative_point().x
     dis['y'] = dis.representative_point().y
-    hs = dis[['x', 'y', 'g_height']].copy()#.values.tolist()
+    hs = dis[['x', 'y', 'g_height']].copy()
     
     return dis, hs
 
@@ -281,9 +282,7 @@ def getBldVertices(dis):
             rounded_y = round(y, dps)
             coords_rounded.append((rounded_x, rounded_y, rounded_z))
             all_coords.append([rounded_x, rounded_y, rounded_z])
-        #oring.pop()
-        #for x, y in oring:
-            #all_coords.append([rounded_x, rounded_y, rounded_z])
+
         for i in range(0, len(coords_rounded)-1):
                     x1, y1, z1 = coords_rounded[i]
                     x2, y2, z2 = coords_rounded[i+1]
@@ -313,9 +312,7 @@ def getBldVertices(dis):
                 rounded_y = round(y, dps)
                 coords_rounded.append((rounded_x, rounded_y, rounded_z))
                 all_coords.append([rounded_x, rounded_y, rounded_z])
-            #oring.pop()
-            #for x, y in oring:
-                #all_coords.append([rounded_x, rounded_y, rounded_z])
+
             for i in range(0, len(coords_rounded)-1):
                         x1, y1, z1 = coords_rounded[i]
                         x2, y2, z2 = coords_rounded[i+1]
@@ -366,9 +363,7 @@ def getAOIVertices(buffer, fname):
             rounded_z = round(z, dps)
             coords_rounded.append((rounded_x, rounded_y, rounded_z))
             aoi_coords.append([rounded_x, rounded_y, rounded_z])
-        #oring.pop()
-        #for x, y in oring:
-            #all_coords.append([rounded_x, rounded_y, rounded_z])
+
         for i in range(0, len(coords_rounded)-1):
                     x1, y1, z1 = coords_rounded[i]
                     x2, y2, z2 = coords_rounded[i+1]
@@ -392,8 +387,7 @@ def getAOIVertices(buffer, fname):
     ca.rename(columns={'index':'coords'}, inplace=True)
     
     acoi = pd.DataFrame(aoi_coords, columns=['x', 'y', 'z'])
-    #ac = ac.sort_values('z', 
-                        #ascending=False).drop_duplicates(subset=['x','y'], keep='last')
+  
     acoi = acoi.sort_values(by = 'z', ascending=False)
     acoi.drop_duplicates(subset=['x','y'], keep= 'first', inplace=True)
     acoi = acoi.reset_index(drop=True)
@@ -435,7 +429,7 @@ def executeDelaunay(hs, df3, idx):
     Tr = tr.triangulate(A, 'pVV')  # the VV will print stats in the cmd
     t = Tr.get('triangles').tolist()
     
-    # matplotlib for basic 2D plot
+     #-- matplotlib for basic 2D plot
     #plt.figure(figsize=(8, 8))
     #ax = plt.subplot(111, aspect='equal')
     #tr.plot(ax, **Tr)
@@ -457,7 +451,6 @@ def pvPlot(t, pv_pts, idx, hs):
     holes = pv.PolyData()
     # Make sure it has the same points as the mesh being triangulated
     trin.points = pv_pts
-    #polygon2.points = pv_pts
     holes = hs[['x', 'y', 'g_height']].values
     
     faces = np.insert(t, 0, np.full((1, len(t)), 3), axis=1)
@@ -626,7 +619,6 @@ def extrude_roof_ground(orng, irngs, height, reverse, allsurfaces, cm):
         for (j, pt) in enumerate(iring):
             cm['vertices'].append([pt[0], pt[1], height])
             irings[i][j] = (len(cm['vertices']) - 1)
-    # print(oring)
     output = []
     output.append(oring)
     for each in irings:
@@ -656,23 +648,11 @@ def write275obj(jparams):
     """
     export 2.75D wavefront.obj surface
     """
-    #up = 'cjio {0} upgrade_version save {1}'.format(jparams['cjsn_out'],
-                                                    #jparams['cjsn_UpOut'])
-    #os.system(up)
-    
-    #obj = 'cjio {0} export --format=obj {1}'.format(jparams['cjsn_UpOut'],
-                                                    #jparams['obj2_75D'])
-    #os.system(obj)
-    #cm = cityjson.load(jparams['cjsn_out'])
-    #cityjson.save(cm, jparams['cjsn_UpOut'])
     
     cm1 = cityjson.load(jparams['cjsn_out'])
     with open(jparams['obj2_75D'], 'w+') as f:
         re = cm1.export2obj()
         f.write(re.getvalue())
-        
-    #cm1 = cityjson.load(jparams['cjsn_UpOut'])
-    #cityjson.export(cm1, obj, jparams['obj2_75D'])
     
 def write_interactive(area, jparams):
     """
@@ -709,8 +689,7 @@ def write_interactive(area, jparams):
             f["properties"] = {}
             
             for p in i["properties"]:
-            #print(i["properties"]['tags']['building:levels'])
-            #break
+
             #-- store all OSM attributes and prefix them with osm_
                 f["properties"]["osm_%s" % p] = i["properties"][p]
                 osm_shape = shape(i["geometry"])
