@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # env/osm3D
 """
-Created on Tue Jul  6 14:29:39 2021
-@author: arkriger
+main() for osm3DCode
+@author: arkriger - July 2021
+@github: https://github.com/AdrianKriger/osm_LoD1_3DCityModel
 """
 import os
 import sys
