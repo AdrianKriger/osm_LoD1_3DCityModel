@@ -6,6 +6,11 @@ elevation via a raster DEM.
 
 @author: arkriger - July 2021
 @github: https://github.com/AdrianKriger/osm_LoD1_3DCityModel
+
+some script credit:
+    - building height from osm building:level: https://github.com/ualsg/hdb3d-code/blob/master/hdb2d.py
+    - polygon to lines without duplicate edges: https://gis.stackexchange.com/questions/236903/converting-polygon-to-lines-without-duplicate-edges
+    - extruder: https://github.com/cityjson/misc-example-code/blob/master/extruder/extruder.py
 """
 import os
 from itertools import chain
