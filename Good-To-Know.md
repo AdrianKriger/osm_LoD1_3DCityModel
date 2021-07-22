@@ -28,7 +28,9 @@ b) The script handles the projection and clipping to an aoi. If your focus area 
 a) [PyVista](https://www.pyvista.org/) is [built-in](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py#L440-L466) and will execute after the triangulation; before the 3D City Model is created. This is to visualize the terrain. I have left [line 242 of osm3DCode](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py#L242) as an aid.
 You need to verify if the building footprints have been removed from the surface. The two images illustrate an example were a specific vector had to be accounted for or the result would not be topologically correct (water-tight with no holes nor gaps).
 
-<img src="img/fp01.png" alt="alt text" width="250" height="250">  <img src="img/fp02.png" alt="alt text" width="250" height="250">
+<p align="center">
+  <img src="img/fp01.png" alt="alt text" width="250" height="250">  <img src="img/fp02.png" alt="alt text" width="250" height="250">
+</p> 
 
 b) Shewchuck's [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) may not be sold or included in commercial products without a license.
 
