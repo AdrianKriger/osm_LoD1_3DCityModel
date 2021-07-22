@@ -4,11 +4,11 @@
 a) Area-of-interest (aoi) is defined `Large area -> focus area` or `State (Province) -> village / campus`.    
 b) Your aoi must exist in osm as either a [way or relation](https://wiki.openstreetmap.org/wiki/Elements); and the type must explicitly be [set](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L4).  
 c) Define [metadata](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L22-L30) for the City Model. Without it the dataset has no value.    
-d) Although interactive is set to ['True'](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L34); I recommend 'False'. Create the .html with [interactiveOnly](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/interactiveOnly.ipynb). This allows for greater control. The static png below illustrates building stock differentiated through color. A school, housing, retail, healthcare and community centred facilities are easily identified. Additional features unique to an aoi can also be included. Here farm land, streams and recreational spaces have been added.
+d) Although interactive is set to ['True'](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L34); I recommend 'False'. Create the .html with [interactiveOnly](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/interactiveOnly.ipynb). This allows for greater control. The static png below illustrates building stock differentiated through color. A school, housing, retail, healthcare and community centred facilities are easily identified. Additional features unique to an aoi can also be included. Here farm land, streams and recreational spaces have been added.  
 
 <p align="center">
   <img width="650" height="350" src="img/interactive.png">
-</p>
+</p>  
 
 **Accuracy:**  
 dem - in South Africa if you are using the [National geo-spatial information](http://www.ngi.gov.za/) raster dem the [resolution is 25-m at 3-m accurate](https://www.ee.co.za/wp-content/uploads/2015/08/Julie-Verhulp.pdf).  
