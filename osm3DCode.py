@@ -12,6 +12,9 @@ some script credit:
     - polygon to lines without duplicate edges: https://gis.stackexchange.com/questions/236903/converting-polygon-to-lines-without-duplicate-edges
     - geopandas snap routine: https://gis.stackexchange.com/questions/290092/how-to-do-snapping-in-geopandas
     - extruder: https://github.com/cityjson/misc-example-code/blob/master/extruder/extruder.py - Hugo Ledoux <h.ledoux@tudelft.nl>
+addtional thanks:
+    - OpenStreetMap help: https://help.openstreetmap.org/users/19716/arkriger
+    - cityjson community: https://github.com/cityjson/specs/discussions/79
 """
 import os
 from itertools import chain
