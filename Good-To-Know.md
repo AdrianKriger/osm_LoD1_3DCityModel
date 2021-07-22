@@ -7,7 +7,7 @@ c) Define [metadata](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/m
 d) Although interactive is set to ['True'](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L34); I recommend 'False'. Create the .html with [interactiveOnly](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/interactiveOnly.ipynb). This allows for greater control. The static png below illustrates building stock differentiated through color. Housing, retail, healthcare and community centred facilities are easily identified. Additional features unique to an aoi can also be included. Here farm land, streams and recreational spaces have been added.
 
 <p align="center">
-  <img width="850" height="450" src="img/interactive.png">
+  <img width="650" height="350" src="img/interactive.png">
 </p>
 
 **Accuracy:**  
