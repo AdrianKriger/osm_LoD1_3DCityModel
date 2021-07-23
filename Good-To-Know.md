@@ -9,6 +9,9 @@ d) Although interactive is set to ['True'](https://github.com/AdrianKriger/osm_L
 <p align="center">
   <img width="650" height="350" src="img/interactive.png">
 </p>  
+<p align="center">
+    <em>An example of how the interactive visualization can be customized through coloring the building stock (school, retail, housing, social development facilaties, etc.) and including additional aoi specific features (recreational ground, agricultural land. etc.) </em>
+</p>
 
 **Accuracy:**  
 dem - in South Africa if you are using the [National geo-spatial information](http://www.ngi.gov.za/) raster dem the [resolution is 25-m at 3-m accurate](https://www.ee.co.za/wp-content/uploads/2015/08/Julie-Verhulp.pdf).  
