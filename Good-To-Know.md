@@ -10,7 +10,7 @@ d) Although interactive is set to ['True'](https://github.com/AdrianKriger/osm_L
   <img width="650" height="350" src="img/interactive.png">
 </p>  
 <p align="center">
-    <em>An example of how the interactive visualization can be customized through coloring the building stock (school, retail, housing, social development facilaties, etc.) and including additional aoi specific features (recreational ground, agricultural land. etc.) </em>
+    An example of how the interactive visualization can be customized through coloring the building stock (school, retail, housing, social development facilaties, etc.) and including additional aoi specific features (recreational ground, agricultural land. etc.).
 </p>
 
 **Accuracy:**  
