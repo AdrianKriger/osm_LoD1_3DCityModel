@@ -35,7 +35,7 @@ You need to verify if the building footprints have been removed from the surface
   <img src="img/fp01.png" alt="alt text" width="250" height="250">  <img src="img/fp02.png" alt="alt text" width="250" height="250">
 </p> 
 <p align="center">
-    Fig 2. - <em>left<em> illustrates the building footprint removed from the terrain; for while <em>right<em> shows the vertices accounted for but the ground remains.
+    Fig 2. - left illustrates the building footprint removed from the terrain. - right shows the vertices accounted for; but the ground remains.
 </p>
 
 b) Shewchuck's [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) may not be sold or included in commercial products without a license.
