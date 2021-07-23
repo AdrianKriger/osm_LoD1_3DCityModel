@@ -10,7 +10,7 @@ d) Although interactive is set to ['True'](https://github.com/AdrianKriger/osm_L
   <img width="650" height="350" src="img/interactive.png">
 </p>  
 <p align="center">
-    An example of how the interactive visualization can be customized through coloring the building stock (school, retail, housing, social development facilaties, etc.) and including additional aoi specific features (recreational ground, agricultural land. etc.).
+    Fig 1. An example of how the interactive visualization can be customized through coloring the building stock (school, retail, housing, social development facilaties, etc.) and including additional aoi specific features (recreational ground, agricultural land. etc.).
 </p>
 
 **Accuracy:**  
@@ -34,6 +34,9 @@ You need to verify if the building footprints have been removed from the surface
 <p align="center">
   <img src="img/fp01.png" alt="alt text" width="250" height="250">  <img src="img/fp02.png" alt="alt text" width="250" height="250">
 </p> 
+<p align="center">
+    Fig 2. - <em>left<em> illustrates the building footprint removed from the terrain; for while <em>right<em> shows the vertices accounted for but the ground remains.
+</p>
 
 b) Shewchuck's [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) may not be sold or included in commercial products without a license.
 
