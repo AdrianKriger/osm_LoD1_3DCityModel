@@ -1,0 +1,25 @@
+#### ESSENTIAL LIBRARIES FOR MAIN FUNCTIONALITY ####
+
+#-- I only pip when conda-forge is not available
+
+requests
+overpass
+osm2geojson
+
+numpy
+pandas
+geopandas as gpd
+shapely
+fiona
+json
+geojson
+cjio      # -  python CLI to process and manipulate CityJSON files
+
+gdal
+ogr
+rasterstats
+
+triangle  # - python wrapper around Jonathan Richard Shewchuk's at rufat.be/triangle 
+
+pydeck
+pyvista
