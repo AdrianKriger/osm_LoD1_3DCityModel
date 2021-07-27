@@ -1,6 +1,6 @@
 #### ESSENTIAL LIBRARIES FOR MAIN FUNCTIONALITY ####
+#-- pip when conda-forge is not available
 
-#-- I only pip when conda-forge is not available
 python = 3.8.5
 requests = 2.25.1
 overpass = 0.7
