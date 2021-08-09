@@ -7,7 +7,7 @@ elevation via a raster DEM.
 @author: arkriger - July 2021
 @github: https://github.com/AdrianKriger/osm_LoD1_3DCityModel
 
-some script credit:
+script credit:
     - building height from osm building:level: https://github.com/ualsg/hdb3d-code/blob/master/hdb2d.py - Filip Biljecki <filip@nus.edu.sg>
     - polygon to lines without duplicate edges: https://gis.stackexchange.com/questions/236903/converting-polygon-to-lines-without-duplicate-edges
     - geopandas snap routine: https://gis.stackexchange.com/questions/290092/how-to-do-snapping-in-geopandas
@@ -15,7 +15,8 @@ some script credit:
 
 additional thanks:
     - OpenStreetMap help: https://help.openstreetmap.org/users/19716/arkriger
-    - cityjson community: https://github.com/cityjson/specs/discussions/79
+    - cityjson community: https://github.com/cityjson/specs/discussions/79 and 
+                          https://github.com/cityjson/specs/issues/51
 """
 import os
 from itertools import chain
