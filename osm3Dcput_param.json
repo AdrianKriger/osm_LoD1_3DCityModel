@@ -18,7 +18,7 @@
 
     "xyz": "./raster/rasElev.xyz",
     
-    "cjsn_out": "./result/citjsn_3d.json",
+    "cjsn_out": "./result/citjsn_cput3d.json",
     "cjsn_Title": "LoD1 City model of Cape Peninsula University of Technology (Bellville Campus)",
     "cjsn_RefDate": "2021-07-31",
     "cjsn_source": "OpenStreetMap contributions and National Geo-spatial Information raster DEM",
@@ -28,10 +28,13 @@
     "cjsn_cont": "www.linkedin.com/in/adrian-kriger", 
     "cjsn_contType": "private",
     "github": "https://github.com/AdrianKriger/osm_LoD1_3Dbuildings",
-    "cjsn_UpOut": "./result/citjsnV1_3d.json",
+    "metaStan": "ISO 19115, Geographic Information and ISO 19160, Addressing - Metadata",
+    "metaStanV": "ISO 19115:2014(E) and ISO 19160-1:2015(en)",
+    
+    "cjsn_ClOut": "./result/citjsnCl_cput3d.json",
     "obj2_75D": "./result/obj275D_cput3d.obj",
     
-    "inter": "True",
+    "inter": "False",
     "int-gjson_out": "./data/fp_h.geojson",
     "intact": "./result/interactive.html"
 
