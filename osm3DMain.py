@@ -9,12 +9,17 @@ import os
 import sys
 import json
 
+import time
+from datetime import timedelta
+
 from osm3DCode import requestOsmBld, projVec, requestOsmAoi, write_interactive, \
     prepareDEM, assignZ, getosmBld, writegjson, getosmArea, getXYZ, getBldVertices, \
         getAOIVertices, appendCoords, createSgmts, executeDelaunay, pvPlot, writeObj, \
             output_citysjon, createXYZ, write275obj
     
 def main():
+    start = time.time()
+    
     try:
         jparams = json.load(open('osm3Dcput_param.json'))
     except:
@@ -56,6 +61,9 @@ def main():
     idx = createSgmts(acoi, ca, df2, idx)
     df3 = appendCoords(df2, acoi)
     pts = df3[['x', 'y', 'z']].values
+    
+     #-- change the dtype to 'float64'
+    #pts = pts.astype('float64')
 
     t = executeDelaunay(hs, df3, idx)
     
@@ -70,6 +78,12 @@ def main():
     
     if jparams['inter'] == 'True':
         write_interactive(area, jparams)
+        
+    end = time.time()
+    print('runtime:', str(timedelta(seconds=(end - start))))
+    
+     #-- cput runtime: 0:00:32.762952 ~ university campus: 50 buildings
+     #-- rural runtime: 0:16:30.662577 ~ rural village: population 9 000
 
 if __name__ == "__main__":
     main()
