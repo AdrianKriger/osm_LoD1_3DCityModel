@@ -12,6 +12,7 @@ some script credit:
     - polygon to lines without duplicate edges: https://gis.stackexchange.com/questions/236903/converting-polygon-to-lines-without-duplicate-edges
     - geopandas snap routine: https://gis.stackexchange.com/questions/290092/how-to-do-snapping-in-geopandas
     - extruder: https://github.com/cityjson/misc-example-code/blob/master/extruder/extruder.py - Hugo Ledoux <h.ledoux@tudelft.nl>
+
 additional thanks:
     - OpenStreetMap help: https://help.openstreetmap.org/users/19716/arkriger
     - cityjson community: https://github.com/cityjson/specs/discussions/79
@@ -44,6 +45,9 @@ import pyvista as pv
 import triangle as tr
 
 import matplotlib.pyplot as plt
+
+import time
+from datetime import timedelta
 
 def requestOsmBld(jparams):
     """
@@ -182,9 +186,30 @@ def writegjson(ts, fname):
         if 'building:levels' in row.tags:
             f["properties"] = {}
             
-            #-- store all OSM attributes and prefix them with osm_          
+            #-- store all OSM attributes and prefix them with osm_ 
             f["properties"]["osm_id"] = row.id
-            f["properties"]["osm_tags"] = row.tags
+            for p in row.tags:
+                adr = []
+                #-- transform the OSM address to string prefix with osm_
+                if 'addr:flats'in row.tags:
+                    adr.append(row.tags['addr:flats'])
+                if 'addr:housenumber'in row.tags:
+                    adr.append(row.tags['addr:housenumber'])
+                if 'addr:street' in row.tags:
+                    adr.append(row.tags['addr:street'])
+                if 'addr:suburb' in row.tags:
+                    adr.append(row.tags['addr:suburb'])
+                if 'addr:postcode' in row.tags:
+                    adr.append(row.tags['addr:postcode'])
+                if 'addr:city' in row.tags:
+                    adr.append(row.tags['addr:city'])
+                if 'addr:province' in row.tags:
+                    adr.append(row.tags['addr:province'])
+                #-- store other OSM attributes and prefix them with osm_
+                f["properties"]["osm_%s" % p] = row.tags[p]
+                
+            f["properties"]["osm_address"] = " ".join(adr)
+            
             osm_shape = shape(row["geometry"])
                 #-- a few buildings are not polygons, rather linestrings. This converts them to polygons
                 #-- rare, but if not done it breaks the code later
@@ -199,10 +224,26 @@ def writegjson(ts, fname):
             f["geometry"] = mapping(osm_shape)
     
             #-- finally calculate the height and store it as an attribute
-            f["properties"]['g_height'] = row["mean"]
-            f["properties"]['b_height'] = float(row.tags['building:levels']) * storeyheight + 1.3  
-            f["properties"]['r_height'] = f["properties"]['b_height'] + row["mean"]
+            f["properties"]['g_height'] = round(row["mean"], 2)
+            f["properties"]['b_height'] = round(float(row.tags['building:levels']) * storeyheight + 1.3, 2) 
+            f["properties"]['r_height'] = round(f["properties"]['b_height'] + row["mean"], 2)
             footprints['features'].append(f)
+            
+    for value in footprints['features']:
+        if 'osm_addr:flats' in value["properties"]:
+            del value["properties"]["osm_addr:flats"]
+        if 'osm_addr:housenumber' in value["properties"]:
+            del value["properties"]["osm_addr:housenumber"]
+        if 'osm_addr:street' in value["properties"]:
+            del value["properties"]["osm_addr:street"]
+        if 'osm_addr:suburb' in value["properties"]:
+            del value["properties"]["osm_addr:suburb"]
+        if 'osm_addr:postcode' in value["properties"]:
+            del value["properties"]["osm_addr:postcode"]
+        if 'osm_addr:city' in value["properties"]:
+            del value["properties"]["osm_addr:city"]
+        if 'osm_addr:province' in value["properties"]:
+            del value["properties"]["osm_addr:province"]
                 
     #-- store the data as GeoJSON
     with open(fname, 'w') as outfile:
@@ -248,7 +289,7 @@ def getosmBld(jparams):
      #-- save
     dis.to_file(jparams['gjson-z_out'], driver='GeoJSON')
     
-    #dis = dis[dis.osm_id != 904207929] # need to exclude one building 
+    dis = dis[dis.osm_id != 904207929] # need to exclude one building 
     
     # create a point representing the hole within each building  
     dis['x'] = dis.representative_point().x
@@ -506,6 +547,11 @@ def output_citysjon(extent, minz, maxz, T, pts, jparams):
     fout.write(json_str)  
      ##- close fiona object
     c.close()
+    
+    #clean cityjson
+    cm = cityjson.load(jparams['cjsn_out'])
+    cm.remove_duplicate_vertices()
+    cityjson.save(cm, jparams['cjsn_ClOut'])
 
 def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams): 
     #-- create the JSON data structure for the City Model
@@ -535,8 +581,8 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
         "contactType": jparams['cjsn_contType'],
         "github": jparams['github']
         },
-    "metadataStandard": "ISO 19115 - Geographic Information - Metadata",
-    "metadataStandardVersion": "ISO 19115:2014(E)"
+    "metadataStandard": jparams['metaStan'],
+    "metadataStandardVersion": jparams['metaStanV']
     }
       ##-- do terrain
     add_terrain_v(pts, cm)
@@ -556,15 +602,20 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
     cm['CityObjects']['terrain01'] = grd
     
      #-- then buildings
-    for (i,geom) in enumerate(lsgeom):
+    for (i, geom) in enumerate(lsgeom):
         footprint = geom
         #-- one building
         oneb = {}
         oneb['type'] = 'Building'
         oneb['attributes'] = {}
+        for k, v in list(lsattributes[i].items()):
+            if v is None:
+                del lsattributes[i][k]
+            #oneb['attributes'][k] = lsattributes[i][k]
         for a in lsattributes[i]:
             oneb['attributes'][a] = lsattributes[i][a]
-        oneb['geometry'] = [] #-- a cityobject can have >1
+        
+        oneb['geometry'] = [] #-- a cityobject can have > 1
         #-- the geometry
         g = {} 
         g['type'] = 'Solid'
