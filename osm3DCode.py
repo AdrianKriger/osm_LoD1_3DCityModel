@@ -224,9 +224,9 @@ def writegjson(ts, fname):
             f["geometry"] = mapping(osm_shape)
     
             #-- finally calculate the height and store it as an attribute
-            f["properties"]['g_height'] = round(row["mean"], 2)
-            f["properties"]['b_height'] = round(float(row.tags['building:levels']) * storeyheight + 1.3, 2) 
-            f["properties"]['r_height'] = round(f["properties"]['b_height'] + row["mean"], 2)
+            f["properties"]['ground_height'] = round(row["mean"], 2)
+            f["properties"]['building_height'] = round(float(row.tags['building:levels']) * storeyheight + 1.3, 2) 
+            f["properties"]['roof_height'] = round(f["properties"]['building_height'] + row["mean"], 2)
             footprints['features'].append(f)
             
     for value in footprints['features']:
@@ -294,7 +294,7 @@ def getosmBld(jparams):
     # create a point representing the hole within each building  
     dis['x'] = dis.representative_point().x
     dis['y'] = dis.representative_point().y
-    hs = dis[['x', 'y', 'g_height']].copy()
+    hs = dis[['x', 'y', 'ground_height']].copy()
     
     return dis, hs
 
@@ -323,7 +323,7 @@ def getBldVertices(dis):
     geoms = {}
     
     for ids, row in dis.iterrows():
-        oring, z = list(row.geometry.exterior.coords), row['g_height']
+        oring, z = list(row.geometry.exterior.coords), row['ground_height']
         rounded_z = round(z, dps)
         coords_rounded = []
         #po = []
@@ -353,7 +353,7 @@ def getBldVertices(dis):
                         segs[key] += 1
          ##-- if polygon has interior (ground in couryard)                
         for interior in row.geometry.interiors:
-            oring, z = list(interior.coords), row['g_height']
+            oring, z = list(interior.coords), row['ground_height']
             rounded_z = round(z, dps)
             coords_rounded = []
             #po = []
@@ -501,7 +501,7 @@ def pvPlot(t, pv_pts, idx, hs):
     holes = pv.PolyData()
     # Make sure it has the same points as the mesh being triangulated
     trin.points = pv_pts
-    holes = hs[['x', 'y', 'g_height']].values
+    holes = hs[['x', 'y', 'ground_height']].values
     
     faces = np.insert(t, 0, np.full((1, len(t)), 3), axis=1)
     trin.faces = faces
@@ -627,7 +627,7 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
         if footprint.exterior.is_ccw == False:
             #-- to get proper orientation of the normals
             oring.reverse() 
-        extrude_walls(oring, lsattributes[i]['r_height'], lsattributes[i]['g_height'],
+        extrude_walls(oring, lsattributes[i]['roof_height'], lsattributes[i]['ground_height'],
                       allsurfaces, cm)
         #-- interior rings of each footprint
         irings = []
@@ -639,12 +639,12 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
                 #-- to get proper orientation of the normals
                 iring.reverse() 
             irings.append(iring)
-            extrude_walls(iring, lsattributes[i]['r_height'], lsattributes[i]['g_height'],
+            extrude_walls(iring, lsattributes[i]['roof_height'], lsattributes[i]['ground_height'],
                           allsurfaces, cm)
         #-- top-bottom surfaces
-        extrude_roof_ground(oring, irings, lsattributes[i]['r_height'], 
+        extrude_roof_ground(oring, irings, lsattributes[i]['roof_height'], 
                             False, allsurfaces, cm)
-        extrude_roof_ground(oring, irings, lsattributes[i]['g_height'], 
+        extrude_roof_ground(oring, irings, lsattributes[i]['ground_height'], 
                             True, allsurfaces, cm)
         #-- add the extruded geometry to the geometry
         g['boundaries'] = []
