@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 # env/osm3D
 """
-code to create LoD1 3D City Model from volunteered public data (OpenStreetMap) with 
-elevation via a raster DEM.
+code to create LoD1 3D City Model from volunteered public data (OpenStreetMap) with elevation via a raster DEM.
 
 @author: arkriger - July 2021
 @github: https://github.com/AdrianKriger/osm_LoD1_3DCityModel
