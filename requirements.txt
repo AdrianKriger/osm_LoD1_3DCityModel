@@ -14,6 +14,9 @@ shapely = 1.7.1
 fiona = 1.8.18
 geojson = 2.5.0
 
+# - google 'plus codes' at https://github.com/google/open-location-code
+openlocationcode = 1.0.1
+
 # -  python CLI to process and manipulate CityJSON files
 cjio = 0.6.8    
 
