@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 # env/osm3D
 """
-code to create LoD1 3D City Model from volunteered public data (OpenStreetMap) with elevation via a raster DEM.
+code to create LoD1 3D City Model from volunteered public data (OpenStreetMap) with 
+elevation via a raster DEM.
 
 @author: arkriger - July 2021
 @github: https://github.com/AdrianKriger/osm_LoD1_3DCityModel
 
-script credit:
+some script credit:
     - building height from osm building:level: https://github.com/ualsg/hdb3d-code/blob/master/hdb2d.py - Filip Biljecki <filip@nus.edu.sg>
     - polygon to lines without duplicate edges: https://gis.stackexchange.com/questions/236903/converting-polygon-to-lines-without-duplicate-edges
     - geopandas snap routine: https://gis.stackexchange.com/questions/290092/how-to-do-snapping-in-geopandas
@@ -14,8 +15,7 @@ script credit:
 
 additional thanks:
     - OpenStreetMap help: https://help.openstreetmap.org/users/19716/arkriger
-    - cityjson community: https://github.com/cityjson/specs/discussions/79 and 
-                          https://github.com/cityjson/specs/issues/51
+    - cityjson community: https://github.com/cityjson/specs/discussions/79
 """
 import os
 from itertools import chain
@@ -30,10 +30,16 @@ import geopandas as gpd
 import shapely.geometry as sg
 from shapely.geometry import Point, LineString, Polygon, shape, mapping
 from shapely.ops import snap
+from shapely.ops import transform
 import fiona
 import copy
 import json
 import geojson
+
+import pyproj
+
+from openlocationcode import openlocationcode as olc
+
 from cjio import cityjson
 
 from osgeo import gdal, ogr
@@ -164,7 +170,7 @@ def assignZ(vfname, rfname):
     
     return ts
     
-def writegjson(ts, fname):
+def writegjson(ts, jparams):#, fname):
     """
     read the rasterstats geojson and create new attributes in osm vector
     ~ ground height, relative building height and roof height.
@@ -221,6 +227,14 @@ def writegjson(ts, fname):
                 for poly in osm_shape:
                     osm_shape = Polygon(poly)#[0])
                     #-- convert the shapely object to geojson
+            
+            wgs84 = pyproj.CRS('EPSG:4326')
+            utm = pyproj.CRS(jparams['crs'])
+            p = osm_shape.representative_point()
+            project = pyproj.Transformer.from_crs(utm, wgs84, always_xy=True).transform
+            utm_point = transform(project, p)
+            f["properties"]["plus_code"] = olc.encode(utm_point.y, utm_point.x, 12)
+                
             f["geometry"] = mapping(osm_shape)
     
             #-- finally calculate the height and store it as an attribute
@@ -246,7 +260,7 @@ def writegjson(ts, fname):
             del value["properties"]["osm_addr:province"]
                 
     #-- store the data as GeoJSON
-    with open(fname, 'w') as outfile:
+    with open(jparams['gjson-z_out'], 'w') as outfile:
         json.dump(footprints, outfile)
 
 def getXYZ(dis, buffer, jparams):
