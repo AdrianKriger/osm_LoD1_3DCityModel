@@ -228,12 +228,13 @@ def writegjson(ts, jparams):#, fname):
                     osm_shape = Polygon(poly)#[0])
                     #-- convert the shapely object to geojson
             
+             #-- open location code (plus codes)
             wgs84 = pyproj.CRS('EPSG:4326')
             utm = pyproj.CRS(jparams['crs'])
             p = osm_shape.representative_point()
             project = pyproj.Transformer.from_crs(utm, wgs84, always_xy=True).transform
-            utm_point = transform(project, p)
-            f["properties"]["plus_code"] = olc.encode(utm_point.y, utm_point.x, 12)
+            wgs_point = transform(project, p)
+            f["properties"]["plus_code"] = olc.encode(wgs_point.y, wgs_point.x, 12)
                 
             f["geometry"] = mapping(osm_shape)
     
