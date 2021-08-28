@@ -72,6 +72,7 @@ def requestOsmBld(jparams):
     
         // plus every building:part
         way["building:part"](area.a);
+        relation["building:part"]["type"="multipolygon"](area.a);
         // and relation type=multipolygon ~ to removed courtyards from buildings
         relation["building"]["type"="multipolygon"](area.a);
       );
@@ -228,13 +229,12 @@ def writegjson(ts, jparams):#, fname):
                     osm_shape = Polygon(poly)#[0])
                     #-- convert the shapely object to geojson
             
-             #-- open location code (plus codes)
             wgs84 = pyproj.CRS('EPSG:4326')
             utm = pyproj.CRS(jparams['crs'])
             p = osm_shape.representative_point()
             project = pyproj.Transformer.from_crs(utm, wgs84, always_xy=True).transform
-            wgs_point = transform(project, p)
-            f["properties"]["plus_code"] = olc.encode(wgs_point.y, wgs_point.x, 12)
+            utm_point = transform(project, p)
+            f["properties"]["plus_code"] = olc.encode(utm_point.y, utm_point.x, 12)
                 
             f["geometry"] = mapping(osm_shape)
     
@@ -304,7 +304,7 @@ def getosmBld(jparams):
      #-- save
     dis.to_file(jparams['gjson-z_out'], driver='GeoJSON')
     
-    dis = dis[dis.osm_id != 904207929] # need to exclude one building 
+    #dis = dis[dis.osm_id != 13076003] # need to exclude one building 
     
     # create a point representing the hole within each building  
     dis['x'] = dis.representative_point().x
