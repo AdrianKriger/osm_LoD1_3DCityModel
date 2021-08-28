@@ -84,6 +84,7 @@ def requestOsmBld(jparams):
         rel(bw:"outline")["type"="building"];
         // back to the ways with role "outline"
         way(r:"outline");
+        rel(r:"outline");
       );
     );
     out body;
@@ -301,10 +302,16 @@ def getosmBld(jparams):
         # I took 1 because index 0 would be the row itself
         snapped_geom = snap(row['geometry'], closest_geom, 0.2)
         dis.loc[index, 'geometry'] = snapped_geom
+    
+     #-- this serves two functions:
+     #               i)  verify footprints removed
+     #               ii) possibly remove outline that overwrite building:parts - 
+     #                   can be done with cjio           
+    dis = dis.loc[(dis.osm_id != 13076003) & (dis.osm_id != 12405081)] 
      #-- save
     dis.to_file(jparams['gjson-z_out'], driver='GeoJSON')
     
-    #dis = dis[dis.osm_id != 13076003] # need to exclude one building 
+     
     
     # create a point representing the hole within each building  
     dis['x'] = dis.representative_point().x
