@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
 # env/osm3D
-"""
-code to create LoD1 3D City Model from volunteered public data (OpenStreetMap) with 
-elevation via a raster DEM.
+#########################
+# code to create LoD1 3D City Model from volunteered public data (OpenStreetMap) with elevation via a raster DEM.
 
-@author: arkriger - July 2021
-@github: https://github.com/AdrianKriger/osm_LoD1_3DCityModel
+# author: arkriger - July 2021
+# github: https://github.com/AdrianKriger/osm_LoD1_3DCityModel
 
-script credit:
-    - building height from osm building:level: https://github.com/ualsg/hdb3d-code/blob/master/hdb2d.py - Filip Biljecki <filip@nus.edu.sg>
-    - polygon to lines without duplicate edges: https://gis.stackexchange.com/questions/236903/converting-polygon-to-lines-without-duplicate-edges
-    - geopandas snap routine: https://gis.stackexchange.com/questions/290092/how-to-do-snapping-in-geopandas
-    - extruder: https://github.com/cityjson/misc-example-code/blob/master/extruder/extruder.py - Hugo Ledoux <h.ledoux@tudelft.nl>
+# script credit:
+#    - building height from osm building:level: https://github.com/ualsg/hdb3d-code/blob/master/hdb2d.py - Filip Biljecki <filip@nus.edu.sg>
+#    - polygon to lines without duplicate edges: https://gis.stackexchange.com/questions/236903/converting-polygon-to-lines-without-duplicate-edges
+#    - geopandas snap routine: https://gis.stackexchange.com/questions/290092/how-to-do-snapping-in-geopandas
+#    - extruder: https://github.com/cityjson/misc-example-code/blob/master/extruder/extruder.py - Hugo Ledoux <h.ledoux@tudelft.nl>
 
-additional thanks:
-    - OpenStreetMap help: https://help.openstreetmap.org/users/19716/arkriger
-    - cityjson community: https://github.com/cityjson/specs/discussions/79
-"""
+#additional thanks:
+#    - OpenStreetMap help: https://help.openstreetmap.org/users/19716/arkriger
+#    - cityjson community: https://github.com/cityjson/specs/discussions/79
+#########################
 import os
 from itertools import chain
 
@@ -27,10 +26,14 @@ import osm2geojson
 import numpy as np
 import pandas as pd
 import geopandas as gpd
+
+import shapely
+shapely.speedups.disable()
 import shapely.geometry as sg
 from shapely.geometry import Point, LineString, Polygon, shape, mapping
 from shapely.ops import snap
 from shapely.ops import transform
+
 import fiona
 import copy
 import json
@@ -68,7 +71,7 @@ def requestOsmBld(jparams):
     (
       (
         // I want all buildings
-        way[building](area.a);
+        way['building'](area.a);
     
         // plus every building:part
         way["building:part"](area.a);
@@ -84,7 +87,6 @@ def requestOsmBld(jparams):
         rel(bw:"outline")["type"="building"];
         // back to the ways with role "outline"
         way(r:"outline");
-        rel(r:"outline");
       );
     );
     out body;
@@ -108,7 +110,7 @@ def projVec(outfile, infile, crs):
     ds = gdal.VectorTranslate(outfile, infile, 
                           format = 'GeoJSON', reproject = True, makeValid=True,
                           srcSRS='EPSG:4326', dstSRS=crs)
-    #Dereference and close dataset
+    # de-reference and close dataset
     del ds
 
 def requestOsmAoi(jparams):
@@ -305,13 +307,13 @@ def getosmBld(jparams):
     
      #-- this serves two functions:
      #               i)  verify footprints removed
-     #               ii) possibly remove outline that overwrite building:parts - 
-     #                   can be done with cjio           
+     #               ii) remove `outline` that overwrite `building:parts` 
+     #                   - how does https://3dbuildings.com/data/#17.59/-33.932156/18.638025/131.2/60
+     #                   - and https://demo.f4map.com/#lat=-33.9319930&lon=18.6386228&zoom=19&camera.theta=69.973&camera.phi=-126.624
+     #                   - display the form correctly?      
     dis = dis.loc[(dis.osm_id != 13076003) & (dis.osm_id != 12405081)] 
      #-- save
     dis.to_file(jparams['gjson-z_out'], driver='GeoJSON')
-    
-     
     
     # create a point representing the hole within each building  
     dis['x'] = dis.representative_point().x
