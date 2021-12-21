@@ -221,7 +221,7 @@ def writegjson(ts, jparams):#, fname):
             p = osm_shape.representative_point()
             project = pyproj.Transformer.from_crs(utm, wgs84, always_xy=True).transform
             utm_point = transform(project, p)
-            f["properties"]["plus_code"] = olc.encode(utm_point.y, utm_point.x, 12)
+            f["properties"]["plus_code"] = olc.encode(utm_point.y, utm_point.x, 11)
                 
             f["geometry"] = mapping(osm_shape)
     
