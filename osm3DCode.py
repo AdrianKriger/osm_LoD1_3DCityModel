@@ -64,30 +64,14 @@ def requestOsmBld(jparams):
     """  
     query = """
     [out:json][timeout:25];
-    area[name='{0}']->.b;
+    (area[name='{0}'] ->.b;
     // -- target area ~ can be way or relation
     {1}(area.b)[name='{2}'];
     map_to_area -> .a;
-    (
-      (
         // I want all buildings
         way['building'](area.a);
-    
-        // plus every building:part
-        way["building:part"](area.a);
-        relation["building:part"]["type"="multipolygon"](area.a);
         // and relation type=multipolygon ~ to removed courtyards from buildings
         relation["building"]["type"="multipolygon"](area.a);
-      );
-    -
-      // excluding buildings with relation type=building role=outline
-      // to remove outlines that surround building:part
-      (
-        // for every way in the input set select the relations of which it is an "outline" member
-        rel(bw:"outline")["type"="building"];
-        // back to the ways with role "outline"
-        way(r:"outline");
-      );
     );
     out body;
     >;
@@ -311,7 +295,7 @@ def getosmBld(jparams):
      #                   - how does https://3dbuildings.com/data/#17.59/-33.932156/18.638025/131.2/60
      #                   - and https://demo.f4map.com/#lat=-33.9319930&lon=18.6386228&zoom=19&camera.theta=69.973&camera.phi=-126.624
      #                   - display the form correctly?      
-    dis = dis.loc[(dis.osm_id != 13076003) & (dis.osm_id != 12405081)] 
+    #dis = dis.loc[(dis.osm_id != 13076003) & (dis.osm_id != 12405081)] 
      #-- save
     dis.to_file(jparams['gjson-z_out'], driver='GeoJSON')
     
