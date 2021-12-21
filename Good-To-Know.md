@@ -45,11 +45,13 @@ a) [osm tags](https://wiki.openstreetmap.org/wiki/Map_features#Building) are sim
 The [code](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py#L194-L246) can easily be extended to meet your specific needs. no osm tag = no attribute.  
 b) Google ['plus codes'](https://maps.google.com/pluscodes/) are included at a precision of [11 characters - 3.5-meter block size](https://en.wikipedia.org/wiki/Open_Location_Code) (e.g. 4FRW3J9R+892Q); referenced to the [`representative_point()`](https://shapely.readthedocs.io/en/stable/manual.html) of buildings. - in Fig 2. this would be the red dot.
 
+c) Fig. 3 illustrates the typical semantic data connected to the 3D City Model. *Visualization: [Ninja](https://ninja.cityjson.org/#)*
+
 <p align="center">
-  <img width="650" height="350" src="img/CityJSON_Ninja_mamre_semantics.png">
+  <img width="550" height="250" src="img/CityJSON_Ninja_mamre_semantics.png">
 </p>  
 <p align="center">
-    Fig 3. An example of the CityJSON attributes. *Visualization: [Ninja](https://ninja.cityjson.org/#)*
+    Fig 3. An example of the CityJSON attributes. 
 </p>
 
 <ins>**Alternatives:**</ins>  
