@@ -10,9 +10,6 @@
     "gjson-proj_out": "./data/fp_proj.geojson",
     "gjson-z_out": "./data/fp_proj_z.geojson",
     
-    "aoi": "./data/aoi.geojson",
-    "aoi_prj": "./data/aoi_proj.geojson",
-    
     "in_raster": "./raster/LO19_050M_3318CD.tif",
     "nodata": 3.402823466385289e+38,
     "projClip_raster": "./raster/3318CD_clip_utm33s.tif",
