@@ -72,23 +72,30 @@ def getOsmPBF(jparams):
     
     if len(shapes) == 1:
         aoi = osm.get_boundaries(name=shapes[0])
+              
+    if len(shapes) > 1:
+        df = pd.DataFrame()
         
-     ## -- do more than two areas here... 
-
+        for i in shapes:
+            aoi = osm.get_boundaries(name=i)
+            df = df.append(aoi)
+        
+        gdf = gpd.GeoDataFrame(df, geometry='geometry')
+        aoi = gdf.dissolve()
+        
     aoi = aoi.set_crs(4326) 
     aoi_proj = aoi.to_crs(jparams['crs'])
-        
+     
     # Get the shapely geometry
     bbox_geom = aoi['geometry'].values[0]
     # Initiliaze with bounding box
     osm = OSM(fp, bounding_box=bbox_geom)
     # Retrieve buildings
     focus = osm.get_buildings()
-    
      #-- save
     focus.to_file(jparams['ori-gjson_out'], driver='GeoJSON')
     
-    buffer = gpd.GeoDataFrame(aoi_proj, geometry = aoi_proj.geometry, crs="EPSG:32733")
+    buffer = gpd.GeoDataFrame(aoi_proj, geometry = aoi_proj.geometry, crs=jparams['crs'])
     buffer['geometry'] = aoi_proj.buffer(150, cap_style = 2, join_style = 2)
     
     extent = [buffer.total_bounds[0] - 250, buffer.total_bounds[1] - 250, 
@@ -107,46 +114,59 @@ def projVec(outfile, infile, crs):
     # de-reference and close dataset
     del ds
 
-def requestOsmAoi(jparams):
-    """
-    request osm area - save
-    """
-    query = """
-    [out:json][timeout:30];
-    area[name='{0}']->.a;
-    //gather results
-    (
-    // query part for: “university”
-    {1}['name'='{2}'](area.a);
-    );
-    //print results
-    out body;
-    >;
-    out skel qt;
-    """.format(jparams['Larea'], jparams['osm_type'], jparams['Farea'])
+# def requestOsmAoi(jparams):
+#     """
+#     request osm area - save
+#     """
+#     query = """
+#     [out:json][timeout:30];
+#     area[name='{0}']->.a;
+#     //gather results
+#     (
+#     // query part for: “university”
+#     {1}['name'='{2}'](area.a);
+#     );
+#     //print results
+#     out body;
+#     >;
+#     out skel qt;
+#     """.format(jparams['Larea'], jparams['osm_type'], jparams['Farea'])
     
-    url = "http://overpass-api.de/api/interpreter"
-    r = requests.get(url, params={'data': query})
-    area = osm2geojson.json2geojson(r.json())
-    #-- store the data as GeoJSON
-    with open(jparams['aoi'], 'w') as outfile:
-        json.dump(area, outfile)
+#     url = "http://overpass-api.de/api/interpreter"
+#     r = requests.get(url, params={'data': query})
+#     area = osm2geojson.json2geojson(r.json())
+#     #-- store the data as GeoJSON
+#     with open(jparams['aoi'], 'w') as outfile:
+#         json.dump(area, outfile)
         
-    return area
+#     return area
 
 def prepareDEM(extent, jparams):
     """
-    gdal.Warp to reproject and clip raster dem
+    gdal.Warp to (mosaic) reproject and clip raster dem
     """
-    OutTile = gdal.Warp(jparams['projClip_raster'], 
-                        #'/vsimem/proj.tif',
-                        jparams['in_raster'], 
-                        dstSRS=jparams['crs'],
-                         #-- outputBounds=[minX, minY, maxX, maxY]
-                        outputBounds = [extent[0], extent[1],
-                                        extent[2], extent[3]])
-    OutTile = None 
-      
+    a_string = jparams['in_raster']
+    imgs = a_string.split(",") 
+    
+    if len(imgs) == 1:
+        OutTile = gdal.Warp(jparams['projClip_raster'], 
+                            jparams['in_raster'], 
+                            dstSRS=jparams['crs'],
+                            #-- outputBounds=[minX, minY, maxX, maxY]
+                            outputBounds = [extent[0], extent[1],
+                                            extent[2], extent[3]])
+        OutTile = None 
+     
+    if len(imgs) > 1:
+        OutTile = gdal.Warp(jparams['projClip_raster'], 
+                            [jparams['in_raster']],
+                            resampleAlg='bilinear',
+                            dstSRS=jparams['crs'],
+                            #-- outputBounds=[minX, minY, maxX, maxY]
+                            outputBounds = [extent[0], extent[1],
+                                            extent[2], extent[3]])
+        OutTile = None 
+        
 def createXYZ(fout, fin):
     """
     read raster and extract an xyz
