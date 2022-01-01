@@ -158,8 +158,17 @@ def prepareDEM(extent, jparams):
         OutTile = None 
      
     if len(imgs) > 1:
+        
+        a_string = jparams['in_raster']
+        shapes = a_string.split(",")
+        s = ' '.join([str(elem) for elem in shapes])
+        c = ' '
+        idx = [pos for pos, char in enumerate(s) if char == c]
+        for i in idx:
+            new = s[:i-1] + "", "" + a_string[i+1:]
+        
         OutTile = gdal.Warp(jparams['projClip_raster'], 
-                            [jparams['in_raster']],
+                            list(new),
                             resampleAlg='bilinear',
                             dstSRS=jparams['crs'],
                             #-- outputBounds=[minX, minY, maxX, maxY]
@@ -191,7 +200,7 @@ def assignZ(vfname, rfname):
     
      ##-- rasterstats
     l = point_query(vectors=ts['geometry'].representative_point(), 
-            raster="./raster/3318CD_clip_utm33s.tif", interpolate='bilinear', 
+            raster=rfname, interpolate='bilinear', 
             nodata=3.402823466385289e+38)
     
      ##-- assign to column
@@ -614,7 +623,7 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
         },
     "+metadata-extended": {
         "lineage":
-            [{"featureIDs": ["terrain01"],
+            [{"featureIDs": ["terrain-01"],
              "source": [
                  {
                      "description": "Chief Directorate: National Geo-spatial Information",
@@ -622,7 +631,7 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
                      "sourceReferenceSystem": "urn:ogc:def:crs:EPSG:20481"
                      }],
              "processStep": {
-                 "description" : "Transform raster terrain with gdal.Translate",
+                 "description" : "Transform raster terrain with gdal.Warp",
                  "processor": {
                      "contactName": jparams['cjsn_contName'],
                      "contactType": jparams['cjsn_contType'],
@@ -648,7 +657,7 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
       #-- add the geom 
     grd['geometry'].append(g)
       #-- insert the terrain as one new city object
-    cm['CityObjects']['terrain01'] = grd
+    cm['CityObjects']['terrain-01'] = grd
     
      #-- then buildings
     for (i, geom) in enumerate(lsgeom):
