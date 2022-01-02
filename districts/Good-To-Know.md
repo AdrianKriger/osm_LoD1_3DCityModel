@@ -3,7 +3,7 @@
 <ins>**Parameters:**</ins>  
 a) ["update"](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/osm3Ddistricts_param.json#L3) must be `"True"` to download the appropriate osm.pbf; therafter `"False"` will use that file.  
 b) Your ["Focus_area"](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/osm3Ddistricts_param.json#L3) must exist in osm as a defined [boundary=administrative](https://wiki.openstreetmap.org/wiki/Tag:boundary%3Dadministrative). It can be one or comma seperated. So for example should you wish to explore the nine census wards (tracts) of [Khayelitsha](https://en.wikipedia.org/wiki/Khayelitsha) (population: aprox. 390 000) you would go:  
-`"Cape Town Ward 18,Cape Town Ward 87,Cape Town Ward 90,Cape Town Ward 89,<    etc.  >,Cape Town Ward 97,Cape Town Ward 95"`.  
+`"Cape Town Ward 18,Cape Town Ward 87,Cape Town Ward 90,<    and so on  >,Cape Town Ward 97,Cape Town Ward 95"`.  Try to keep the areas adjacent.
 c) Define [metadata](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L22-L30) for the City Model. Without it the dataset has no value.    
 d) Although interactive is set to ['True'](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L34); I recommend 'False'. Create the .html with [interactiveOnly](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/interactiveOnly.ipynb). The [Jupyter](https://jupyter.org/) environment allows for easy customization of the final product. The static png below (Fig 1.) illustrates building stock differentiated through color. A school, housing, retail, healthcare and community focused facilities are easily identified. Additional features unique to an aoi can also be included. Here farmland, streams, recreational spaces and bus rapid transit routes have been added *- you are thus limited only through data and your imagination*.
 
@@ -19,14 +19,15 @@ dem - in South Africa if you are using the [National geo-spatial information](ht
 vector - A [snap routine](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py#L231-L238) reduces the number of vertices within 0.2-m on the osm vector layer. 
 
 <ins>**Precision:**</ins>  
-I've chosen to process in Universal Transverse Mercator 33 South. You can choose another [crs](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L6). Be aware a floating-point precision error might arise.
+I've chosen to process in Universal Transverse Mercator 34 South. You can choose another [crs](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L6). Be aware a floating-point precision error might arise.
 
 <ins>**Building Heights:**</ins>  
 The osm tag `building:level` is taken as a [proxy for the height of a building](https://wiki.openstreetmap.org/wiki/Key:building:levels). The calculation is simply `building:level * 2.8 + 1.3`. If a structure does not have a `building:level` tag no LoD1 model is created. Vector data is through [&copy; OpenStreetMap contributors](https://www.openstreetmap.org/copyright). All data from OpenStreetMap is licensed under the [OpenStreetMap License](https://wiki.osmfoundation.org/wiki/Licence).
 
 <ins>**Raster dem:**</ins>  
 a) The [osm3Dcput_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/extra/osm3Dcput_param.json#L15) defines the raster I used in the example. [osm3Dmamre_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dmamre_param.json#L15) defines another. These datasets, and more, are available from the [CD:NGI Geoportal](http://www.ngi.gov.za/index.php/online-shop/what-is-itis-portal); State copyright reserved. The Chief Directorate: National Geospatial Information is a branch of the [Department Rural Development and Land Reform](https://www.drdlr.gov.za/sites/Internet/Branches/NationalGeomaticsAndManagementServices/Pages/National-Geo-Spatial-Information.aspx) and is a key contributor to the [South African Spatial Data Infrustructure](http://www.sasdi.gov.za/sites/SASDI/Pages/Home.aspx).  
-b) The script handles the projection and clipping to an aoi. If your focus area falls on the boundary of two raster sheets - you are welcome to raise an issue so we can expand the functionality to `glob` a folder, reproject, **merge**, clip and continue. Bear in mind the **NOTE.**
+b) The script handles the mosaic (merge), projection and clipping to an Area-of-Interest. Similar to ["Focus_area"](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/osm3Ddistricts_param.json#L3) if more than one raster dem is necessary the ["in_raster" parameter]() would be:  
+`"./raster/LO19_050M_3418BA.tif, ./raster/LO19_050M_3318DC.tif"`. Two should be enough. In the event you need more the script needs to change. You are welcome to raise an issue.
 
 <ins>**Triangulation:**</ins>  
 a) [PyVista](https://www.pyvista.org/) is [built-in](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py#L440-L466) and will execute after the triangulation; before the 3D City Model is created. This is to visualize the terrain. I have left [line 298 of osm3DCode](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py#L298) as an aid.
