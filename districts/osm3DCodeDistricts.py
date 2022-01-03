@@ -101,7 +101,7 @@ def getOsmPBF(jparams):
     extent = [buffer.total_bounds[0] - 250, buffer.total_bounds[1] - 250, 
               buffer.total_bounds[2] + 250, buffer.total_bounds[3] + 250]
     
-    return buffer, extent
+    return aoi, buffer, extent
 
        
 def projVec(outfile, infile, crs):
@@ -185,12 +185,12 @@ def createXYZ(fout, fin):
                          format = 'XYZ')
     xyz = None
 
-def assignZ(vfname, rfname):
+def assignZ(jparams): #vfname, rfname):
     """
     assign a height attribute - mean ground - to the osm vector 
     ~ .representative_point() used instead of .centroid
     """
-    ts = gpd.read_file(vfname)
+    ts = gpd.read_file(jparams['gjson-proj_out'])
     
      ##-- some basic manipulation to harvest only what we want
     ts.dropna(subset=['building:levels'], inplace= True)
@@ -200,8 +200,8 @@ def assignZ(vfname, rfname):
     
      ##-- rasterstats
     l = point_query(vectors=ts['geometry'].representative_point(), 
-            raster=rfname, interpolate='bilinear', 
-            nodata=3.402823466385289e+38)
+            raster=jparams['projClip_raster'], interpolate='bilinear', 
+            nodata=jparams['nodata'])
     
      ##-- assign to column
     ts['mean'] = np.array(l)
@@ -250,13 +250,23 @@ def writegjson(ts, jparams):#, fname):
             adr.append(row['addr:city'])
         if 'addr:province' in columns and row['addr:province'] != None:
             adr.append(row['addr:province'])
-                
-                #-- store other OSM attributes and prefix them with osm_
-        #if ts.columns != 'geometry' or ts.columns != 'addr:flats' or ts.columns != 'addr:housenumber' or \
-            #ts.columns != 'addr:housename' or ts.columns != 'addr:street' or ts.columns != 'addr:suburb'\
-            #or ts.columns != 'addr:postcode' or ts.columns != 'addr:city' or ts.columns != 'addr:province' \
-            #and row[i] != None:
-                #f["properties"]["osm_%s" % c] = row[c]
+            
+        # harvest some tags ~ we could harvest all but lets do less
+        if 'building' in columns and row['building'] != None:
+            f["properties"]["osm_building"] = row['building']
+        if 'amenity' in columns and row['amenity'] != None:
+            f["properties"]["osm_amenity"] = row['amenity']
+        if 'start_date' in columns and row['start_date'] != None:
+            f["properties"]["osm_start_date"] = row['start_date']
+        if 'shop' in columns and row['shop'] != None:
+            f["properties"]["osm_shop"] = row['shop']
+        if 'building:levels' in columns and row['building:levels'] != None:
+            f["properties"]["osm_building:levels"] = row['building:levels']
+        if 'name' in columns and row['name'] != None:
+            f["properties"]["osm_name"] = row['name']
+        if 'school' in columns and row['school'] != None:
+            f["properties"]["osm_school"] = row['school']
+        
             
         f["properties"]["osm_address"] = " ".join(adr)
             
@@ -272,7 +282,7 @@ def writegjson(ts, jparams):#, fname):
                 osm_shape = Polygon(poly)#[0])
                 
         wgs84 = pyproj.CRS('EPSG:4326')
-        utm = pyproj.CRS("EPSG:32733")
+        utm = pyproj.CRS(jparams['crs'])
         p = osm_shape.representative_point()
         project = pyproj.Transformer.from_crs(utm, wgs84, always_xy=True).transform
         wgs_point = transform(project, p)
@@ -316,7 +326,10 @@ def getosmBld(jparams):
     read osm buildings to gdf, extract the representative_point() for each polygon
     and create a basic xyz_df;
     """
+    #filename = jparams['gjson-z_out']
+    #file = open(filename)
     dis = gpd.read_file(jparams['gjson-z_out'])
+    #file.close()
     dis.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
  
     # remove duplicate vertices within tolerance 0.2 
@@ -623,7 +636,7 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
         },
     "+metadata-extended": {
         "lineage":
-            [{"featureIDs": ["terrain-01"],
+            [{"featureIDs": ["terrain_id-1"],
              "source": [
                  {
                      "description": "Chief Directorate: National Geo-spatial Information",
@@ -657,9 +670,10 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
       #-- add the geom 
     grd['geometry'].append(g)
       #-- insert the terrain as one new city object
-    cm['CityObjects']['terrain-01'] = grd
+    cm['CityObjects']['terrain_id-1'] = grd
     
      #-- then buildings
+    k = 1
     for (i, geom) in enumerate(lsgeom):
         footprint = geom
         #-- one building
@@ -711,6 +725,8 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
         oneb['geometry'].append(g)
         #-- insert the building as one new city object
         cm['CityObjects'][lsattributes[i]['osm_id']] = oneb
+        #cm['CityObjects']['building_id-', [k]['osm_id']] = oneb
+        k =+ 1
 
     return cm
 
@@ -791,40 +807,75 @@ def write_interactive(area, jparams):
     f.close()
     
     storeyheight = 2.8
-
-    #-- iterate through the list of buildings and create GeoJSON features rich in attributes
+        #-- iterate through the list of buildings and create GeoJSON 
+        # features rich in attributes
     footprints = {
         "type": "FeatureCollection",
         "features": []
         }
-    
-    for i in gj['features']:
+    columns = ts.columns   
+    for i, row in ts.iterrows():
         f = {
         "type" : "Feature"
         }
-        # at a minimum we only want building:levels tagged
-        if 'building:levels' in i['properties']['tags']:
-            f["properties"] = {}
-            
-            for p in i["properties"]:
 
-            #-- store all OSM attributes and prefix them with osm_
-                f["properties"]["osm_%s" % p] = i["properties"][p]
-                osm_shape = shape(i["geometry"])
-                #-- a few buildings are not polygons, rather linestrings. This converts them to polygons
-                #-- rare, but if not done it breaks the code later
-                if osm_shape.type == 'LineString':
-                    osm_shape = Polygon(osm_shape)
-                    #-- and multipolygons must be accounted for
-                elif osm_shape.type == 'MultiPolygon':
-                    osm_shape = Polygon(osm_shape[0])
-                    #-- convert the shapely object to geojson
-                f["geometry"] = mapping(osm_shape)
-    
-        #-- finally calculate the height and store it as an attribute (extrusion of geometry 
-        ## -- will be done in the next script)
-                f["properties"]['height'] = float(i["properties"]['tags']['building:levels']) * storeyheight + 1.3    
-                footprints['features'].append(f)
+        f["properties"] = {}      
+            #-- store all OSM attributes and prefix them with osm_ 
+        f["properties"]["osm_id"] = row.id
+        #columns = ts.columns
+        #for c in columns:
+        # adr = []
+        #         #-- transform the OSM address to string prefix with osm_
+        # if 'addr:flats' in columns and row['addr:flats'] != None:
+        #     adr.append(row['addr:flats'])
+        # if 'addr:housenumber' in columns and row['addr:housenumber'] != None:
+        #     adr.append(row['addr:housenumber'])
+        # if 'addr:housename' in columns and row['addr:housename'] != None:
+        #     adr.append(row['addr:housename'])
+        # if 'addr:street' in columns and row['addr:street'] != None:
+        #     adr.append(row['addr:street'])
+        # if 'addr:suburb' in columns and row['addr:suburb'] != None:
+        #     adr.append(row['addr:suburb'])
+        # if 'addr:postcode' in columns and row['addr:postcode'] != None:
+        #     adr.append(row['addr:postcode'])
+        # if 'addr:city' in columns and row['addr:city'] != None:
+        #     adr.append(row['addr:city'])
+        # if 'addr:province' in columns and row['addr:province'] != None:
+        #     adr.append(row['addr:province'])
+                
+                #-- store other OSM attributes and prefix them with osm_
+        #if ts.columns != 'geometry' or ts.columns != 'addr:flats' or ts.columns != 'addr:housenumber' or \
+            #ts.columns != 'addr:housename' or ts.columns != 'addr:street' or ts.columns != 'addr:suburb'\
+            #or ts.columns != 'addr:postcode' or ts.columns != 'addr:city' or ts.columns != 'addr:province' \
+            #and row[i] != None:
+                #f["properties"]["osm_%s" % c] = row[c]
+            
+        #f["properties"]["osm_address"] = " ".join(adr)
+            
+        osm_shape = row["geometry"] # shape(row["geometry"][0])
+            #-- a few buildings are not polygons, rather linestrings. This converts them to polygons
+            #-- rare, but if not done it breaks the code later
+        if osm_shape.type == 'LineString':
+            osm_shape = Polygon(osm_shape)
+            #-- and multipolygons must be accounted for
+        elif osm_shape.type == 'MultiPolygon':
+                #osm_shape = Polygon(osm_shape[0])
+            for poly in osm_shape:
+                osm_shape = Polygon(poly)#[0])
+                
+        wgs84 = pyproj.CRS('EPSG:4326')
+        utm = pyproj.CRS(jparams['crs'])
+        p = osm_shape.representative_point()
+        project = pyproj.Transformer.from_crs(utm, wgs84, always_xy=True).transform
+        wgs_point = transform(project, p)
+        f["properties"]["plus_code"] = olc.encode(wgs_point.y, wgs_point.x, 11)
+        
+        f["geometry"] = mapping(osm_shape)
+            #-- finally calculate the height and store it as an attribute
+        f["properties"]['ground_height'] = round(row["mean"], 2)
+        f["properties"]['building_height'] = round(float(row['building:levels']) * storeyheight + 1.3, 2) 
+        f["properties"]['roof_height'] = round(f["properties"]['building_height'] + row["mean"], 2)
+        footprints['features'].append(f)
     
     #-- store the data as GeoJSON
     with open(jparams['int-gjson_out'], 'w') as outfile:
