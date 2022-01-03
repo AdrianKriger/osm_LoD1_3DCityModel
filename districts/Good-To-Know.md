@@ -43,7 +43,7 @@ You need to verify if the building footprints have been removed from the surface
 b) Shewchuck's [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) may not be sold or included in commercial products without a license.  
 
 <ins>**CityJSON attributes:**</ins>  
-a) [osm tags](https://wiki.openstreetmap.org/wiki/Map_features#Building) are simply copied to the 3D Building Models verbatim; with the exception of the address. To reduce the complexty of the [Key:addr](https://wiki.openstreetmap.org/wiki/Key:addr#Detailed_subkeys) each component is concatenated into one [string](https://en.wikibooks.org/wiki/Python_Programming/Variables_and_Strings#String) following, as closely as possible, the [ISO 19160-1:2015(en) Addressing](https://www.iso.org/obp/ui/#iso:std:iso:19160:-1:ed-1:v1:en) standard. A typical address will thus read: `housenumber street suburb postalcode city province`. Should the building be an apartment the [unit range](https://wiki.openstreetmap.org/wiki/Key:addr:flats) will prepend the address.  
+a) A selection of the [osm tags](https://wiki.openstreetmap.org/wiki/Map_features#Building) are simply copied to the 3D Building Models verbatim; with the exception of the address. To reduce the complexty of the [Key:addr](https://wiki.openstreetmap.org/wiki/Key:addr#Detailed_subkeys) each component is concatenated into one [string](https://en.wikibooks.org/wiki/Python_Programming/Variables_and_Strings#String) following, as closely as possible, the [ISO 19160-1:2015(en) Addressing](https://www.iso.org/obp/ui/#iso:std:iso:19160:-1:ed-1:v1:en) standard. A typical address will thus read: `housenumber street suburb postalcode city province`. Should the building be an apartment the [unit range](https://wiki.openstreetmap.org/wiki/Key:addr:flats) will prepend the address.  
 The [code](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py#L187-L248) can easily be extended to meet your specific needs. no osm tag = no attribute.  
 b) Google ['plus codes'](https://maps.google.com/pluscodes/) are included at a precision of [11 characters - 3.5-meter block size](https://en.wikipedia.org/wiki/Open_Location_Code) (e.g. 4FRW3J9R+892Q); referenced to the [`representative_point()`](https://shapely.readthedocs.io/en/stable/manual.html) of buildings. - in Fig 2. this would be the red dot.  
 c) Fig. 3 illustrates the typical semantic data connected to the 3D City Model. *Visualization: [ninja](https://ninja.cityjson.org/#)*
@@ -59,7 +59,4 @@ c) Fig. 3 illustrates the typical semantic data connected to the 3D City Model. 
 [Cesium](https://cesium.com/), [mapbox](https://www.mapbox.com/), [deck.gl](https://deck.gl/) and [3dbuildings](https://3dbuildings.com/) will stream 3D tiles to your hearts content.
 
 <ins>**[The Penultimate Truth:](https://en.wikipedia.org/wiki/The_Penultimate_Truth)**</ins>  
-Its not very efficient. A few [timing examples](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/osm3DMainDistricts.py#L85-L86) are available to help you decide -> run and wait or run, walk away and come back later?
-
-<ins>**Lastly:**</ins>  
-Please don't burden the osm server with requests for an extreme amount of data.
+Its not very efficient. A few [timing metrics](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/osm3DMainDistricts.py#L85-L86) are available to help you decide -> run and wait or run, walk away and come back later?
