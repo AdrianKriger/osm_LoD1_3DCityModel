@@ -91,7 +91,7 @@ def getOsmPBF(jparams):
     # Initiliaze with bounding box
     osm = OSM(fp, bounding_box=bbox_geom)
     # Retrieve buildings
-    focus = osm.get_buildings()
+    focus = osm.get_buildings(extra_attributes=["addr:suburb"])
      #-- save
     focus.to_file(jparams['ori-gjson_out'], driver='GeoJSON')
     
