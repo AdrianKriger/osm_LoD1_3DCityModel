@@ -12,16 +12,15 @@ import json
 import time
 from datetime import timedelta
 
-from osm3DCodeDistricts import getOsmPBF, projVec, requestOsmAoi, write_interactive, \
-    prepareDEM, assignZ, getosmBld, writegjson, getosmArea, getXYZ, getBldVertices, \
-        getAOIVertices, appendCoords, createSgmts, executeDelaunay, pvPlot, writeObj, \
-            output_cityjson, createXYZ, write275obj
+from osm3DCodeDistricts import getOsmPBF, projVec, prepareDEM, assignZ, getosmBld, writegjson,\
+    getosmArea, getXYZ, getBldVertices, getAOIVertices, appendCoords, createSgmts, executeDelaunay, \
+        pvPlot, writeObj, output_cityjson, createXYZ, write275obj
     
 def main():
     start = time.time()
     
     try:
-        jparams = json.load(open('osm3Ddistricts_param.json'))
+        jparams = json.load(open('osm3DdistrictsCityMany_param.json'))
     except:
         print("ERROR: something is wrong with the param.json file.")
         sys.exit()
@@ -31,7 +30,7 @@ def main():
     path = os.path.join(path, d_name)
     os.makedirs(path, exist_ok=True)
     
-    buffer, extent = getOsmPBF(jparams)
+    area, buffer, extent = getOsmPBF(jparams)
     projVec(jparams['gjson-proj_out'], jparams['ori-gjson_out'], jparams['crs'])
     #area = requestOsmAoi(jparams)
     #projVec(jparams['aoi_prj'], jparams['aoi'], jparams['crs'])
@@ -44,7 +43,7 @@ def main():
 
     prepareDEM(extent, jparams)
     createXYZ(jparams['xyz'], jparams['projClip_raster'])
-    ts = assignZ(jparams['gjson-proj_out'], jparams['projClip_raster'])
+    ts = assignZ(jparams) # jparams['gjson-proj_out'], jparams['projClip_raster'])
     writegjson(ts, jparams)
     
     dis, hs = getosmBld(jparams)
@@ -82,8 +81,9 @@ def main():
     end = time.time()
     print('runtime:', str(timedelta(seconds=(end - start))))
     
-     #-- one area runtime: 0:33:31.895032 ~ buildings ~ 1000, population 29 939
-     #-- two areas runtime:               ~ buildings ~     , population ~ 50 000
+     #-- Ward 57            - runtime: 0:33:31.895032 ~ (2332) buildings with levels -> 1082, population ~  30 000
+     #-- Ward 57 and 115    - runtime:                ~ buildings with levels ~ 1000, population ~  50 000
+     #-- Kayaltsha          - runtime:                ~ buildings with levels ~    3, population ~ 390 000
 
 if __name__ == "__main__":
     main()
