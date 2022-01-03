@@ -36,7 +36,7 @@ a) [PyVista](https://www.pyvista.org/) is [built-in](https://github.com/AdrianKr
   <img src="img/sp01.png" alt="alt text" width="350" height="250">  <img src="img/sp02.png" alt="alt text" width="350" height="250">
 </p> 
 <p align="center">
-    Fig 2. - left illustrates a spike. - right traces the chanllenge to the root.
+    Fig 2. - left illustrates a spike. - right traces the challenge to the root.
 </p>
 
 b) Shewchuck's [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) may not be sold or included in commercial products without a license.  
