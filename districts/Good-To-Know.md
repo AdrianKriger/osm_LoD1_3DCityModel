@@ -11,7 +11,7 @@ d) Create a dynamic .html with [interactiveOnly](https://github.com/AdrianKriger
   <img width="650" height="350" src="img/interactive.png">
 </p>  
 <p align="center">
-    Fig 1. An example of how the interactive visualization can be customized through coloring the building stock (school, retail, housing, commercial, etc.).
+    Fig 1. An example of how the interactive visualization can be customized through coloring the building stock (school, retail, housing, commercial, etc.) while the tooltips showcase the underlying data.
 </p>
 
 <ins>**Accuracy:**</ins>  
