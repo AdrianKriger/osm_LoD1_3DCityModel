@@ -8,7 +8,7 @@ c) Define [metadata](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/m
 d) Create a dynamic .html with [interactiveOnly](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/interactiveOnly.ipynb). The [Jupyter](https://jupyter.org/) environment allows for easy customization of the final product. The static png below (Fig 1.) illustrates building stock differentiated through color. A school, housing, retail, healthcare and community focused facilities are easily identified. The tooltips provide an additional means to convey information.
 
 <p align="center">
-  <img width="650" height="350" src="img/interactive.png">
+  <img width="750" height="350" src="img/interactive.png">
 </p>  
 <p align="center">
     Fig 1. An example of how the interactive visualization can be customized through coloring the building stock (school, retail, housing, commercial, etc.) while the tooltips showcase the underlying data.
