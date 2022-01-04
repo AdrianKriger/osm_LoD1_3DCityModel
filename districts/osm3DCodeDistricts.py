@@ -15,6 +15,7 @@
 #additional thanks:
 #    - OpenStreetMap help: https://help.openstreetmap.org/users/19716/arkriger
 #    - cityjson community: https://github.com/cityjson/specs/discussions/79
+#    - pyrosm            : https://github.com/HTenkanen/pyrosm/issues/167
 #########################
 import os
 from itertools import chain
