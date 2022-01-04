@@ -20,7 +20,7 @@ def main():
     start = time.time()
     
     try:
-        jparams = json.load(open('osm3DdistrictsCityMany_param.json'))
+        jparams = json.load(open('osm3DdistrictsKaya_param.json'))
     except:
         print("ERROR: something is wrong with the param.json file.")
         sys.exit()
@@ -81,9 +81,9 @@ def main():
     end = time.time()
     print('runtime:', str(timedelta(seconds=(end - start))))
     
-     #-- Ward 57            - runtime: 0:33:31.895032 ~ (2332) buildings with levels -> 1082, population ~  30 000
-     #-- Ward 57 and 115    - runtime:                ~ buildings with levels ~ 1000, population ~  50 000
-     #-- Kayaltsha          - runtime:                ~ buildings with levels ~    3, population ~ 390 000
+     #-- Ward 57                - runtime: 0:33:31.895032 ~ (2332)  buildings with levels -> 1082, population ~  30 000
+     #-- Ward 57 and 115        - runtime:                ~ ()      buildings with levels ->     , population ~  50 000
+     #-- Khayelitsha (12 wards) - runtime: 0:08:00.895749 ~ (81770) buildings with levels ->   57, population ~ 390 000
 
 if __name__ == "__main__":
     main()
