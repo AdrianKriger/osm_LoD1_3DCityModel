@@ -10,7 +10,7 @@ Its [paper](https://joss.theoj.org/papers/10.21105/joss.02866): `Ledoux H, Bilje
 
 ---
 
-We generate a Level-of-Detail 1 (LoD1) 3D City Model (buildings and terrain) from [OpenStreetMap contributions](https://en.wikipedia.org/wiki/OpenStreetMap) (osm) with elevation from a raster Digital Elevation Model (DEM).\
+We generate a Level-of-Detail 1 (LoD1) 3D City Model (buildings and terrain) from [OpenStreetMap](https://en.wikipedia.org/wiki/OpenStreetMap) (osm) contributions with elevation from a raster Digital Elevation Model (DEM).\
 
 <p align="center">There are two procesing strategies</p>
 
@@ -20,7 +20,7 @@ We generate a Level-of-Detail 1 (LoD1) 3D City Model (buildings and terrain) fro
 
 ---
 
-**Input** a raster DEM. Script will call the osm server.  
+**Input** a raster DEM. Script will call for the [osm contributions](https://www.openstreetmap.org/about#:~:text=OpenStreetMap%20is%20built%20by%20a,more%2C%20all%20over%20the%20world.).  
 **Output** includes:  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i. a 2.75D surface mesh *(buildings connected to terrain)*;  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ii. a semantically rich LoD1 City Model *(information rich building models seperate from the ground; but when connected to the terrain   form a water-tight surface<sup>*</sup>)*; and  
