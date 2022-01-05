@@ -33,7 +33,7 @@ b) The script handles the mosaic (merge), projection and clipping to an aoi. Sim
 a) [PyVista](https://www.pyvista.org/) is [built-in](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py#L440-L466) and will execute after the triangulation; before the 3D City Model is created. In addition to verifying the building footprints have been removed, from the surface, you need to check for a spike or two. Generally if you trace this to its root *---and open in an [osm editor](https://wiki.openstreetmap.org/wiki/Editors)---* you'll discover buildings crossing each other ~ Fig.2. The triangulation knows there are lines (walls) and expects a vertex where they intersect. There is none and the result is a spike. Drop a [node](https://wiki.openstreetmap.org/wiki/Node) to correct the topology. *We are transforming volunteered public data into a value-added product. Alchemy is a process. Please be patient.*
 
 <p align="center">
-  <img src="img/sp01.png" alt="alt text" width="350" height="250">  <img src="img/sp02.png" alt="alt text" width="350" height="250">
+  <img src="img/sp01.png" alt="alt text" width="450" height="300">  <img src="img/sp02.png" alt="alt text" width="450" height="300">
 </p> 
 <p align="center">
     Fig 2. - left illustrates a spike. - right traces the challenge to the root.
