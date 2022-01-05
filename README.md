@@ -10,10 +10,10 @@ Its [paper](https://joss.theoj.org/papers/10.21105/joss.02866): `Ledoux H, Bilje
 
 ---
 
-\We generate a Level-of-Detail 1 (LoD1) 3D City Model (buildings and terrain) from [OpenStreetMap contributions](https://en.wikipedia.org/wiki/OpenStreetMap) (osm) with elevation from a raster Digital Elevation Model (DEM).\
+We generate a Level-of-Detail 1 (LoD1) 3D City Model (buildings and terrain) from [OpenStreetMap contributions](https://en.wikipedia.org/wiki/OpenStreetMap) (osm) with elevation from a raster Digital Elevation Model (DEM).\
 
-<h1 align="center">\There are two procesing strategies\
-</h1>
+< align="center">There are two procesing strategies
+</>
 
 | [Village/Campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus) | [District](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts)  |
 | :-----: | :-----: |
