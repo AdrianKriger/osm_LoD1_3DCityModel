@@ -32,7 +32,7 @@ a) [PyVista](https://www.pyvista.org/) is [built-in](https://github.com/AdrianKr
 You need to verify if the building footprints have been removed from the surface. The two images illustrate an example were a specific vector had to be accounted for or the result would not be topologically correct (water-tight with no holes nor gaps).
 
 <p align="center">
-  <img src="img/fp01.png" alt="alt text" width="250" height="250">  <img src="img/fp02.png" alt="alt text" width="250" height="250">
+  <img src="img/fp01.png" alt="alt text" width="350" height="350">  <img src="img/fp02.png" alt="alt text" width="350" height="350">
 </p> 
 <p align="center">
     Fig 2. - left illustrates the building footprint removed from the terrain. - right shows the vertices accounted for; but the ground remains.
