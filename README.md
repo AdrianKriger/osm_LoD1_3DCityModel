@@ -8,16 +8,16 @@ This repository is inspired by [3dfier](https://tudelft3d.github.io/3dfier/minim
 
 Its [paper](https://joss.theoj.org/papers/10.21105/joss.02866): `Ledoux H, Biljecki F, Dukai B, Kumar K, Peters R, Stoter J, and Commandeur T (2021). 3dfier: automatic reconstruction of 3D city models. Journal of Open Source Software, 6(57), 2866.` [website](https://tudelft3d.github.io/3dfier/index.html) and [github](https://github.com/tudelft3d/3dfier) are available.
 #
-We generate a Level-of-Detail 1 (LoD1) 3D City Model (buildings and terrain) from [OpenStreetMap](https://en.wikipedia.org/wiki/OpenStreetMap) (osm) contributions with elevation from a raster Digital Elevation Model (DEM).
-
+We generate a Level-of-Detail 1 (LoD1) 3D City Model (buildings and terrain) from [OpenStreetMap contributions](https://en.wikipedia.org/wiki/OpenStreetMap) (osm) with elevation from a raster Digital Elevation Model (DEM).
 ---
 
-**NOTE:** *This workflow is not meant to scale.*  
-Requests for an extreme amount of data from the [osm](https://en.wikipedia.org/wiki/OpenStreetMap) server is destructive to the entire community. Village, communities with populations less-than 10 000 and campus analysis only please. For larger areas consider harvesting data via `.pbf` ([geofabric](https://download.geofabrik.de/index.html) or [planet](https://planet.osm.org/)) - raise an issue and we can work on an alternate processing strategy.
+There are two procesing strategies
+
+| [Village/Campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus) | [District](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts)  |
+| :-----: | :-----: |
+| If your Area-of-Interest (aoi) has a population of 1 000 or less you re welcome to choose [village/campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus)| Please choose [District](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts) should you aoi have a population of more than 10 000|
 
 ---
-
-Set parameters with a basic [json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json) to execute [osm3DCode](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DCode.py) through [osm3DMain](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3DMain.py).  
 
 **Input** a raster DEM. Script will call the osm server.  
 **Output** includes:  
@@ -26,5 +26,3 @@ Set parameters with a basic [json](https://github.com/AdrianKriger/osm_LoD1_3DCi
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;iii. an interactive .html which you can navigate and query.
 
 <sup>*</sup> *the goal is a topologically correct surface. I have not tested this for all possibilities. If the result you achieve is not; you are welcome to raise an issue. I depend on you to help me improve.* 
-
-Please read the [Good-To-Know](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/Good-To-Know.md).
