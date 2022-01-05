@@ -1,14 +1,14 @@
 <h1 align="center">LoD1 3D City Model from volunteered public data and a raster Digital Elevation Model.
 </h1> 
 <p align="center">
-  <img width="650" height="370" src="img/CityJSON_Ninja_cput.png">
+  <img width="650" height="370" src="https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/img/CityJSON_Ninja_cput.png">
 </p>
 
 This repository is inspired by [3dfier](https://tudelft3d.github.io/3dfier/minimal_data_requirements.html); product of the [3D geoinformation group](https://3d.bk.tudelft.nl/) at [TUDelft](https://www.tudelft.nl/)
 
 Its [paper](https://joss.theoj.org/papers/10.21105/joss.02866): `Ledoux H, Biljecki F, Dukai B, Kumar K, Peters R, Stoter J, and Commandeur T (2021). 3dfier: automatic reconstruction of 3D city models. Journal of Open Source Software, 6(57), 2866.` [website](https://tudelft3d.github.io/3dfier/index.html) and [github](https://github.com/tudelft3d/3dfier) are available.
-#
-We generate a Level-of-Detail 1 (LoD1) 3D City Model (buildings and terrain) from [OpenStreetMap contributions](https://en.wikipedia.org/wiki/OpenStreetMap) (osm) with elevation from a raster Digital Elevation Model (DEM).
+
+**We generate a Level-of-Detail 1 (LoD1) 3D City Model (buildings and terrain) from [OpenStreetMap contributions](https://en.wikipedia.org/wiki/OpenStreetMap) (osm) with elevation from a raster Digital Elevation Model (DEM).**
 ---
 
 There are two procesing strategies
