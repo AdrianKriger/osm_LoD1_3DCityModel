@@ -3,7 +3,7 @@
 <ins>**Parameters:**</ins>  
  a) Area-of-interest (aoi) is defined `Large area -> focus area` or `State (Province) -> village / campus`.    
 b) Your aoi must exist in osm as either a [way or relation](https://wiki.openstreetmap.org/wiki/Elements); and the type must explicitly be [set](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/osm3Dmamre_param.json#L4).  
-c) Define [metadata](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/osm3Dmamre_param.json#L22-L32) for the City Model. Without it the dataset has no value.    
+c) Define [metadata](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/osm3Dmamre_param.json#L22-L32) for the City Model. Without it the dataset has no value.  [CityJSON Specifications](https://www.cityjson.org/specs/1.1.0/#metadata) are pretty comprehensive.  
 d) Create a dynamic .html with [interactiveOnly](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/interactiveOnly.ipynb). The [Jupyter](https://jupyter.org/) environment allows for easy customization of the final product. The static png below (Fig 1.) illustrates building stock differentiated through color. A school, housing, retail, healthcare and community focused facilities are easily identified. Additional features unique to an aoi can also be included. Here farmland, streams, recreational spaces and bus rapid transit routes have been added *- you are thus limited only through data and your imagination*.
 
 <p align="center">
