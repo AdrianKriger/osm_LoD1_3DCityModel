@@ -5,3 +5,9 @@ LOD1 3D City Model from [osm.pbf](https://wiki.openstreetmap.org/wiki/PBF_Format
 Set parameters with a basic [json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/osm3Ddistricts_param.json) to execute [osm3DCodeDistricts](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/osm3DCodeDistricts.py) through [osm3DMainDistricts](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/osm3DMainDistricts.py). A dynamic visualization is possible with [interactiveOnly](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/interactiveOnly.ipynb)
 
 Please read the [Good-To-Know](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/Good-To-Know.md).
+&nbsp;
+
+&nbsp;
+
+*use with caution; I am experiencing challenges handeling exceptions (buildings as nodes, without tags, etc.) and haven't been able to properly put this through its paces:  
+06-01-2022*
