@@ -5,13 +5,13 @@ a) ["update"](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/dis
 b) Your ["Focus_area"](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/osm3Ddistricts_param.json#L3) must exist in osm as a defined [boundary=administrative](https://wiki.openstreetmap.org/wiki/Tag:boundary%3Dadministrative). It can be one or comma seperated. So for example should you wish to explore the twelve census wards (tracts) of [Khayelitsha](https://en.wikipedia.org/wiki/Khayelitsha) (population: aprox. 390 000) you would go:  
 `"Cape Town Ward 18,Cape Town Ward 87,Cape Town Ward 90,<    and so on  >,Cape Town Ward 97,Cape Town Ward 95"`.  Try to keep the areas adjacent.  
 c) Define [metadata](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/osm3Dcput_param.json#L22-L30) for the City Model. Without it the dataset has no value. [CityJSON Specifications](https://www.cityjson.org/specs/1.1.0/#metadata) are pretty comprehensive.  
-d) Create a dynamic .html with [interactiveOnly](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/interactiveOnly.ipynb). The [Jupyter](https://jupyter.org/) environment allows for easy customization of the final product. The static png below (Fig 1.) illustrates building stock differentiated through color. A school, housing, retail, healthcare and community focused facilities are easily identified. Additional features unique to an Area-of-Interest (aoi) can also be included. Here bus rapid transit routes have been added. The tooltips provide an additional means to convey information.
+d) Create a dynamic .html with [interactiveOnly](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/interactiveOnly.ipynb). The [Jupyter](https://jupyter.org/) environment allows for easy customization of the final product. The static png below (Fig 1.) illustrates building stock differentiated through color. A school, housing, retail, healthcare and community focused facilities are easily identified. Additional features unique to an Area-of-Interest (aoi) can also be included. Here parks and bus rapid transit routes have been added. The tooltips provide an additional means to convey information.
 
 <p align="center">
   <img width="800" height="350" src="img/interactive.png">
 </p>  
 <p align="center">
-    Fig 1. An example of how the interactive visualization can be customized through coloring the building stock (school, retail, housing, commercial, etc.) and including aoi specific features (bus rapid transit, etc.) while the tooltips showcase the underlying data.
+    Fig 1. An example of how the interactive visualization can be customized through coloring the building stock (school, retail, housing, commercial, etc.) and including aoi specific features (parks, bus rapid transit, etc.) while the tooltips showcase the underlying data.
 </p>
 
 <ins>**Accuracy:**</ins>  
