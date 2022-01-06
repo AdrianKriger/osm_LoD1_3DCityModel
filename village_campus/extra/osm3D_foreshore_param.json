@@ -1,0 +1,40 @@
+{
+    "Larea": "Western Cape",
+    "Farea": "Foreshore",
+    "osm_type": "relation",
+    
+    "crs": "EPSG:32734",
+
+    "ori-gjson_out": "./data/fp_cbd.geojson",
+    "gjson-proj_out": "./data/fp_proj_cbd.geojson",
+    "gjson-z_out": "./data/fp_proj_z_cbd.geojson",
+    
+    "aoi": "./data/aoi_cbd.geojson",
+    "aoi_prj": "./data/aoi_cbd_rural.geojson",
+    
+    "in_raster": "./raster/LO19_050M_3318CD.tif",
+    "nodata": 3.402823466385289e+38,
+    "projClip_raster": "./raster/3318CD_clip_utm34s.tif",
+
+    "xyz": "./raster/rasElev_cbd.xyz",
+        
+    "cjsn_out": "./result/citjsn_cbd3d.json",
+    "cjsn_Title": "LoD1 City model of rural village",
+    "cjsn_RefDate": "2021-07-31",
+    "cjsn_source": "OpenStreetMap contributions and National Geo-spatial Information raster DEM",
+    "cjsn_Locatn": "Cape Town, South Africa",
+    "cjsn_refSystm": "urn:ogc:def:crs:EPSG::32734",
+    "cjsn_contName": "arkriger", 
+    "cjsn_cont": "www.linkedin.com/in/adrian-kriger", 
+    "cjsn_contType": "private",
+    "github": "https://github.com/AdrianKriger/osm_LoD1_3Dbuildings",
+    "metaStan": "ISO 19115, Geographic Information and ISO 19160, Addressing - Metadata",
+    "metaStanV": "ISO 19115:2014(E) and ISO 19160-1:2015(en)",
+    
+    "cjsn_ClOut": "./result/citjsnV1_cbd3d.json",
+    "obj2_75D": "./result/obj275D_cbd3d.obj",
+    
+    "inter": "False",
+    "int-gjson_out": "./data/fp_h_ru.geojson",
+    "intact": "./result/interactive_ru.html"
+}
