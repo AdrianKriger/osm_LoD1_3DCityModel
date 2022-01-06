@@ -132,6 +132,8 @@ def prepareDEM(extent, jparams):
                         #'/vsimem/proj.tif',
                         jparams['in_raster'], 
                         dstSRS=jparams['crs'],
+                        srcNodata = jparams['nodata'],
+                        #dstNodata = 0,
                          #-- outputBounds=[minX, minY, maxX, maxY]
                         outputBounds = [extent[0], extent[1],
                                         extent[2], extent[3]])
@@ -143,7 +145,8 @@ def createXYZ(fout, fin):
     """
     xyz = gdal.Translate(fout,
                          fin,
-                         format = 'XYZ')
+                         format = 'XYZ',
+                         noData = float(0))
     xyz = None
 
 def assignZ(vfname, rfname):
@@ -154,7 +157,7 @@ def assignZ(vfname, rfname):
     ts = gpd.read_file(vfname)
     ts['mean'] = pd.DataFrame(point_query(
         vectors=ts['geometry'].representative_point(), 
-        raster=rfname))#['mean']
+        raster=rfname, interpolate='bilinear', nodata=0))#['mean']
     
     return ts
     
@@ -220,15 +223,20 @@ def writegjson(ts, jparams):#, fname):
             utm = pyproj.CRS(jparams['crs'])
             p = osm_shape.representative_point()
             project = pyproj.Transformer.from_crs(utm, wgs84, always_xy=True).transform
-            utm_point = transform(project, p)
-            f["properties"]["plus_code"] = olc.encode(utm_point.y, utm_point.x, 11)
+            wgs_point = transform(project, p)
+            f["properties"]["plus_code"] = olc.encode(wgs_point.y, wgs_point.x, 11)
                 
             f["geometry"] = mapping(osm_shape)
     
             #-- finally calculate the height and store it as an attribute
-            f["properties"]['ground_height'] = round(row["mean"], 2)
+            if row["mean"] == None:
+                z = float(0)
+            if row["mean"] != None:
+                z = round(row["mean"], 2)
+            
+            f["properties"]['ground_height'] = z #round(row["mean"], 2)
             f["properties"]['building_height'] = round(float(row.tags['building:levels']) * storeyheight + 1.3, 2) 
-            f["properties"]['roof_height'] = round(f["properties"]['building_height'] + row["mean"], 2)
+            f["properties"]['roof_height'] = round(f["properties"]['building_height'] + z, 2)
             footprints['features'].append(f)
             
     for value in footprints['features']:
@@ -261,13 +269,15 @@ def getXYZ(dis, buffer, jparams):
     
     geometry = [Point(xy) for xy in zip(df.x, df.y)]
     #df = df.drop(['Lon', 'Lat'], axis=1)
-    gdf = gpd.GeoDataFrame(df, crs="EPSG:32733", geometry=geometry)
+    gdf = gpd.GeoDataFrame(df, crs=jparams['crs'], geometry=geometry)
     
     _symdiff = gpd.overlay(buffer, dis, how='symmetric_difference')
     _mask = gdf.within(_symdiff.loc[0, 'geometry'])
     gdf = gdf.loc[_mask]
                      
-    gdf = gdf[gdf['z'] != jparams['nodata']]
+    #gdf['z'] = gdf['z'].replace('None', float(0))
+    #gdf = gdf[gdf['z'] != jparams['nodata']]
+    #gdf['z'].fillna(value=0, inplace=True)
     gdf = gdf.round(2)
     
     return gdf
@@ -289,6 +299,7 @@ def getosmBld(jparams):
         snapped_geom = snap(row['geometry'], closest_geom, 0.2)
         dis.loc[index, 'geometry'] = snapped_geom
     
+     # - the following is left for reference
      #-- this serves two functions:
      #               i)  verify footprints removed
      #               ii) remove `outline` that overwrite `building:parts` 
@@ -297,7 +308,7 @@ def getosmBld(jparams):
      #                   - display the form correctly?      
     #dis = dis.loc[(dis.osm_id != 13076003) & (dis.osm_id != 12405081)] 
      #-- save
-    dis.to_file(jparams['gjson-z_out'], driver='GeoJSON')
+    #dis.to_file(jparams['gjson-z_out'], driver='GeoJSON')
     
     # create a point representing the hole within each building  
     dis['x'] = dis.representative_point().x
@@ -415,10 +426,15 @@ def getAOIVertices(buffer, fname):
         coords_rounded = []
         po = []
         for x, y in oring:
-            [z] = point_query(Point(x, y), raster=fname)
+            [z] = point_query(Point(x, y), raster=fname, interpolate='bilinear', nodata=0)
+            if z == None:
+                rounded_z = float(0)
+            if z != None:
+                rounded_z = round(z, 2)
+    
             rounded_x = round(x, dps)
             rounded_y = round(y, dps)
-            rounded_z = round(z, dps)
+            #rounded_z = round(z, dps)
             coords_rounded.append((rounded_x, rounded_y, rounded_z))
             aoi_coords.append([rounded_x, rounded_y, rounded_z])
 
@@ -536,7 +552,7 @@ def writeObj(pts, dt, obj_filename):
                                           simplex[2] + 1))
     f_out.close()
     
-def output_citysjon(extent, minz, maxz, T, pts, jparams):
+def output_cityjson(extent, minz, maxz, T, pts, jparams):
     """
     basic function to produce LoD1 City Model
     - buildings and terrain
