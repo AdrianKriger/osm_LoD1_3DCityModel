@@ -40,7 +40,7 @@ You need to verify if the building footprints have been removed from the surface
     Fig 2. - left illustrates the building footprint removed from the terrain. - right shows the vertices accounted for; but the ground remains.
 </p>
 
-b) Please see [Districts](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/Good-To-Know.md) for an additional quality check.
+b) Please see [Districts](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/Good-To-Know.md) for an additional quality check.  
 c) Shewchuck's [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) may not be sold or included in commercial products without a license.  
 
 <ins>**CityJSON attributes:**</ins>  
