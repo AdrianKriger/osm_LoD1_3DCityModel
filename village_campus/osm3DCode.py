@@ -68,10 +68,10 @@ def requestOsmBld(jparams):
     // -- target area ~ can be way or relation
     {1}(area.b)[name='{2}'];
     map_to_area -> .a;
-        // I want all buildings
-        way['building'](area.a);
+        // I want all buildings ~ with levels tagged
+        way['building:levels'](area.a);
         // and relation type=multipolygon ~ to removed courtyards from buildings
-        relation["building"]["type"="multipolygon"](area.a);
+        relation['building:levels']["type"="multipolygon"](area.a);
     );
     out body;
     >;
@@ -145,8 +145,8 @@ def createXYZ(fout, fin):
     """
     xyz = gdal.Translate(fout,
                          fin,
-                         format = 'XYZ',
-                         noData = float(0))
+                         format = 'XYZ')#,
+                         #noData = float(0))
     xyz = None
 
 def assignZ(vfname, rfname):
@@ -157,7 +157,7 @@ def assignZ(vfname, rfname):
     ts = gpd.read_file(vfname)
     ts['mean'] = pd.DataFrame(point_query(
         vectors=ts['geometry'].representative_point(), 
-        raster=rfname, interpolate='bilinear', nodata=0))#['mean']
+        raster=rfname))#, interpolate='nearest', nodata=0))#['mean']
     
     return ts
     
@@ -167,9 +167,14 @@ def writegjson(ts, jparams):#, fname):
     ~ ground height, relative building height and roof height.
     write the result to file.
     """
+    # take care of non-Polygon LineString's 
+    for i, row in ts.iterrows():
+        if row.geometry.type == 'LineString' and len(row.geometry.coords) < 3:
+            ts = ts.drop(ts.index[i])
+    
+    
     storeyheight = 2.8
-    #-- iterate through the list of buildings and create GeoJSON 
-    # features rich in attributes
+    #-- iterate through the list of buildings and create GeoJSON features rich in attributes
     footprints = {
         "type": "FeatureCollection",
         "features": []
@@ -180,7 +185,10 @@ def writegjson(ts, jparams):#, fname):
         "type" : "Feature"
         }
         # at a minimum we only want building:levels tagged
-        if 'building:levels' in row.tags:
+        #if row.tags['building:levels'] != row.tags['building:levels'].astype(str): #'building:levels' in row.tags and 
+        #if row['type'] != 'node' and 'tags' in row is not None and 'building:levels' in row['tags'] and type(row['tags']['building:levels']) is not str:
+        if row['type'] != 'node' and row['tags'] != None and 'building:levels' in row['tags']:#\
+    
             f["properties"] = {}
             
             #-- store all OSM attributes and prefix them with osm_ 
@@ -229,14 +237,15 @@ def writegjson(ts, jparams):#, fname):
             f["geometry"] = mapping(osm_shape)
     
             #-- finally calculate the height and store it as an attribute
-            if row["mean"] == None:
-                z = float(0)
-            if row["mean"] != None:
-                z = round(row["mean"], 2)
+            # if row["mean"] == None:
+            #     z = float(0)
+            # if row["mean"] != None:
+            #     z = round(row["mean"], 2)
             
-            f["properties"]['ground_height'] = z #round(row["mean"], 2)
+            f["properties"]['ground_height'] = round(row["mean"], 2)
+            #print('id: ', f["properties"]["osm_id"], row.tags['building:levels'])
             f["properties"]['building_height'] = round(float(row.tags['building:levels']) * storeyheight + 1.3, 2) 
-            f["properties"]['roof_height'] = round(f["properties"]['building_height'] + z, 2)
+            f["properties"]['roof_height'] = round(f["properties"]['building_height'] + row["mean"], 2)
             footprints['features'].append(f)
             
     for value in footprints['features']:
@@ -259,7 +268,7 @@ def writegjson(ts, jparams):#, fname):
     with open(jparams['gjson-z_out'], 'w') as outfile:
         json.dump(footprints, outfile)
 
-def getXYZ(dis, buffer, jparams):
+def getXYZ(dis, aoi, jparams):
     """
     read xyz to gdf
     """
@@ -271,14 +280,15 @@ def getXYZ(dis, buffer, jparams):
     #df = df.drop(['Lon', 'Lat'], axis=1)
     gdf = gpd.GeoDataFrame(df, crs=jparams['crs'], geometry=geometry)
     
-    _symdiff = gpd.overlay(buffer, dis, how='symmetric_difference')
+    _symdiff = gpd.overlay(aoi, dis, how='symmetric_difference')
     _mask = gdf.within(_symdiff.loc[0, 'geometry'])
     gdf = gdf.loc[_mask]
                      
     #gdf['z'] = gdf['z'].replace('None', float(0))
-    #gdf = gdf[gdf['z'] != jparams['nodata']]
+    gdf = gdf[gdf['z'] != jparams['nodata']]
     #gdf['z'].fillna(value=0, inplace=True)
     gdf = gdf.round(2)
+    gdf.reset_index(drop=True, inplace=True)
     
     return gdf
 
@@ -317,19 +327,32 @@ def getosmBld(jparams):
     
     return dis, hs
 
-def getosmArea(filen):
+def getosmArea(filen, b_type, crs):
     """
     read osm area to gdf and buffer
     - get the extent for the cityjson
     """
     aoi = gpd.read_file(filen)
+    
+    # when relations return may areas
+    if b_type == 'relation' and len(aoi) > 1:
+        for i, row in aoi.iterrows():
+            if row.tags != None and 'place' in row.tags:
+                focus = row
+            
+        trim = pd.DataFrame(focus)
+        trim = trim.T
+        aoi = gpd.GeoDataFrame(trim, geometry = trim['geometry'])
+        
+    aoi = aoi.set_crs(crs)
+                        
     buffer = gpd.GeoDataFrame(aoi, geometry = aoi.geometry)
     buffer['geometry'] = aoi.buffer(150, cap_style = 2, join_style = 2)
     
-    extent = [aoi.total_bounds[0] - 250, aoi.total_bounds[1] - 250, 
-              aoi.total_bounds[2] + 250, aoi.total_bounds[3] + 250]
+    extent = [buffer.total_bounds[0] - 250, buffer.total_bounds[1] - 250, 
+              buffer.total_bounds[2] + 250, buffer.total_bounds[3] + 250]
     
-    return buffer, extent
+    return aoi, extent
 
 def getBldVertices(dis):
     """
@@ -411,7 +434,7 @@ def getBldVertices(dis):
         
     return ac, c
 
-def getAOIVertices(buffer, fname):
+def getAOIVertices(aoi, fname):
     """
     retrieve vertices from aoi ~ without duplicates 
     - these vertices are assigned a z attribute
@@ -420,21 +443,21 @@ def getAOIVertices(buffer, fname):
     dps = 2
     segs = {}
     
-    for ids, row in buffer.iterrows():
+    for ids, row in aoi.iterrows():
         oring = list(row.geometry.exterior.coords)
        
         coords_rounded = []
         po = []
         for x, y in oring:
-            [z] = point_query(Point(x, y), raster=fname, interpolate='bilinear', nodata=0)
-            if z == None:
-                rounded_z = float(0)
-            if z != None:
-                rounded_z = round(z, 2)
+            [z] = point_query(Point(x, y), raster=fname)#, interpolate='nearest', nodata=0)
+            # if z == None:
+            #     rounded_z = float(0)
+            # if z != None:
+            #     rounded_z = round(z, 2)
     
             rounded_x = round(x, dps)
             rounded_y = round(y, dps)
-            #rounded_z = round(z, dps)
+            rounded_z = round(z, dps)
             coords_rounded.append((rounded_x, rounded_y, rounded_z))
             aoi_coords.append([rounded_x, rounded_y, rounded_z])
 
