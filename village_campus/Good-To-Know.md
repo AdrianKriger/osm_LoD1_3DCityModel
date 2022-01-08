@@ -1,7 +1,7 @@
 # Good-To-Know
 
 <ins>**Parameters:**</ins>  
- a) Area-of-interest (aoi) is defined `Large area -> focus area` or `State (Province) -> village / campus`.    
+a) Area-of-interest (aoi) is defined `Large area -> focus area` or `State (Province) -> village / campus`.    
 b) Your aoi must exist in osm as either a [way or relation](https://wiki.openstreetmap.org/wiki/Elements); and the type must explicitly be [set](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/osm3Dmamre_param.json#L4).  
 c) Define [metadata](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/osm3Dmamre_param.json#L22-L32) for the City Model. Without it the dataset has no value.  [CityJSON Specifications](https://www.cityjson.org/specs/1.1.0/#metadata) are pretty comprehensive.  
 d) Create a dynamic .html with [interactiveOnly](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/interactiveOnly.ipynb). The [Jupyter](https://jupyter.org/) environment allows for easy customization of the final product. The static png below (Fig 1.) illustrates building stock differentiated through color. A school, housing, retail, healthcare and community focused facilities are easily identified. Additional features unique to an aoi can also be included. Here farmland, streams, recreational spaces and bus rapid transit routes have been added *- you are thus limited only through data and your imagination*.
@@ -12,6 +12,8 @@ d) Create a dynamic .html with [interactiveOnly](https://github.com/AdrianKriger
 <p align="center">
     Fig 1. An example of how the interactive visualization can be customized through coloring the building stock (school, retail, housing, social development facilities, etc.) and including aoi specific features (recreational ground, agricultural land, etc.).
 </p>
+
+e) Aoi's that extend into the ocean (nodata) are not supported. This means [these types of areas](https://www.openstreetmap.org/relation/2034620#map=14/-33.9128/18.4430) will fail while [these](https://www.openstreetmap.org/way/689159965) will pass.
 
 <ins>**Accuracy:**</ins>  
 dem - in South Africa if you are using the [National geo-spatial information](http://www.ngi.gov.za/) raster dem the [resolution is 25-m at 3-m accurate](https://www.ee.co.za/wp-content/uploads/2015/08/Julie-Verhulp.pdf).  
@@ -26,7 +28,6 @@ The osm tag `building:level` is taken as a [proxy for the height of a building](
 <ins>**Raster dem:**</ins>  
 a) The [osm3Dcput_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/extra/osm3Dcput_param.json#L15) defines the raster I used in the example. [osm3Dmamre_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/osm3Dmamre_param.json#L15) and [osm3D_foreshore_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/extra/osm3D_foreshore_param.json#L15) defines two other. These datasets, and more, are available from the [CD:NGI Geoportal](http://www.ngi.gov.za/index.php/online-shop/what-is-itis-portal); State copyright reserved. The Chief Directorate: National Geospatial Information is a branch of the [Department Rural Development and Land Reform](https://www.drdlr.gov.za/sites/Internet/Branches/NationalGeomaticsAndManagementServices/Pages/National-Geo-Spatial-Information.aspx) and is a key contributor to the [South African Spatial Data Infrustructure](http://www.sasdi.gov.za/sites/SASDI/Pages/Home.aspx).  
 b) The script handles the projection and clipping to an aoi. If your focus area falls on the boundary of two raster sheets perhaps the [Districts](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts) processing strategy is better.  
-c) The raster Nodata value is forced to `0`([here](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/osm3DCode.py#L149), [here](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/osm3DCode.py#L160) and [here](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/osm3DCode.py#L429)). Not `None`. Not `np.nan`. Zero.
 
 <ins>**Triangulation:**</ins>  
 a) [PyVista](https://www.pyvista.org/) is [built-in](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/osm3DCode.py#L498-L524) and will execute after the triangulation; before the 3D City Model is created. This is to visualize the terrain. I have left [line 298 of osm3DCode](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/osm3DCode.py#L292-L298) as an aid.
@@ -39,7 +40,8 @@ You need to verify if the building footprints have been removed from the surface
     Fig 2. - left illustrates the building footprint removed from the terrain. - right shows the vertices accounted for; but the ground remains.
 </p>
 
-b) Shewchuck's [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) may not be sold or included in commercial products without a license.  
+b) Please see [Districts](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/Good-To-Know.md) for an additional quality check.
+c) Shewchuck's [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) may not be sold or included in commercial products without a license.  
 
 <ins>**CityJSON attributes:**</ins>  
 a) [osm tags](https://wiki.openstreetmap.org/wiki/Map_features#Building) are simply copied to the 3D Building Models verbatim; with the exception of the address. To reduce the complexty of the [Key:addr](https://wiki.openstreetmap.org/wiki/Key:addr#Detailed_subkeys) each component is concatenated into one [string](https://en.wikibooks.org/wiki/Python_Programming/Variables_and_Strings#String) following, as closely as possible, the [ISO 19160-1:2015(en) Addressing](https://www.iso.org/obp/ui/#iso:std:iso:19160:-1:ed-1:v1:en) standard. A typical address will thus read: `housenumber street suburb postalcode city province`. Should the building be an apartment the [unit range](https://wiki.openstreetmap.org/wiki/Key:addr:flats) will prepend the address.  
