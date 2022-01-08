@@ -69,9 +69,9 @@ def requestOsmBld(jparams):
     {1}(area.b)[name='{2}'];
     map_to_area -> .a;
         // I want all buildings ~ with levels tagged
-        way['building:levels'](area.a);
+        way['building'](area.a);
         // and relation type=multipolygon ~ to removed courtyards from buildings
-        relation['building:levels']["type"="multipolygon"](area.a);
+        relation['building']["type"="multipolygon"](area.a);
     );
     out body;
     >;
