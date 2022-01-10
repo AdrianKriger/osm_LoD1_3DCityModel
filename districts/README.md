@@ -9,5 +9,5 @@ Please read the [Good-To-Know](https://github.com/AdrianKriger/osm_LoD1_3DCityMo
 
 &nbsp;
 
-*use with caution; I am experiencing challenges handeling exceptions (buildings as nodes, without tags, etc.) and haven't been able to properly put this through its paces:  
+*use with caution; I am experiencing challenges handeling exceptions (buildings as nodes, without tags, etc. ~ [issue #8](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/issues/8)) and haven't been able to properly put this through its paces:  
 06-01-2022*
