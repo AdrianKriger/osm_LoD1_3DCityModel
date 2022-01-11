@@ -14,7 +14,7 @@ d) Create a dynamic .html with [interactiveOnly](https://github.com/AdrianKriger
     Fig 1. An example of how the interactive visualization can be customized through coloring the building stock (school, retail, housing, commercial, etc.) and including aoi specific features (parks, bus rapid transit, etc.) while the tooltips showcase the underlying data.
 </p>
 
-e) While [interactiveOnly](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/interactiveOnly.ipynb) should execute successfully in any area; the [CityJSON](https://www.cityjson.org/) will not when an aoi extend's into the ocean (nodata). This means [these types of areas](https://www.openstreetmap.org/relation/6580101#map=13/-33.9170/18.4359) will fail to produce a LoD1 3D City Model.
+e) While [interactiveOnly](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/interactiveOnly.ipynb) should execute successfully in any area; the [CityJSON](https://www.cityjson.org/) will not when an aoi extend's into NoData (typically the ocean). This means [these types of areas](https://www.openstreetmap.org/relation/6580101#map=13/-33.9170/18.4359) will fail to produce a LoD1 3D City Model.
 
 <ins>**Accuracy:**</ins>  
 dem - in South Africa if you are using the [National geo-spatial information](http://www.ngi.gov.za/) raster dem the [resolution is 25-m at 3-m accurate](https://www.ee.co.za/wp-content/uploads/2015/08/Julie-Verhulp.pdf).  
