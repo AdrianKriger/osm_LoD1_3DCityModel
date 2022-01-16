@@ -1,0 +1,37 @@
+{
+    "osm-pbf": "South Africa",
+    "update": "False",
+    "pbf_directory": "data",
+    
+    "trim": "yes",
+    "osmconvert": "osmconvert64",
+    "osm_poly": "tshwane_gauteng.poly",
+    "trim_pbf": "Tshwane_gauteng_extract.pbf",
+    
+    "Focus_area": "Tshwane Ward 58", 
+    
+    "crs": "EPSG:32735",
+
+    "ori-gjson_out": "./data/fp.geojson",
+    "gjson-proj_out": "./data/fp_proj.geojson",
+    "gjson-z_out": "./data/fp_proj_z.geojson",
+    
+    "in_raster": "./raster/pret/LO29_050M_2528CA.tif",
+    "nodata": 3.402823466385289e+38,
+    "projClip_raster": "./raster/pret/2528CA_clip_utm35s.tif",
+
+    "xyz": "./raster/rasElev.xyz",
+    
+    "cjsn_out": "./result/citjsn_tsw_pbf.json",
+    
+    "cjsn_datasetTitle": "LoD1 City Model from osm.pbf with terrain from NGI",
+    "datasetReferenceDate": "2022-01-01",
+    "cjsn_referenceSystem": "https://www.opengis.net/def/crs/EPSG/0/32735",
+    "cjsn_contactName": "arkriger", 
+    "cjsn_website": "www.linkedin.com/in/adrian-kriger", 
+    "cjsn_contactType": "private",
+    "cjsn_+meta_lin_featureIDs": "terrain_id-1",
+
+    "cjsn_ClOut": "./result/citjsnCl_tsw_pbf.json",
+    "obj2_75D": "./result/obj275D_tsw_pbf.obj"
+}
