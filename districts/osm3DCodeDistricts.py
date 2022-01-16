@@ -18,6 +18,9 @@
 #    - pyrosm            : https://github.com/HTenkanen/pyrosm/issues/167
 #########################
 import os
+import subprocess
+from pathlib import Path
+
 from itertools import chain
 
 from pyrosm import OSM, data
@@ -58,15 +61,31 @@ import matplotlib.pyplot as plt
 import time
 from datetime import timedelta
 
-def getOsmPBF(jparams):
+def getOsmPBF(jparams, path):
     """
     get osm.pbf and buildings
-    """  
-    if jparams['update'] == "False":
-        fp = get_data(jparams['pbf_area'], update=False, directory=jparams['pbf_directory'])
+    """ 
+    #if jparams['own_pbf'] == "yes":
+        #fp = jparams['own_pbf-file']
         
-     ##-- True here ...
-    
+    #if jparams['own_pbf'] == "no":
+        
+    if jparams['update'] == "False":
+        fp = get_data(jparams['osm-pbf'], update=False, directory=jparams['pbf_directory'])    
+        
+    if jparams['update'] == "True":
+        fp = get_data(jparams['osm-pbf'], update=True, directory=jparams['pbf_directory'])
+        
+    if jparams['trim'] == "yes":
+        osm_convert_path = os.path.join(path, jparams['osmconvert'])
+        in_path = fp
+        poly_path = os.path.join(path, Path(jparams['pbf_directory'], jparams['osm_poly']))
+        out_path = os.path.join(path, Path(jparams['pbf_directory'], jparams['trim_pbf']))
+        #os.system('{} {} -B={} -o={}'.format(osm_convert_path, in_path, poly_path, out_path))
+        subprocess.call('{} {} -B={} -o={}'.format(osm_convert_path, in_path, poly_path, out_path))
+
+        fp = out_path
+        
     osm = OSM(fp)
     a_string = jparams['Focus_area']
     shapes = a_string.split(",") 
@@ -102,7 +121,7 @@ def getOsmPBF(jparams):
     extent = [buffer.total_bounds[0] - 250, buffer.total_bounds[1] - 250, 
               buffer.total_bounds[2] + 250, buffer.total_bounds[3] + 250]
     
-    return aoi, buffer, extent
+    return aoi_proj, buffer, extent
 
        
 def projVec(outfile, infile, crs):
@@ -147,12 +166,14 @@ def prepareDEM(extent, jparams):
     gdal.Warp to (mosaic) reproject and clip raster dem
     """
     a_string = jparams['in_raster']
-    imgs = a_string.split(",") 
+    imgs = a_string.split()#",") 
     
     if len(imgs) == 1:
         OutTile = gdal.Warp(jparams['projClip_raster'], 
                             jparams['in_raster'], 
                             dstSRS=jparams['crs'],
+                            srcNodata = jparams['nodata'],
+                            #dstNodata = 0,
                             #-- outputBounds=[minX, minY, maxX, maxY]
                             outputBounds = [extent[0], extent[1],
                                             extent[2], extent[3]])
@@ -160,21 +181,32 @@ def prepareDEM(extent, jparams):
      
     if len(imgs) > 1:
         
-        a_string = jparams['in_raster']
-        shapes = a_string.split(",")
-        s = ' '.join([str(elem) for elem in shapes])
-        c = ' '
-        idx = [pos for pos, char in enumerate(s) if char == c]
-        for i in idx:
-            new = s[:i-1] + "", "" + a_string[i+1:]
+        # a_string = jparams['in_raster']
+        # shapes = a_string.split(",")
+        # s = ' '.join([str(elem) for elem in shapes])
+        # c = ' '
+        # idx = [pos for pos, char in enumerate(s) if char == c]
+        # for i in idx:
+        #     new = s[:i-1] + "", "" + a_string[i+1:]
         
-        OutTile = gdal.Warp(jparams['projClip_raster'], 
-                            list(new),
+        # OutTile = gdal.Warp(jparams['projClip_raster'], 
+        #                     list(new),
+        #                     resampleAlg='bilinear',
+        #                     dstSRS=jparams['crs'],
+        #                     srcNodata = jparams['nodata'],
+        #                     #dstNodata = 0,
+        #                     #-- outputBounds=[minX, minY, maxX, maxY]
+        #                     outputBounds = [extent[0], extent[1],
+        #                                     extent[2], extent[3]])
+        # OutTile = None 
+        
+        OutTile = gdal.Warp(jparams['projClip_raster'],
+                            imgs,
                             resampleAlg='bilinear',
                             dstSRS=jparams['crs'],
+                            srcNodata = jparams['nodata'],
                             #-- outputBounds=[minX, minY, maxX, maxY]
-                            outputBounds = [extent[0], extent[1],
-                                            extent[2], extent[3]])
+                            outputBounds = [extent[0], extent[1], extent[2], extent[3]])
         OutTile = None 
         
 def createXYZ(fout, fin):
@@ -183,7 +215,8 @@ def createXYZ(fout, fin):
     """
     xyz = gdal.Translate(fout,
                          fin,
-                         format = 'XYZ')
+                         format = 'XYZ',
+                         noData = float(0))
     xyz = None
 
 def assignZ(jparams): #vfname, rfname):
@@ -202,7 +235,7 @@ def assignZ(jparams): #vfname, rfname):
      ##-- rasterstats
     l = point_query(vectors=ts['geometry'].representative_point(), 
             raster=jparams['projClip_raster'], interpolate='bilinear', 
-            nodata=jparams['nodata'])
+            nodata=0)#jparams['nodata'])
     
      ##-- assign to column
     ts['mean'] = np.array(l)
@@ -278,7 +311,7 @@ def writegjson(ts, jparams):#, fname):
             osm_shape = Polygon(osm_shape)
             #-- and multipolygons must be accounted for
         elif osm_shape.type == 'MultiPolygon':
-                #osm_shape = Polygon(osm_shape[0])
+            #osm_shape = Polygon(osm_shape[0])
             for poly in osm_shape:
                 osm_shape = Polygon(poly)#[0])
                 
@@ -291,6 +324,11 @@ def writegjson(ts, jparams):#, fname):
         
         f["geometry"] = mapping(osm_shape)
             #-- finally calculate the height and store it as an attribute
+        # if row["mean"] == None:
+        #     z = 0
+        # if row["mean"] != None:
+        #     z = round(row["mean"], 2)
+        
         f["properties"]['ground_height'] = round(row["mean"], 2)
         f["properties"]['building_height'] = round(float(row['building:levels']) * storeyheight + 1.3, 2) 
         f["properties"]['roof_height'] = round(f["properties"]['building_height'] + row["mean"], 2)
@@ -300,7 +338,7 @@ def writegjson(ts, jparams):#, fname):
     with open(jparams['gjson-z_out'], 'w') as outfile:
         json.dump(footprints, outfile)
 
-def getXYZ(dis, buffer, jparams):
+def getXYZ(dis, aoi, jparams):
     """
     read xyz to gdf
     """
@@ -312,10 +350,11 @@ def getXYZ(dis, buffer, jparams):
     #df = df.drop(['Lon', 'Lat'], axis=1)
     gdf = gpd.GeoDataFrame(df, crs=jparams['crs'], geometry=geometry)
     
-    _symdiff = gpd.overlay(buffer, dis, how='symmetric_difference')
+    _symdiff = gpd.overlay(aoi, dis, how='symmetric_difference')
     _mask = gdf.within(_symdiff.loc[0, 'geometry'])
     gdf = gdf.loc[_mask]
-                     
+    
+    #gdf['z'] = gdf['z'].replace([jparams['nodata']], float(0))
     gdf = gdf[gdf['z'] != jparams['nodata']]
     gdf = gdf.round(2)
     gdf.reset_index(drop=True, inplace=True)
@@ -352,19 +391,19 @@ def getosmBld(jparams):
     
     return dis, hs
 
-def getosmArea(filen):
-    """
-    read osm area to gdf and buffer
-    - get the extent for the cityjson
-    """
-    aoi = gpd.read_file(filen)
-    buffer = gpd.GeoDataFrame(aoi, geometry = aoi.geometry)
-    buffer['geometry'] = aoi.buffer(150, cap_style = 2, join_style = 2)
+# def getosmArea(filen):
+#     """
+#     read osm area to gdf and buffer
+#     - get the extent for the cityjson
+#     """
+#     aoi = gpd.read_file(filen)
+#     buffer = gpd.GeoDataFrame(aoi, geometry = aoi.geometry)
+#     buffer['geometry'] = aoi.buffer(150, cap_style = 2, join_style = 2)
     
-    extent = [aoi.total_bounds[0] - 250, aoi.total_bounds[1] - 250, 
-              aoi.total_bounds[2] + 250, aoi.total_bounds[3] + 250]
+#     extent = [aoi.total_bounds[0] - 250, aoi.total_bounds[1] - 250, 
+#               aoi.total_bounds[2] + 250, aoi.total_bounds[3] + 250]
     
-    return buffer, extent
+#     return buffer, extent
 
 def getBldVertices(dis):
     """
@@ -461,7 +500,12 @@ def getAOIVertices(buffer, fname):
         coords_rounded = []
         po = []
         for x, y in oring:
-            [z] = point_query(Point(x, y), raster=fname)
+            [z] = point_query(Point(x, y), raster=fname)#, interpolate='bilinear', nodata=0)
+            # if z == None:
+            #     rounded_z = float(0)
+            # if z != None:
+            #     rounded_z = round(z, 2)
+                
             rounded_x = round(x, dps)
             rounded_y = round(y, dps)
             rounded_z = round(z, dps)
@@ -616,11 +660,11 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
     cm["vertices"] = []
     #-- Metadata is added manually
     cm["metadata"] = {
-    "datasetTitle": jparams['cjsn_Title'],
-    "datasetReferenceDate": jparams['cjsn_RefDate'],
+    "datasetTitle": jparams['cjsn_datasetTitle'],
+    "datasetReferenceDate": jparams['datasetReferenceDate'],
     #"dataSource": jparams['cjsn_source'],
     #"geographicLocation": jparams['cjsn_Locatn'],
-    "referenceSystem": jparams['cjsn_refSystm'],
+    "referenceSystem": jparams['cjsn_referenceSystem'],
     "geographicalExtent": [
         extent[0],
         extent[1],
@@ -630,9 +674,9 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
         maxz
       ],
     "datasetPointOfContact": {
-        "contactName": jparams['cjsn_contName'],
-        "website": jparams['cjsn_cont'],
-        "contactType": jparams['cjsn_contType'],
+        "contactName": jparams['cjsn_contactName'],
+        "website": jparams['cjsn_website'],
+        "contactType": jparams['cjsn_contactType'],
         #"website": jparams['github']
         },
     "+metadata-extended": {
@@ -647,8 +691,8 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
              "processStep": {
                  "description" : "Transform raster terrain with gdal.Warp",
                  "processor": {
-                     "contactName": jparams['cjsn_contName'],
-                     "contactType": jparams['cjsn_contType'],
+                     "contactName": jparams['cjsn_contactName'],
+                     "contactType": jparams['cjsn_contactType'],
                      }
                  }
             }]
