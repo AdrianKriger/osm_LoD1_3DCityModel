@@ -61,4 +61,4 @@ c) Fig. 3 illustrates the typical semantic data connected to the 3D City Model. 
 [Cesium](https://cesium.com/), [mapbox](https://www.mapbox.com/), [deck.gl](https://deck.gl/) and [3dbuildings](https://3dbuildings.com/) will stream 3D tiles to your hearts content.
 
 <ins>**[The Penultimate Truth:](https://en.wikipedia.org/wiki/The_Penultimate_Truth)**</ins>  
-Its not very efficient. A few [timing metrics](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/osm3DMainDistricts.py#L84-L86) are available to help you decide -> run and wait or run, walk away and come back later?
+Its not very efficient. A few [timing metrics](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/osm3DMainDistricts.py#L84-L87) are available to help you decide -> run and wait or run, walk away and come back later?
