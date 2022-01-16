@@ -302,7 +302,8 @@ def writegjson(ts, jparams):#, fname):
             f["properties"]["osm_school"] = row['school']
         
             
-        f["properties"]["osm_address"] = " ".join(adr)
+        #f["properties"]["osm_address"] = " ".join(adr)
+        f["properties"]["osm_address"] = ' '.join(str(v) for v in adr)
             
         osm_shape = row["geometry"] # shape(row["geometry"][0])
             #-- a few buildings are not polygons, rather linestrings. This converts them to polygons
