@@ -20,7 +20,7 @@ def main():
     start = time.time()
     
     try:
-        jparams = json.load(open('osm3DdistrictsTshwane_param.json'))
+        jparams = json.load(open('osm3Ddistricts_param.json'))
     except:
         print("ERROR: something is wrong with the param.json file.")
         sys.exit()
@@ -81,8 +81,7 @@ def main():
     end = time.time()
     print('runtime:', str(timedelta(seconds=(end - start))))
     
-     #-- Ward 57                - runtime: 0:33:31.895032 ~ (2332)  buildings with levels -> 1082, population ~  30 000
-     #-- Ward 57 and 115        - runtime:                ~ ()      buildings with levels ->     , population ~  50 000
+     #-- Ward 57                - runtime: 0:30:31.895032 ~ (2332)  buildings with levels -> 1082, population ~  30 000
      #-- Khayelitsha (12 wards) - runtime: 0:08:00.895749 ~ (81770) buildings with levels ->   57, population ~ 390 000
      #-- Tshwane clipped from South Africa (1 ward) - runtime: 0:04:56.645984 ~ (1495) buildings with levels ->   32, population ~ 33 000
 
