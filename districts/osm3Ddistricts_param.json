@@ -1,8 +1,14 @@
 {
-    "pbf_area": "CapeTown",
+   "osm-pbf": "CapeTown",
     "update": "False",
     "pbf_directory": "data",
-    "Focus_area": "Cape Town Ward 57", 
+    
+    "trim": "no",
+    "osmconvert": "osmconvert64",
+    "osm_poly": "tshwane_gauteng.poly",
+    "trim_pbf": "Tshwane_gauteng_extract.pbf",
+    
+    "Focus_area": "Cape Town Ward 57",
     
     "crs": "EPSG:32734",
 
@@ -12,26 +18,21 @@
     
     "in_raster": "./raster/LO19_050M_3318CD.tif",
     "nodata": 3.402823466385289e+38,
-    "projClip_raster": "./raster/3318CD_clip_utm33s.tif",
+    "projClip_raster": "./raster/3318CD_clip_utm34s.tif",
 
     "xyz": "./raster/rasElev.xyz",
     
-    "cjsn_out": "./result/citjsn_pbf.json",
+    "cjsn_out": "./result/citjsn_57pbf.json",
     
-    "cjsn_Title": "LoD1 City Model from osm.pbf with terrain from NGI",
-    "cjsn_RefDate": "2022-01-01",
-    "cjsn_Locatn": "Cape Town, South Africa",
-    "cjsn_refSystm": "https://www.opengis.net/def/crs/EPSG/0/32734",
-    "cjsn_contName": "arkriger", 
-    "cjsn_cont": "www.linkedin.com/in/adrian-kriger", 
-    "cjsn_contType": "private",
-
-    
-    "cjsn_ClOut": "./result/citjsnCl_pbf.json",
-    "obj2_75D": "./result/obj275D_pbf.obj",
-    
-    "inter": "False",
-    "int-gjson_out": "./data/fp_h.geojson",
-    "intact": "./result/interactive.html"
+    "cjsn_datasetTitle": "LoD1 City Model from osm.pbf with terrain from NGI",
+    "datasetReferenceDate": "2022-01-01",
+    "cjsn_referenceSystem": "https://www.opengis.net/def/crs/EPSG/0/32734",
+    "cjsn_contactName": "arkriger", 
+    "cjsn_website": "www.linkedin.com/in/adrian-kriger", 
+    "cjsn_contactType": "private",
+    "cjsn_+meta_lin_featureIDs": "terrain_id-1",
+ 
+    "cjsn_ClOut": "./result/citjsnCl_57pbf.json",
+    "obj2_75D": "./result/obj275D_57pbf.obj"
 
 }
