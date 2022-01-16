@@ -13,24 +13,24 @@ import time
 from datetime import timedelta
 
 from osm3DCodeDistricts import getOsmPBF, projVec, prepareDEM, assignZ, getosmBld, writegjson,\
-    getosmArea, getXYZ, getBldVertices, getAOIVertices, appendCoords, createSgmts, executeDelaunay, \
+    getXYZ, getBldVertices, getAOIVertices, appendCoords, createSgmts, executeDelaunay, \
         pvPlot, writeObj, output_cityjson, createXYZ, write275obj
     
 def main():
     start = time.time()
     
     try:
-        jparams = json.load(open('osm3DdistrictsKaya_param.json'))
+        jparams = json.load(open('osm3DdistrictsTshwane_param.json'))
     except:
         print("ERROR: something is wrong with the param.json file.")
         sys.exit()
         
     path = os.getcwd()
     d_name = 'data'
-    path = os.path.join(path, d_name)
-    os.makedirs(path, exist_ok=True)
+    path_i = os.path.join(path, d_name)
+    os.makedirs(path_i, exist_ok=True)
     
-    area, buffer, extent = getOsmPBF(jparams)
+    aoi_proj, buffer, extent = getOsmPBF(jparams, path)
     projVec(jparams['gjson-proj_out'], jparams['ori-gjson_out'], jparams['crs'])
     #area = requestOsmAoi(jparams)
     #projVec(jparams['aoi_prj'], jparams['aoi'], jparams['crs'])
@@ -48,7 +48,7 @@ def main():
     
     dis, hs = getosmBld(jparams)
     
-    gdf = getXYZ(dis, buffer, jparams)
+    gdf = getXYZ(dis, aoi_proj, jparams)
     ac, c = getBldVertices(dis)
     df2 = appendCoords(gdf, ac)
     
@@ -84,6 +84,7 @@ def main():
      #-- Ward 57                - runtime: 0:33:31.895032 ~ (2332)  buildings with levels -> 1082, population ~  30 000
      #-- Ward 57 and 115        - runtime:                ~ ()      buildings with levels ->     , population ~  50 000
      #-- Khayelitsha (12 wards) - runtime: 0:08:00.895749 ~ (81770) buildings with levels ->   57, population ~ 390 000
+     #-- Tshwane clipped from South Africa (1 ward) - runtime: 0:04:56.645984 ~ (1495) buildings with levels ->   32, population ~ 33 000
 
 if __name__ == "__main__":
     main()
