@@ -1,4 +1,5 @@
-theme: jekyll-theme-tactile
+theme: jekyll-theme-minima
+#theme: jekyll-theme-tactile
 
 #_config.yml
 
