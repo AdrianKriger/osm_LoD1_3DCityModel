@@ -1,1 +1,8 @@
 theme: jekyll-theme-tactile
+
+#_config.yml
+
+url: 'https://adriankriger.github.io/'              # your main domain
+baseurl: 'osm_LoD1_3DCityModel/'                    # if you're using custom domain keep this blank example: baseurl: ''
+
+<img src="{{site.baseurl | prepend: site.url}}img/interactiveOnly.html" alt="Untitled" />
