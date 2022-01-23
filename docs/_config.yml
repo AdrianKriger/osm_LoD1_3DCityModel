@@ -6,3 +6,7 @@ url: 'https://adriankriger.github.io/'              # your main domain
 baseurl: 'osm_LoD1_3DCityModel/'                    # if you're using custom domain keep this blank example: baseurl: ''
 
 # <img src="{{site.baseurl | prepend: site.url}}img/interactiveOnly.html" alt="Untitled" />
+
+title: 'Level-of-Detail (LoD) 1 3D City Model'
+subtitle: 'LoD1 City Model from volunteed public data and a raster DEM' 
+#description: ''
