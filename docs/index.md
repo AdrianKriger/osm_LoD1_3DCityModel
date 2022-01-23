@@ -1,1 +1,1 @@
-{% include imagezoom.html file="interactiveOnly.html"}
+<img src="img/interactiveOnly.html" alt="hi" class="inline"/>
