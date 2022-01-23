@@ -1,1 +1,1 @@
-<img src="img/interactiveOnly.html" alt="hi" class="inline"/>
+![img](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/docs/img/interactiveOnly.html)
