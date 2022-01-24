@@ -7,9 +7,8 @@ c) Define [metadata](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/m
 d) Create a dynamic .html with [interactiveOnly](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/interactiveOnly.ipynb). The [Jupyter](https://jupyter.org/) environment allows for easy customization of the final product. The static png below (Fig 1.) illustrates building stock differentiated through color. A school, housing, retail, healthcare and community focused facilities are easily identified. Additional features unique to an aoi can also be included. Here farmland, streams, recreational spaces and bus rapid transit routes have been added *- you are thus limited only through data and your imagination*.
 
 <p align="center">
-  <!-- <img width="650" height="350" src="img/interactive.png"> -->
-  <iframe src="img/interactiveOnly.html" style="width: 700px; height: 400px"></iframe> 
-
+  <img width="650" height="350" src="img/interactive.png">
+  <!-- <iframe src="img/interactiveOnly.html" style="width: 700px; height: 400px"></iframe>  -->
 </p>  
 <p align="center">
     Fig 1. An example of how the interactive visualization can be customized through coloring the building stock (school, retail, housing, social development facilities, etc.) and including aoi specific features (recreational ground, agricultural land, etc.).
