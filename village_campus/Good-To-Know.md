@@ -8,7 +8,7 @@ d) Create a dynamic .html with [interactiveOnly](https://github.com/AdrianKriger
 
 <p align="center">
   <!-- <img width="650" height="350" src="img/interactive.png"> -->
-  <iframe width="650" height="350" src="img/interactiveOnly.html"></iframe> 
+  <iframe src="img/interactiveOnly.html" style="width: 700px; height: 400px"></iframe> 
 
 </p>  
 <p align="center">
