@@ -1,5 +1,5 @@
 
-<iframe src="{{site.baseurl | prepend: site.url}}img/interactiveOnly.html" style="width: 1500px; height: 900px; border: 0px"></iframe>
+<iframe src="{{site.baseurl | prepend: site.url}}img/interactiveOnly.html" style="width: 1000px; height: 500px; border: 0px"></iframe>
 
 <!-- <iframe src="{{site.baseurl | prepend: site.url}}img/interactiveOnly.html"></iframe> -->
 
