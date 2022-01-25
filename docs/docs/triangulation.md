@@ -42,3 +42,7 @@ An addition quality check is for a spike or two. Generally if you trace this to 
 <p align="center">
     Fig. - left illustrates a spike. - right traces the challenge to the root.
 </p>
+
+## Licencing
+
+While this workflow is released under a GNU General Public License v3.0 be aware Shewchuck's [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) may not be sold or included in commercial products without a license.
