@@ -44,4 +44,4 @@ An additional quality check is for a spike or two. Generally the root of this ch
 
 ## Licencing
 
-While this workflow is released under a GNU General Public License v3.0 be aware Shewchuck's [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) may not be sold or included in commercial products without a license.
+While this workflow is released under a *---some licence here---* be aware Shewchuck's [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) may not be sold or included in commercial products without a license.
