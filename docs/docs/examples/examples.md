@@ -8,5 +8,4 @@ permalink: /docs/docs/examples
 
 # Examples
 
-To make it as easy as possible to write documentation in plain Markdown, most UI components are styled using default Markdown elements with few additional CSS classes needed.
-{: .fs-6 .fw-300 }
+To ease the use of this workflow a range of parameter files ---with various settings--- are available.
