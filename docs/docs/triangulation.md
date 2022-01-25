@@ -5,9 +5,10 @@ nav_order: 3
 ---
 
 # Triangulation
-{: .no_toc }
+{: .no_toc }  
 
-The 3D Model is based on a [triangulated irregular network](https://en.wikipedia.org/wiki/Triangulated_irregular_network) (TIN) data-structure. A TIN is a collection of connected 3D triangles that form a continuous closed surface. [osm_LoD1_3DCityModel](https://github.com/AdrianKriger/osm_LoD1_3DCityModel) creates a TIN with Jonathan Richard Shewchuk's [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) and uses a special algorithm called a [Constrained Delaunay triangulation](https://en.wikipedia.org/wiki/Constrained_Delaunay_triangulation).
+The 3D Model is based on a [triangulated irregular network](https://en.wikipedia.org/wiki/Triangulated_irregular_network) (TIN) data-structure. A TIN is a collection of connected 3D triangles that form a continuous closed surface. [osm_LoD1_3DCityModel](https://github.com/AdrianKriger/osm_LoD1_3DCityModel) creates a TIN with Jonathan Richard Shewchuk's [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) and uses a special algorithm called a [Constrained Delaunay triangulation](https://en.wikipedia.org/wiki/Constrained_Delaunay_triangulation).  
+
 
 ## Table of contents
 {: .no_toc .text-delta }
