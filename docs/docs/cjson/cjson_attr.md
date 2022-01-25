@@ -28,7 +28,6 @@ A selection of [osm tags](https://wiki.openstreetmap.org/wiki/Map_features#Build
     The typical semantic data connected to the 3D City Model.
 </p>
 
-
 ## Google Plus Codes
 
 Google ['plus codes'](https://maps.google.com/pluscodes/) are included at a precision of [11 characters - 3.5-meter block size](https://en.wikipedia.org/wiki/Open_Location_Code) (e.g. 4FRW3J9R+892Q); referenced to the [`representative_point()`](https://shapely.readthedocs.io/en/stable/manual.html) of buildings.
