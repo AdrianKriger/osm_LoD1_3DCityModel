@@ -6,10 +6,10 @@ description: "A python-based workflow for creation of Level-of-Detail 1 3D Model
 permalink: /
 ---
 
-# A python-based workflow for the creation of Level-of-Detail 1 (LoD1) 3D Models
+#  Level-of-Detail 1 (LoD1) 3D Models
 {: .fs-9 }
 
-We generate a LoD1 3D City Model (buildings and terrain) from OpenStreetMap (osm) contributions with elevation from a raster Digital Elevation Model (DEM). The workflow aims for simplicity. It takes 2D osm vector contributions (building outlines) with building:level tags and extrudes the polygon from the raster DEM (terrain). {: .fs-6 .fw-300 }
+[osm_LoD1_3DCityModel]() is a python-based workflow for the creation of LoD1 3D City Models (buildings and terrain) from OpenStreetMap (osm) contributions with elevation from a raster Digital Elevation Model (DEM). The workflow aims for simplicity. It takes 2D osm vector contributions (building outlines) with building:level tags and extrudes the polygon from the raster DEM (terrain). {: .fs-6 .fw-300 }
 
 <p align="center">There are two procesing strategies</p>
 
