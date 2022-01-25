@@ -16,7 +16,7 @@ remote_theme: pmarsceill/just-the-docs
 # you will see them accessed via {{ site.title }}, {{ site.github_repo }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: LoD1 3D City Model
+title: LoD1 City Model
 description: Level-of-Detail 1 3D City Model from volunteered public data and a raster DEM
 baseurl: "/osm_LoD1_3DCityModel" # the subpath of your site, e.g. /blog
 url: "https://adriankriger.github.io" # the base hostname & protocol for your site, e.g. http://example.com
