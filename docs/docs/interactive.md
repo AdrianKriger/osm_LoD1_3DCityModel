@@ -8,7 +8,7 @@ nav_order: 3
 {: .no_toc }
 
 
-The Jupyter environment allows for easy customization of the final product. The visualization below illustrates building stock differentiated through color. A school, housing, retail, healthcare and community focused facilities are easily identified. Additional features unique to an aoi can also be included. Here farmland, streams, recreational spaces and bus rapid transit routes have been added *- you are thus limited only through data and your imagination*. <!-- {: .fs-6 .fw-300 } -->
+The Jupyter environment allows for easy customization of the final product. The visualization below illustrates building stock differentiated through color. A school, housing, retail, healthcare and community focused facilities are easily identified while the tooltips hightlight the underlying data. Additional features unique to an aoi can also be included. Here farmland, streams, recreational spaces and bus rapid transit routes have been added *- you are thus limited only through data and your imagination*. <!-- {: .fs-6 .fw-300 } -->
 
 **on a laptop without a mouse**:
 
