@@ -2,8 +2,8 @@
 layout: default
 title: Code with line numbers
 parent: Code
-grand_parent: UI Components
-permalink: /docs/ui-components/code/line-numbers/
+grand_parent: Examples
+permalink: /docs/examples/code/line-numbers/
 ---
 
 # Code snippets with line numbers
