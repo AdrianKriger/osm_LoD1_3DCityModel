@@ -17,4 +17,4 @@ The Jupyter environment allows for easy customization of the final product. The 
 - `+` next to Backspace zoom-in and `-` next to `+` zoom-out.
 
 
-<iframe src="{{site.baseurl | prepend: site.url}}/img/interactiveOnly.html" style="width: 750px; height: 400px; border: 0px"></iframe>
+<iframe src="{{site.baseurl | prepend: site.url}}/img/interactiveOnly.html" style="width: 800px; height: 400px; border: 0px"></iframe>
