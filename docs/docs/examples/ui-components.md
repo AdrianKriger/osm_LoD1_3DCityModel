@@ -4,6 +4,7 @@ title: Examples
 nav_order: 3
 has_children: true
 permalink: /docs/examples
+nav_exclude: true
 ---
 
 # UI Components
