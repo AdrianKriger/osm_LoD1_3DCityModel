@@ -12,7 +12,8 @@ The Jupyter environment allows for easy customization of the final product. The 
 {: .fs-6 .fw-300 }
 
 
-<iframe src="{{site.baseurl | prepend: site.url}}img/interactiveOnly.html" style="width: 700px; height: 400px; border: 0px"></iframe>
+<iframe src="{{site.baseurl | prepend: site.url}}/img/interactiveOnly.html" style="width: 700px; height: 400px; border: 0px"></iframe>
+
 
 **on a laptop without a mouse**:
 
