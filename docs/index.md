@@ -19,6 +19,7 @@ It takes 2D osm vector contributions (building outlines) with [`building:level`]
 <p align="center">
     LoD1 3D Model of the Cape Peninsula University of Technology (Bellville Campus).
 </p>
+&nbsp;&nbsp;
 
 <p align="center"><b>There are two procesing strategies</b></p>
 
