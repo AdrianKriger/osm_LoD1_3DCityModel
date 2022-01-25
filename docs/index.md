@@ -9,13 +9,18 @@ permalink: /
 # Level-of-Detail 1 (LoD1) 3D City Models
 {: .fs-9 }
 
-[osm_LoD1_3DCityModel](https://github.com/AdrianKriger/osm_LoD1_3DCityModel) is a python-based workflow for the creation of LoD1 3D City Models (buildings and terrain) from OpenStreetMap (osm) contributions with elevation from a raster Digital Elevation Model (DEM). The workflow aims for simplicity. It takes 2D osm vector contributions (building outlines) with [`building:level`](https://wiki.openstreetmap.org/wiki/Key:building:levels) tagged and extrudes the polygon from the DEM (terrain).
+[osm_LoD1_3DCityModel](https://github.com/AdrianKriger/osm_LoD1_3DCityModel) is a python-based workflow for the creation of LoD1 3D City Models (buildings and terrain) from OpenStreetMap (osm) contributions with elevation from a raster Digital Elevation Model (DEM). The workflow aims for simplicity.  
+
+It takes 2D osm vector contributions (building outlines) with [`building:level`](https://wiki.openstreetmap.org/wiki/Key:building:levels) tagged and extrudes the polygon from the DEM (terrain).
 
 <p align="center">
 <img src="{{site.baseurl | prepend: site.url}}/img/CityJSON_Ninja_cput.png" style="width: 800px; height: 400px; border: 0px">
 </p>
+<p align="center">
+    LoD1 3D Model of the Cape Peninsula University of Technology (Bellville Campus).
+</p>
 
-<p align="center">There are two procesing strategies</p>
+<p align="center">*There are two procesing strategies*</p>
 
 | [Village/Campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus) | [District](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts)  |
 | :-----: | :-----: |
