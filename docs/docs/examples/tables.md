@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Tables
-parent: UI Components
+parent: Examples
 nav_order: 4
 ---
 
