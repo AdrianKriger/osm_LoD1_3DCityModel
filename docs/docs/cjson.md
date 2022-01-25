@@ -15,7 +15,7 @@ nav_order: 3
 
 ---
 
-It is recommended to define metadata for the 3D City Model. An explanation of the CityJSON parameters are given here:
+It is recommended to define metadata for the 3D City Model. While an explanation of the CityJSON parameters are given here the reader is encouraged to explore the [CityJSON Specifications](https://www.cityjson.org/specs/1.1.0/#metadata):
 
 ## Title
 
@@ -36,5 +36,3 @@ It is recommended to define metadata for the 3D City Model. An explanation of th
     "metaStan": "ISO 19115, Geographic Information and ISO 19160, Addressing - Metadata",
     "metaStanV": "ISO 19115:2014(E) and ISO 19160-1:2015(en)",
 ```
-
-The reader is encouraged to explore [CityJSON Specifications](https://www.cityjson.org/specs/1.1.0/#metadata).
