@@ -17,9 +17,14 @@ nav_order: 3
 
 It is recommended to define metadata for the 3D City Model. An explanation of the CityJSON parameters are given here:
 
+## Title
+
 ```json
-    "cjsn_out": "./result/citjsn_rural3d.json",
     "cjsn_Title": "LoD1 City model of rural village",
+```
+
+##  referenceDate
+```json
     "cjsn_RefDate": "2021-07-31",
     "cjsn_source": "OpenStreetMap contributions and National Geo-spatial Information raster DEM",
     "cjsn_Locatn": "Cape Town, South Africa",
