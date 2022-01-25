@@ -21,7 +21,7 @@ nav_order: 2
 
 ### Building Footprints
 
-It is necessary to verify whether the building footprints have been removed from the surface. The Fig. 1 illustrate an example were a specific vector had to be accounted for or the result would not be topologically correct (water-tight with no holes nor gaps).
+It is necessary to verify whether the building footprints have been removed from the surface. The Fig. 1 illustrate an example were a specific vector had to be accounted for or the result would not be water-tight with no holes nor gaps.
 
 <p align="center">
   <img src="{{site.baseurl | prepend: site.url}}/img/fp01.png" alt="alt text" width="350" height="350">  <img src="{{site.baseurl | prepend: site.url}}/img/fp02.png" alt="alt text" width="350" height="350">
@@ -33,7 +33,7 @@ It is necessary to verify whether the building footprints have been removed from
 
 ### Spikes
 
-An additional quality check is for a spike or two. Generally the root of this challenge are buildings crossing each other ~ Fig.2. The [constrained Delaunay triangulation](https://rufat.be/triangle/definitions.html) knows there are lines (walls) and expects a vertex where they intersect. There is none and the result is a spike. Open an [osm editor](https://wiki.openstreetmap.org/wiki/Editors) and correct the topology please. *We are transforming volunteered public data into a value-added product. Alchemy is a process. Please be patient.*
+An additional quality check is for a spike or two. Generally the root of this challenge are buildings crossing each other ~ Fig.2. The [constrained Delaunay triangulation](https://rufat.be/triangle/definitions.html) knows there are lines (walls) and expects a vertex where they intersect. There is none and the result is a spike. **Open an [osm editor](https://wiki.openstreetmap.org/wiki/Editors) and correct the topology please**. *We are transforming volunteered public data into a value-added product. Alchemy is a process. Please be patient.*
 
 <p align="center">
   <img src="{{site.baseurl | prepend: site.url}}/img/sp01.png" alt="alt text" width="350" height="250">  <img src="{{site.baseurl | prepend: site.url}}/img/sp02.png" alt="alt text" width="350" height="250">
