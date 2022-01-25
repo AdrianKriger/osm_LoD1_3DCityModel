@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Lists
-parent: UI Components
+parent: Examples
 nav_order: 5
 ---
 
