@@ -10,6 +10,6 @@ nav_order: 2
 
 ---
 
-[osm3Dcput_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/extra/osm3Dcput_param.json) defines the settings to produce a CityJSON 3D City Model of a university campus with a approximatly 55 buildings. 
+[osm3Dcput_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/extra/osm3Dcput_param.json) defines the settings to produce a CityJSON 3D City Model of a university campus with approximatly 55 buildings. 
 
 Similarly [interactiveOnly_cput.ipynb](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/extra/interactiveOnly_cput.ipynb) is a walk-through for the production of a dynamic `.html` with additional visual features. 
