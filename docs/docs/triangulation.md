@@ -32,7 +32,7 @@ It is necessary to verify whether the building footprints have been removed from
 </p>
 
 
-### Building Footprints
+### Spikes
 
 An addition quality check is for a spike or two. Generally if you trace this to its root *---and open in an [osm editor](https://wiki.openstreetmap.org/wiki/Editors)---* you'll discover buildings crossing each other ~ Fig.2. The [constrained Delaunay triangulation](https://rufat.be/triangle/definitions.html) knows there are lines (walls) and expects a vertex where they intersect. There is none and the result is a spike. Drop a [node](https://wiki.openstreetmap.org/wiki/Node) to correct the topology. *We are transforming volunteered public data into a value-added product. Alchemy is a process. Please be patient.*
 
