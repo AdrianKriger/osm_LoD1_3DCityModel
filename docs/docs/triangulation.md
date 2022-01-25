@@ -22,11 +22,23 @@ nav_order: 2
 
 ### Building Footprints
 
-You need to verify if the building footprints have been removed from the surface. The two images illustrate an example were a specific vector had to be accounted for or the result would not be topologically correct (water-tight with no holes nor gaps).
+It is necessary to verify if the building footprints have been removed from the surface. The two images illustrate an example were a specific vector had to be accounted for or the result would not be topologically correct (water-tight with no holes nor gaps).
 
 <p align="center">
   <img src="{{site.baseurl | prepend: site.url}}/img/fp01.png" alt="alt text" width="350" height="350">  <img src="{{site.baseurl | prepend: site.url}}/img/fp02.png" alt="alt text" width="350" height="350">
 </p> 
 <p align="center">
-    Fig 2. - left illustrates the building footprint removed from the terrain. - right shows the vertices accounted for; but the ground remains.
+    Fig. - left illustrates the building footprint removed from the terrain. - right shows the vertices accounted for; but the ground remains.
+</p>
+
+
+### Building Footprints
+
+An addition quality check is for a spike or two. Generally if you trace this to its root *---and open in an [osm editor](https://wiki.openstreetmap.org/wiki/Editors)---* you'll discover buildings crossing each other ~ Fig.2. The [constrained Delaunay triangulation](https://rufat.be/triangle/definitions.html) knows there are lines (walls) and expects a vertex where they intersect. There is none and the result is a spike. Drop a [node](https://wiki.openstreetmap.org/wiki/Node) to correct the topology. *We are transforming volunteered public data into a value-added product. Alchemy is a process. Please be patient.*
+
+<p align="center">
+  <img src="{{site.baseurl | prepend: site.url}}/img/sp01.png" alt="alt text" width="450" height="300">  <img src="{{site.baseurl | prepend: site.url}}/img/sp02.png" alt="alt text" width="450" height="300">
+</p> 
+<p align="center">
+    Fig. - left illustrates a spike. - right traces the challenge to the root.
 </p>
