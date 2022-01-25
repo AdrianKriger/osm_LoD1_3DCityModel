@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Code
-parent: UI Components
+parent: Examples
 has_children: true
 nav_order: 6
 ---
