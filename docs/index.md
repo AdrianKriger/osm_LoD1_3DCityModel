@@ -20,7 +20,7 @@ It takes 2D osm vector contributions (building outlines) with [`building:level`]
     LoD1 3D Model of the Cape Peninsula University of Technology (Bellville Campus).
 </p>
 
-<p align="center">*There are two procesing strategies*</p>
+<p align="center"><b>There are two procesing strategies</b></p>
 
 | [Village/Campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus) | [District](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts)  |
 | :-----: | :-----: |
