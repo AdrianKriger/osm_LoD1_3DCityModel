@@ -22,10 +22,10 @@ An extremely well documented way of producing 3D Models is through extrusion. Wi
 
 The osm tag `building:level` is taken as a [proxy for the height of a building](https://wiki.openstreetmap.org/wiki/Key:building:levels). The calculation is simply `building:level * 2.8 + 1.3`. If a structure does not have a `building:level` tag no LoD1 model is created.
  &nbsp; &nbsp;
- <figure>
+ <figure><center>
   <img src="{{site.baseurl | prepend: site.url}}/img/extrusion_tuDelft.png" alt="alt text" width="650" height="350">
   <figcaption>Fig.1 - The osm_LoD1_3DCityModel process. <span style="color:blue"><em>--image TUDelft</em></span>.</figcaption>
-</figure>
+</center></figure>
 <!--
 <p align="center">
   <img src="{{site.baseurl | prepend: site.url}}/img/extrusion_tuDelft.png" alt="alt text" width="650" height="350">
