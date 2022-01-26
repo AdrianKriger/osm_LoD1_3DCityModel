@@ -2,7 +2,6 @@
 layout: default
 title: Census Tract/Ward
 parent: Examples
-has_children: true
 nav_order: 5
 ---
 
@@ -17,4 +16,8 @@ nav_order: 5
 
 ---
 
-some text here
+## One Census Ward
+
+## Many Census Wards
+
+## Many Census Wards with many raster DEM
