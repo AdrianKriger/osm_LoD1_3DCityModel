@@ -4,7 +4,7 @@ title: Processing
 nav_order: 2
 ---
 
-# Processing Strategies
+# Processing
 {: .no_toc }
 
 ## Table of contents
