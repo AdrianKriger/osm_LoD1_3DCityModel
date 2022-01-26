@@ -2,6 +2,8 @@
 layout: default
 title: osm_LoD1_3DCityModel
 nav_order: 2
+has_children: true
+permalink: /docs/docs/processing
 ---
 
 # osm_LoD1_3DCityModel
