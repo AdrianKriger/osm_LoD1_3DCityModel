@@ -27,7 +27,7 @@ nav_order: 2
 
 ## `'param.json`
 
-## Restrictions and Condiserations
+## Restrictions and Considerations
 
 ### Area-of-Interest
 
