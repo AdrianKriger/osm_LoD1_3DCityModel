@@ -1,6 +1,6 @@
 ---
 layout: default
-title: CityJSON Metadata
+title: Metadata
 parent: CityJSON
 nav_order: 2
 ---
