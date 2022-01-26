@@ -34,13 +34,13 @@ Fig 1 illustrates the process where the osm *proxy `building:level` height*  is 
 The resulting LoD1 City Model, while basic, offer much advantantage over 2D datasets. These may be used for shadow analyses, line of sight predictions and advanced flood simulation.
 
 ## osm_LoD1_3DCityModel output
-
+ &nbsp;
 osm_LoD1_3DCityModel creates two products;
 
-i) Trianglated MultiSurfaces
+### Trianglated MultiSurfaces
 
 MultiSurface outputs are the walls and roof's of buildings, along with the terrain surface, as a connected collection of triangles. These are created in the 2.75D Wavefront OBJ format. 
 
-ii) Solids
+### Solids
 
 Solid objects are walls and roof's stored as rectangular surfaces. In the CityJSON format these are seperate Building and TINRelief CityObjects and enabling spatial analyses and the structuring of objects.
