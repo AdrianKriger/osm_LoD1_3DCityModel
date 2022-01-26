@@ -32,10 +32,10 @@ The osm tag `building:level` is taken as a [proxy for the height of a building](
 
 Fig 1 illustrates the process where the osm *proxy `building:level` height*  is added to the raster DEM to create a 3D topologically connected surface ~ containing all 2D polygons as 3D objects.
 
-The resulting LoD1 City Model, while basic, offer much advantantage over 2D datasets. These may be used for shadow analyses, line of sight predictions and advanced flood simulation.
+The resulting LoD1 City Model, while basic, offers many advantages over 2D datasets. These may be used for shadow analyses, line of sight predictions and advanced flood simulation. Challenges do exist. Of primary concern is errors in the 2D data propagate to the generated 3D model. Care must be taken to ensure the quality of both the vector and raster DEM.
 
 ## osm_LoD1_3DCityModel output
- &nbsp;
+&nbsp;&nbsp;
 osm_LoD1_3DCityModel creates two products;
 
 ### Trianglated MultiSurfaces
