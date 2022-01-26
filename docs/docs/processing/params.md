@@ -1,6 +1,6 @@
 ---
 layout: default
-title: `param.json`
+title: param.json
 parent: osm_LoD1_3DCityModel
 nav_order: 4
 ---
