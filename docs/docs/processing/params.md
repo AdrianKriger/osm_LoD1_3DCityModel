@@ -1,11 +1,11 @@
 ---
 layout: default
-title: params
+title: `param.json`
 parent: osm_LoD1_3DCityModel
 nav_order: 4
 ---
 
-# `params.json`
+# `param.json`
 {: .no_toc }
 
 To produce a City Model; necessary information that defines your area-of-interest (aoi) and coordinate reference system are parsed through a basic `param.json`. These are elaborated on below.
