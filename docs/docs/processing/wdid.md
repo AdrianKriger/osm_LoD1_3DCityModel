@@ -27,7 +27,7 @@ The osm tag `building:level` is taken as a [proxy for the height of a building](
   <img src="{{site.baseurl | prepend: site.url}}/img/extrusion_tuDelft.png" alt="alt text" width="650" height="350">
 <!-- </p> 
 <p align="center"> -->
-    Fig 1. The osm_LoD1_3DCityModel process. <span style="color:red"><em>--image TUDelft</em></span>.
+    Fig 1. The osm_LoD1_3DCityModel process. <span style="color:blue"><em>--image TUDelft</em></span>.
 </p>
 
 Fig 1 illustrates the process where the osm *proxy `building:level` height*  is added to the raster DEM to create a 3D topologically connected surface ~ containing 2D polygons as 3D objects.
