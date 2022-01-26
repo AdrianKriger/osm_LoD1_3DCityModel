@@ -42,7 +42,7 @@ The resulting LoD1 City Model, while basic, offers many advantages over 2D datas
 
 ### Trianglated MultiSurfaces
 
-MultiSurface outputs are the walls and roof's of buildings, along with the terrain surface, as a connected collection of triangles. These are created in the 2.75D Wavefront OBJ format. 
+MultiSurface outputs are the walls and rooves of buildings, along with the terrain surface, as a connected collection of triangles. These are created in the 2.75D Wavefront OBJ format. 
 
 <figure><center>
   <img src="{{site.baseurl | prepend: site.url}}/img/objects_horizontal_view_multisurface_tuDelft.png" alt="alt text" width="650" height="350">
@@ -51,9 +51,9 @@ MultiSurface outputs are the walls and roof's of buildings, along with the terra
 
 ### Solids
 
-Solid objects are walls and roof's stored as rectangular surfaces. In the [CityJSON](https://www.cityjson.org/) format these are seperate [Building](https://www.cityjson.org/specs/1.0.1/#building) and [TINRelief](https://www.cityjson.org/specs/1.0.1/#tinrelief) [CityObjects](https://www.cityjson.org/specs/1.0.1/#cityjson-object) that enabling spatial analyses and the structuring of objects.
+Solid objects are walls and rooves stored as rectangular surfaces. In the [CityJSON](https://www.cityjson.org/) format these are seperate [Building](https://www.cityjson.org/specs/1.0.1/#building) and [TINRelief](https://www.cityjson.org/specs/1.0.1/#tinrelief) [CityObjects](https://www.cityjson.org/specs/1.0.1/#cityjson-object) that enabling spatial analyses.
 
 <figure><center>
   <img src="{{site.baseurl | prepend: site.url}}/img/objects_horizontal_view_solid_tuDelft.png" alt="alt text" width="650" height="350">
-  <figcaption>Fig.3 - illustrates the solid Building CityObject connected to the terrain. <span style="color:blue;opacity:0.8;"><em>--image TUDelft</em></span>.</figcaption>
+  <figcaption>Fig.3 - solid Building CityObjects's connected to the terrain. <span style="color:blue;opacity:0.8;"><em>--image TUDelft</em></span>.</figcaption>
 </center></figure>
