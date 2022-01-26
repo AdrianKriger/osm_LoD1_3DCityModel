@@ -47,7 +47,7 @@ MultiSurface outputs are the walls and rooves of buildings, along with the terra
 <figure><center>
   <img src="{{site.baseurl | prepend: site.url}}/img/objects_horizontal_view_multisurface_tuDelft.png" alt="alt text" width="650" height="350">
   <figcaption>Fig.2 - illustrates a horizontal view of the 2.75D surface with the exterior of all objects/features together. <span style="color:blue;opacity:0.8;"><em>--image TUDelft</em></span>.</figcaption>
-</center></figure>
+</center></figure>   
 
 ### Solids
 
