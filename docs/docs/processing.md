@@ -19,7 +19,7 @@ nav_order: 2
 
 ## What do I need?
 
-## Strategies
+## Processing Strategies
 
 ### village/campus
 
