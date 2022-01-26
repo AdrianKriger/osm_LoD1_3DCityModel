@@ -1,6 +1,6 @@
 ---
 layout: default
-title: timing
+title: Timing
 parent: osm_LoD1_3DCityModel
 nav_order: 5
 ---
