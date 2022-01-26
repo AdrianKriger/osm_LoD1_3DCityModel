@@ -18,7 +18,7 @@ nav_order: 1
 
 ## Extrusion
 
-An extremely well documented way of producing 3D Models is through extrusion. With extrusion; 2D features are <p style="color:red">*lifted*</p> from an existing surface creating a volumetric 3D object. osm_LoD1_3DCityModel inferes the height with which to *lift*{: style="color: red" } 2D features from osm contributions. 
+An extremely well documented way of producing 3D Models is through extrusion. With extrusion; 2D features are *lifted*{: style="color: red; opacity: 0.80" } from an existing surface creating a volumetric 3D object. osm_LoD1_3DCityModel inferes the height with which to *lift*{: style="color: red; opacity: 0.80" } 2D features from osm contributions. 
 
 The osm tag `building:level` is taken as a [proxy for the height of a building](https://wiki.openstreetmap.org/wiki/Key:building:levels). The calculation is simply `building:level * 2.8 + 1.3`. If a structure does not have a `building:level` tag no LoD1 model is created.
  &nbsp; &nbsp;
@@ -27,7 +27,7 @@ The osm tag `building:level` is taken as a [proxy for the height of a building](
   <img src="{{site.baseurl | prepend: site.url}}/img/extrusion_tuDelft.png" alt="alt text" width="650" height="350">
 </p> 
 <p align="center">
-    Fig 1. The osm_LoD1_3DCityModel process. <i>--image TUDelft</i>.
+    Fig 1. The osm_LoD1_3DCityModel process. <i>--image TUDelft</i>{: style="color: blue; opacity: 0.80" }.
 </p>
 
 Fig 1 illustrates the process where the osm *proxy `building:level` height*  is added to the raster DEM to create a 3D topologically connected surface ~ containing 2D polygons as 3D objects.
