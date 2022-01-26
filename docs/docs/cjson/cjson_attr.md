@@ -1,6 +1,6 @@
 ---
 layout: default
-title: CityJSON Attributes
+title: Attributes
 parent: CityJSON
 nav_order: 1
 ---
