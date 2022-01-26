@@ -24,7 +24,7 @@ The 3D Model is based on a [triangulated irregular network](https://en.wikipedia
 
 ### Building Footprints
 
-It is necessary to verify whether the building footprints have been removed from the surface. The Fig. 1 illustrate an example were a specific vector had to be accounted for or the result would not be water-tight with no holes nor gaps.
+It is necessary to verify whether the building footprints have been removed from the surface. Fig. 1 illustrate an example were a specific vector had to be accounted for or the result would not be water-tight with no holes nor gaps.
 
 <p align="center">
   <img src="{{site.baseurl | prepend: site.url}}/img/fp01.png" alt="alt text" width="350" height="350">  <img src="{{site.baseurl | prepend: site.url}}/img/fp02.png" alt="alt text" width="350" height="350">
