@@ -44,6 +44,11 @@ The resulting LoD1 City Model, while basic, offers many advantages over 2D datas
 
 MultiSurface outputs are the walls and roof's of buildings, along with the terrain surface, as a connected collection of triangles. These are created in the 2.75D Wavefront OBJ format. 
 
+<figure><center>
+  <img src="https://github.com/tudelft3d/3dfier/blob/master/docs/images/algorithm/objects_horizontal_view_multisurface.png" alt="alt text" width="650" height="350">
+  <figcaption>Fig.2 - some text here. <span style="color:blue;opacity:0.8;"><em>--image TUDelft</em></span>.</figcaption>
+</center></figure>
+
 ### Solids
 
 Solid objects are walls and roof's stored as rectangular surfaces. In the CityJSON format these are seperate Building and TINRelief CityObjects that enabling spatial analyses and the structuring of objects.
