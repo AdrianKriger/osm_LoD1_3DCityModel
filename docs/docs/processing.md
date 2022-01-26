@@ -27,11 +27,23 @@ nav_order: 2
 
 ## `param.json`
 
-To produce a City Model; necessary information that defines your area-of-interest and coordinate reference system are parsed through a basic `param.json`. These are elaborated on below.
+To produce a City Model; necessary information that defines your area-of-interest (aoi) and coordinate reference system are parsed through a basic `param.json`. These are elaborated on below.
 
 <!-- ## Restrictions and Considerations -->
 
 ### Area-of-Interest
+
+Due to the nature of the processing strategies aoi's are defined differently
+
+#### village/campus
+```json
+    "Larea": "Western Cape",
+    "Farea": "Mamre",
+    "osm_type": "relation",
+ ```
+ With the village/campus strategy an aoi is defined `Large area -> focus area` or `State (Province) -> village / campus`. The area must exist in osm as either a [way or relation](https://wiki.openstreetmap.org/wiki/Elements)
+
+#### district
 
 ### raster DEM
 
