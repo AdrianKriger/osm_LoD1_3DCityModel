@@ -7,12 +7,12 @@ permalink: /docs/docs/processing
 ---
 
 # osm_LoD1_3DCityModel
-{: .no_toc }
+<!-- {: .no_toc }
 
-<!-- ## Table of contents
+ ## Table of contents
 {: .no_toc .text-delta }
 
 1. TOC
-{:toc} -->
+{:toc} 
 
----
+--- -->
