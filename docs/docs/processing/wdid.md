@@ -42,7 +42,7 @@ The LoD1 City Model, while basic, offers many advantages over 2D datasets. These
 
 ### Trianglated MultiSurfaces
 
-MultiSurface outputs are the walls and rooves of buildings, along with the terrain surface, as a connected collection of triangles. These are created in the 2.75D Wavefront OBJ format. 
+MultiSurface outputs are the walls and rooves of buildings, along with the terrain surface, as a collection of connected triangles. These are created in the 2.75D Wavefront OBJ format. 
 
 <figure><center>
   <img src="{{site.baseurl | prepend: site.url}}/img/objects_horizontal_view_multisurface_tuDelft.png" alt="alt text" width="650" height="350">
