@@ -36,7 +36,7 @@ The resulting LoD1 City Model, while basic, offers many advantages over 2D datas
 
 ## osm_LoD1_3DCityModel output
 &nbsp;&nbsp;
-osm_LoD1_3DCityModel creates two products;
+osm_LoD1_3DCityModel creates two products:
 
 ### Trianglated MultiSurfaces
 
@@ -44,4 +44,4 @@ MultiSurface outputs are the walls and roof's of buildings, along with the terra
 
 ### Solids
 
-Solid objects are walls and roof's stored as rectangular surfaces. In the CityJSON format these are seperate Building and TINRelief CityObjects and enabling spatial analyses and the structuring of objects.
+Solid objects are walls and roof's stored as rectangular surfaces. In the CityJSON format these are seperate Building and TINRelief CityObjects that enabling spatial analyses and the structuring of objects.
