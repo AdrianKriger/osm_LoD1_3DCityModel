@@ -18,7 +18,7 @@ nav_order: 1
 
 ## Extrusion
 
-An extremely well documented way of producing 3D Models is through extrusion. With extrusion; 2D features are *lifted* from an existing surface creating a volumetric 3D object. osm_LoD1_3DCityModel inferes the height with which to *lift* 2D features from osm contributions. 
+An extremely well documented way of producing 3D Models is through extrusion. With extrusion; 2D features are <p style="color:red">*lifted*</p> from an existing surface creating a volumetric 3D object. osm_LoD1_3DCityModel inferes the height with which to <p style="color:red">*lift*</p> 2D features from osm contributions. 
 
 The osm tag `building:level` is taken as a [proxy for the height of a building](https://wiki.openstreetmap.org/wiki/Key:building:levels). The calculation is simply `building:level * 2.8 + 1.3`. If a structure does not have a `building:level` tag no LoD1 model is created.
  &nbsp; &nbsp;
@@ -27,7 +27,7 @@ The osm tag `building:level` is taken as a [proxy for the height of a building](
   <img src="{{site.baseurl | prepend: site.url}}/img/extrusion_tuDelft.png" alt="alt text" width="650" height="350">
 </p> 
 <p align="center">
-    Fig 1. The osm_LoD1_3DCityModel process. <i>--image TUDelft</i>.
+    Fig 1. The osm_LoD1_3DCityModel process. <p style="color:blue"><i>--image TUDelft</i></p>.
 </p>
 
 Fig 1 illustrates the process where the osm *proxy `building:level` height*  is added to the raster DEM to create a 3D topologically connected surface ~ containing 2D polygons as 3D objects.
@@ -36,7 +36,6 @@ The resulting LoD1 City Model, while basic, offers many advantages over 2D datas
 
 ## osm_LoD1_3DCityModel output
 &nbsp;&nbsp;
-
 osm_LoD1_3DCityModel creates two products:
 
 ### Trianglated MultiSurfaces
