@@ -10,7 +10,7 @@ nav_order: 3
 
 A necessary ingredient is a raster Digital Elevation/Terrain Model. (DEM/DTM).
 
-Hereafter; depending of the processing strategy chosen the needs are slightly different. 
+Hereafter; depending of the processing strategy the needs are slightly different. 
 
 | [Village/Campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus) | [District](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts)  |
 | :-----: | :-----: |
