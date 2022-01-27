@@ -18,7 +18,7 @@ nav_order: 2
 
 | | |
 | :-----: | :-----: |
-| [village/campus]((https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus)) harvests osm contributions <br /> via overpass-turbo| With more substantial volumes of data;<br />[districts]((https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts)) extracts the necessary building outline from osm.pbf.|
+| [village/campus]((https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus)) harvests osm contributions via <br /> overpass-turbo| With more substantial volumes of data;<br />[districts]((https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts)) extracts the necessary building outline from osm.pbf.|
 
 <!--  Table of contents
 {: .no_toc .text-delta }
