@@ -18,7 +18,7 @@ nav_order: 1
 
 ## Extrusion
 
-An extremely well documented way of producing 3D Models is through extrusion. With extrusion; 2D features are *lifted*{: style="color: red; opacity: 0.80" } from an existing surface creating a volumetric 3D object.  <code><b>osm_LoD1_3DCityModel</b></code> inferes the height with which to *lift*{: style="color: red; opacity: 0.80" } 2D features from osm contributions. 
+An extremely well documented method of producing 3D Models is through extrusion. With extrusion; 2D features are *lifted*{: style="color: red; opacity: 0.80" } from an existing surface creating a volumetric 3D object.  <code><b>osm_LoD1_3DCityModel</b></code> inferes the height with which to *lift*{: style="color: red; opacity: 0.80" } 2D features from osm contributions. 
 
 The osm tag `building:level` is taken as a [proxy for the height of a building](https://wiki.openstreetmap.org/wiki/Key:building:levels). The calculation is simply `building:level * 2.8 + 1.3`. If a structure does not have a `building:level` tag no LoD1 model is created.
  &nbsp; &nbsp;
