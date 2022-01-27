@@ -9,9 +9,10 @@ nav_order: 2
 <!-- {: .no_toc } -->
 
 <p align="center"><b>There are two procesing strategies</b></p>
-| village/campus | district | 
-|:-----:|:-----:|
-| village/campus is designed for extremely focused analysis <br /> at a neighbourhood scale. These are areas with a population  <br /> of no more than 10 000 |  For larger area; one or many suburbs or census <br /> wards/tracts districts is recommended |
+
+| [Village/Campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus) | [District](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts)  |
+| :-----: | :-----: |
+| village/campus is designed for extremely focused analysis <br /> at a neighbourhood scale. These are areas with a population  <br /> of no more than 10 000| For larger area; one or many suburbs or census <br /> wards/tracts districts is recommended|
 
 <!--  Table of contents
 {: .no_toc .text-delta }
