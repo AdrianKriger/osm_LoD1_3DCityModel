@@ -2,7 +2,7 @@
 layout: default
 title: Processing Strategies
 parent: osm_LoD1_3DCityModel
-nav_order: 3
+nav_order: 2
 ---
 
 # Processing Strategies
