@@ -29,6 +29,7 @@ project
 │   Main.py
 │   param.json
 |   osmconvert
+|   interactive.ipynb
 |
 └───raster
 │   │   dem.tif
