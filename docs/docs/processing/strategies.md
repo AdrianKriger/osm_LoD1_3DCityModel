@@ -8,7 +8,7 @@ nav_order: 2
 # Processing Strategies
 {: .no_toc }
 
-**There are two processing strategies.**
+<p align="center"><b>There are two procesing strategies</b></p>
 | village/campus | district | 
 |:-----:|:-----:|
 | village/campus is designed for extremely focused analysis <br /> at a neighbourhood scale. These are areas with a population  <br /> of no more than 10 000 |  For larger area; one or many suburbs or census <br /> wards/tracts districts is recommended |
