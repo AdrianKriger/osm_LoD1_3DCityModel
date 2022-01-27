@@ -27,3 +27,7 @@ We generate a Level-of-Detail 1 (LoD1) 3D City Model (buildings and terrain) fro
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;iii. an interactive .html which you can navigate and query.
 
 <sup>*</sup> *the goal is a topologically correct surface. I have not tested this for all possibilities. If the result you achieve is not; you are welcome to raise an issue. I depend on you to help me improve.* 
+&nbsp;
+
+&nbsp;
+[Documentation](https://adriankriger.github.io/osm_LoD1_3DCityModel/) is under construction.
