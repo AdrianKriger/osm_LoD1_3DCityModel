@@ -20,7 +20,7 @@ nav_order: 2
 {: .no_toc .text-delta }
 
 <!-- |<td colspan=3><b>The reason for this is</b></td> -->
-<!-- ||<b>The reason for this is</b>|| --> 
+<!-- ||<b>The reason for this is</b>|| 
 
 1. TOC
 {:toc}--> 
