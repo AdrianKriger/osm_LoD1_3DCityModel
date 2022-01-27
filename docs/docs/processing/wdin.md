@@ -8,7 +8,11 @@ nav_order: 3
 # What do I need?
 {: .no_toc }
 
-## Table of contents
+Depending of the processing strategy chosen the needs are slightly different. 
+
+
+
+<!-- ## Table of contents
 {: .no_toc .text-delta }
 
 1. TOC
