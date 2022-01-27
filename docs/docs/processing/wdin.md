@@ -8,7 +8,9 @@ nav_order: 3
 # What do I need?
 <!-- {: .no_toc } -->
 
-A necessary ingredient is a raster Digital Elevation/Terrain Model. (DEM/DTM).
+## Ingredients
+
+A raster Digital Elevation/Terrain Model (DEM/DTM) is necessary.
 
 Hereafter; depending of the processing strategy the needs are slightly different. 
 
