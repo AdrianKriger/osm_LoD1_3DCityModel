@@ -6,7 +6,7 @@ nav_order: 3
 ---
 
 # What do I need?
-<!-- {: .no_toc } -->
+{: .no_toc }
 
 ## Ingredients
 
