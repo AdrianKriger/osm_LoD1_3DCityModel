@@ -8,7 +8,8 @@ nav_order: 3
 # What do I need?
 {: .no_toc }
 
-Depending of the processing strategy chosen the needs are slightly different. 
+<p align="center"><b>Depending of the processing strategy chosen the needs are slightly different.</b></p>
+
 
 
 
@@ -16,6 +17,6 @@ Depending of the processing strategy chosen the needs are slightly different.
 {: .no_toc .text-delta }
 
 1. TOC
-{:toc}
+{:toc} -->
 
 ---
