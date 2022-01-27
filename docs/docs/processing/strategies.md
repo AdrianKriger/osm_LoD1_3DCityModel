@@ -6,7 +6,7 @@ nav_order: 2
 ---
 
 # Processing Strategies
-!-- {: .no_toc } 
+<!-- {: .no_toc } -->
 
 <p align="center"><b>There are two procesing strategies</b></p>
 
