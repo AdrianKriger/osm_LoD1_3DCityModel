@@ -31,6 +31,23 @@ Due to the nature of the processing strategies aoi's are defined differently
 With the village/campus strategy an aoi is defined `Large area -> focus area` or `State (Province) -> village / campus`. The area must exist in osm as either a [way or relation](https://wiki.openstreetmap.org/wiki/Elements). A number of variations are available as [Examples](https://adriankriger.github.io/osm_LoD1_3DCityModel/docs/docs/examples)
 
 #### district
+```json
+    "osm-pbf": "CapeTown",
+    "update": "False",
+    "pbf_directory": "data",
+    
+    "trim": "no",
+    "osmconvert": "osmconvert64",
+    "osm_poly": "tshwane_gauteng.poly",
+    "trim_pbf": "Tshwane_gauteng_extract.pbf",
+    
+    "Focus_area": "Cape Town Ward 57",
+```
+In an attempt to make the solution available to the broadest possible audience we start with national [.osm.pbf](https://wiki.openstreetmap.org/wiki/PBF_Format) and trim with a [osm.poly](https://wiki.openstreetmap.org/wiki/Osmosis/Polygon_Filter_File_Format) via [osmconvert](https://wiki.openstreetmap.org/wiki/Osmconvert). 
+
+[Pyrosm](https://pyrosm.readthedocs.io/en/latest/) harvests [osm.pbf](https://wiki.openstreetmap.org/wiki/PBF_Format) from [GeoFabrik](http://download.geofabrik.de/) and [BBBBike](https://download.bbbike.org/osm/bbbike/). City level osm.pbf extracts are available for a number of regions and are listed on the respective [GeoFabrik](http://download.geofabrik.de/) and [BBBBike](https://download.bbbike.org/osm/bbbike/) websites. If your Area-of-Interest (aoi) does not need to a less substantial [osm.pbf](https://wiki.openstreetmap.org/wiki/PBF_Format); set `"trim": 'no'` and leave the osm.pbf as is. `"trim": 'yes'` otherwise. 
+
+An extensive range of [osm.poly](https://wiki.openstreetmap.org/wiki/Osmosis/Polygon_Filter_File_Format) files can be accessed at James Chevalier's [GitHub](https://github.com/JamesChevalier/cities). 
 
 ### crs
 
