@@ -36,7 +36,7 @@ project
 │   Code.py
 │   Main.py
 │   param.json
-|   osmconvert
+|   osmconvert.exe
 |   interactive.ipynb
 |
 └───raster
