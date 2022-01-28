@@ -10,4 +10,4 @@ nav_order: 3
 
 ---
 
-some text here
+A City Model of a tiny urban community of 300 homes (1000 residents) with the [osm tag](https://wiki.openstreetmap.org/wiki/Tags) `place:neighbourhood` is possible with [osm3DuEstate_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/extra/osm3DuEstate_param.json). The interactive version will follow the same logic as [village/campus interactiveOnly.ipynb](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/interactiveOnly.ipynb)
