@@ -36,12 +36,6 @@ The osm tag `building:level` is taken as a [proxy for the height of a building](
 
 Fig 1 illustrates the process where the osm *proxy `building:level` height*  is added to the raster DEM to create a 3D topologically connected surface ~ containing 2D polygons as 3D objects.
 
-### Is it useful?
-
-The LoD1 City Model, while basic, offers many advantages over 2D datasets. These may be used for shadow analyses, line of sight predictions and advanced flood simulation. With the coming revolution in air traffic control, to accomodate newer forms of air services (delivery drones and urban air mobility), an accurate *digital* representation of the built environment will become crucial. A 3D City Model is one component for the effective air space management of the future.
-
-Challenges do exist. Of primary concern are errors in the source data that propagate to the generated 3D model. Care must be taken to ensure the quality of both the vector building outlines and raster DEM.
-
 ## `osm_LoD1_3DCityModel` products
 
 ### Trianglated MultiSurfaces
@@ -66,3 +60,8 @@ Solid objects are walls and rooves stored as rectangular surfaces. In the [CityJ
 
 A dynamic visualisation is possible through a Jupyter notebook. [Interactive Visualization](https://adriankriger.github.io/osm_LoD1_3DCityModel/docs/interactive/) discusses this further.
 
+## Is it useful?
+
+The LoD1 City Model, while basic, offers many advantages over 2D datasets. These may be used for shadow analyses, line of sight predictions and advanced flood simulation. With the coming revolution in air traffic control, to accomodate newer forms of air services (delivery drones and urban air mobility), an accurate *digital* representation of the built environment will become crucial. A 3D City Model is one component for the effective air space management of the future.
+
+Challenges do exist. Of primary concern are errors in the source data that propagate to the generated 3D model. Care must be taken to ensure the quality of both the vector building outlines and raster DEM.
