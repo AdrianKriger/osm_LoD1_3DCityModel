@@ -26,13 +26,16 @@ The 3D Model is based on a [triangulated irregular network](https://en.wikipedia
 
 It is necessary to verify whether the building footprints have been removed from the surface. Fig. 1 illustrate an example were a specific vector had to be accounted for or the result would not be water-tight with no holes nor gaps.
 
-<p align="center">
+<!-- <p align="center">
   <img src="{{site.baseurl | prepend: site.url}}/img/fp01.png" alt="alt text" width="350" height="350">  <img src="{{site.baseurl | prepend: site.url}}/img/fp02.png" alt="alt text" width="350" height="350">
 </p> 
 <p align="center">
     Fig 1. - left illustrates the building footprint removed from the terrain. - right shows the vertices accounted for; but the ground remains.
-</p>
-
+</p> --> 
+ <figure><center>
+  <img src="{{site.baseurl | prepend: site.url}}/img/fp01.png" alt="alt text" width="350" height="350">  <img src="{{site.baseurl | prepend: site.url}}/img/fp02.png" alt="alt text" width="350" height="350">
+  <figcaption>Fig.1 - left illustrates the building footprint removed from the terrain. - right shows the vertices accounted for; but the ground remains.</figcaption>
+</center></figure>
 
 ### Spikes
 
