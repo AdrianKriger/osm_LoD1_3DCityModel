@@ -74,7 +74,7 @@ One raster DEM will be enough for the [village/campus](https://github.com/Adrian
 
 The [districts](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts) ```"in_raster"``` parameter will accept one or many (e.g.: ```"in_raster": "./raster/LO19_050M_3418BA.tif ./raster/LO19_050M_3318DC.tif",```). NoData values are recommend and the workflow will mosaic where necessary, clip and project an input raster DEM to the defined crs.
 
-### CityJSON and 2.75d.obj
+### CityJSON and 2.75D.obj
 ```json
     "cjsn_out": "./result/citjsn_cput3d.json",
     ...
