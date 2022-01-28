@@ -81,5 +81,5 @@ The [districts](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/d
     "cjsn_CleanOut": "./result/citjsnClean_cput3d.json",
     "obj-2_75D": "./result/obj275D_cput3d.obj"
 ```
-The `"cjsn_out"` City Model is parsed through a basic cleaning operation to remove duplicate vertices. `"cjsn_CleanOut"` thus has no superfluous features.   
+The `"cjsn_out"` City Model is parsed through a basic cleaning operation to remove duplicate and orphan vertices. `"cjsn_CleanOut"` thus has no superfluous features.   
 
