@@ -17,7 +17,6 @@ nav_order: 3
 ---
 
 ## Ingredients
-&nbsp; 
  
 A raster Digital Elevation/Terrain Model (DEM/DTM) is necessary.
 
