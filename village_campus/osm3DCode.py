@@ -76,7 +76,7 @@ def requestOsmBld(jparams):
     out body;
     >;
     out skel qt;
-    """.format(jparams['Larea'], jparams['osm_type'], jparams['Farea'])
+    """.format(jparams['LargeArea'], jparams['osm_type'], jparams['FocusArea'])
     
     url = "http://overpass-api.de/api/interpreter"
     r = requests.get(url, params={'data': query})
@@ -113,7 +113,7 @@ def requestOsmAoi(jparams):
     out body;
     >;
     out skel qt;
-    """.format(jparams['Larea'], jparams['osm_type'], jparams['Farea'])
+    """.format(jparams['LargeArea'], jparams['osm_type'], jparams['FocusArea'])
     
     url = "http://overpass-api.de/api/interpreter"
     r = requests.get(url, params={'data': query})
@@ -171,7 +171,6 @@ def writegjson(ts, jparams):#, fname):
     for i, row in ts.iterrows():
         if row.geometry.type == 'LineString' and len(row.geometry.coords) < 3:
             ts = ts.drop(ts.index[i])
-    
     
     storeyheight = 2.8
     #-- iterate through the list of buildings and create GeoJSON features rich in attributes
@@ -598,22 +597,22 @@ def output_cityjson(extent, minz, maxz, T, pts, jparams):
     #clean cityjson
     cm = cityjson.load(jparams['cjsn_out'])
     cm.remove_duplicate_vertices()
-    cityjson.save(cm, jparams['cjsn_ClOut'])
+    cityjson.save(cm, jparams['cjsn_CleanOut'])
 
 def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams): 
     #-- create the JSON data structure for the City Model
     cm = {}
     cm["type"] = "CityJSON"
-    cm["version"] = "1.0"
+    cm["version"] = "1.1"
     cm["CityObjects"] = {}
     cm["vertices"] = []
     #-- Metadata is added manually
     cm["metadata"] = {
-    "datasetTitle": jparams['cjsn_Title'],
-    "datasetReferenceDate": jparams['cjsn_RefDate'],
-    "dataSource": jparams['cjsn_source'],
-    "geographicLocation": jparams['cjsn_Locatn'],
-    "referenceSystem": jparams['cjsn_refSystm'],
+    "title": jparams['cjsn_title'],
+    "referenceDate": jparams['cjsn_referenceDate'],
+    #"dataSource": jparams['cjsn_source'],
+    #"geographicLocation": jparams['cjsn_Locatn'],
+    "referenceSystem": jparams['cjsn_referenceSystem'],
     "geographicalExtent": [
         extent[0],
         extent[1],
@@ -623,13 +622,13 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
         maxz
       ],
     "datasetPointOfContact": {
-        "contactName": jparams['cjsn_contName'],
-        "linkedin": jparams['cjsn_cont'],
-        "contactType": jparams['cjsn_contType'],
-        "github": jparams['github']
+        "contactName": jparams['cjsn_contactName'],
+        #"linkedin": jparams['cjsn_cont'],
+        "contactType": jparams['cjsn_contactType'],
+        "website": jparams['cjsn_website']
         },
-    "metadataStandard": jparams['metaStan'],
-    "metadataStandardVersion": jparams['metaStanV']
+    #"metadataStandard": jparams['metaStan'],
+    #"metadataStandardVersion": jparams['metaStanV']
     }
       ##-- do terrain
     add_terrain_v(pts, cm)
@@ -757,7 +756,7 @@ def write275obj(jparams):
     """
     
     cm1 = cityjson.load(jparams['cjsn_out'])
-    with open(jparams['obj2_75D'], 'w+') as f:
+    with open(jparams['obj-2_75D'], 'w+') as f:
         re = cm1.export2obj()
         f.write(re.getvalue())
     
