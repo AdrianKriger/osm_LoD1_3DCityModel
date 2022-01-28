@@ -32,8 +32,6 @@ With the village/campus strategy an aoi is defined `Large area -> focus area` or
 
 #### district
 
-### raster DEM
-
 ### crs
 
 ```json
@@ -41,3 +39,13 @@ With the village/campus strategy an aoi is defined `Large area -> focus area` or
 ``` 
 defines the 
 Coordinate Reference System (crs) of the City Model. The workflow will project the osm vector and raster DEM into a local coordinate system. [EPSG code](https://en.wikipedia.org/wiki/EPSG_Geodetic_Parameter_Dataset)'s are supported.
+
+### raster DEM
+```json
+    "in_raster": "./raster/LO19_050M_3318DC.tif",
+    "nodata": 3.402823466385289e+38,
+    "projClip_raster": "./raster/3318DC_clip_utm34s.tif",
+```
+One raster DEM will be enough for the village/campus strategy. Larger areas might require more. The districts ```json "in_raster"``` parameter will accept one or many (e.g.: ```json "in_raster": "./raster/LO19_050M_3418BA.tif ./raster/LO19_050M_3318DC.tif",```). NoData values are recommend and the workflow will mosaic, clip and project the DEM to the defined crs.
+
+
