@@ -1,40 +1,32 @@
 {
-    "Larea": "Western Cape",
-    "Farea": "Mamre",
+    "LargeArea": "Western Cape",
+    "FocusArea": "Mamre",
     "osm_type": "relation",
     
-    "crs": "EPSG:32733",
+    "crs": "EPSG:32734",
 
-    "ori-gjson_out": "./data/fp_ru.geojson",
-    "gjson-proj_out": "./data/fp_proj_ru.geojson",
-    "gjson-z_out": "./data/fp_proj_z_ru.geojson",
+    "ori-gjson_out": "./data/fp_rural.geojson",
+    "gjson-proj_out": "./data/fp_proj_rural.geojson",
+    "gjson-z_out": "./data/fp_proj_z_rural.geojson",
     
-    "aoi": "./data/aoi_ru.geojson",
-    "aoi_prj": "./data/aoi_proj_ru.geojson",
+    "aoi": "./data/aoi_rural.geojson",
+    "aoi_prj": "./data/aoi_proj_rural.geojson",
     
     "in_raster": "./raster/LO19_050M_3318CB.tif",
     "nodata": 3.402823466385289e+38,
-    "projClip_raster": "./raster/3318CB_clip_utm33s.tif",
+    "projClip_raster": "./raster/3318CB_clip_utm34s.tif",
 
     "xyz": "./raster/rasElev_ru.xyz",
         
     "cjsn_out": "./result/citjsn_rural3d.json",
-    "cjsn_Title": "LoD1 City model of rural village",
-    "cjsn_RefDate": "2021-07-31",
-    "cjsn_source": "OpenStreetMap contributions and National Geo-spatial Information raster DEM",
-    "cjsn_Locatn": "Cape Town, South Africa",
-    "cjsn_refSystm": "urn:ogc:def:crs:EPSG::32733",
-    "cjsn_contName": "arkriger", 
-    "cjsn_cont": "www.linkedin.com/in/adrian-kriger", 
-    "cjsn_contType": "private",
-    "github": "https://github.com/AdrianKriger/osm_LoD1_3Dbuildings",
-    "metaStan": "ISO 19115, Geographic Information and ISO 19160, Addressing - Metadata",
-    "metaStanV": "ISO 19115:2014(E) and ISO 19160-1:2015(en)",
     
-    "cjsn_ClOut": "./result/citjsnV1_rural3d.json",
-    "obj2_75D": "./result/obj275D_rural3d.obj",
+    "cjsn_title": "LoD1 City model of rural village",
+    "cjsn_referenceDate": "2021-07-31",
+    "cjsn_referenceSystem": "https://www.opengis.net/def/crs/EPSG/0/32734",
+    "cjsn_contactName": "arkriger", 
+    "cjsn_website": "www.linkedin.com/in/adrian-kriger", 
+    "cjsn_contactType": "private",
     
-    "inter": "False",
-    "int-gjson_out": "./data/fp_h_ru.geojson",
-    "intact": "./result/interactive_ru.html"
+    "cjsn_CleanOut": "./result/citjsnV1_rural3d.json",
+    "obj-2_75D": "./result/obj275D_rural3d.obj"
 }
