@@ -46,7 +46,9 @@ Coordinate Reference System (crs) of the City Model. The workflow will project t
     "nodata": 3.402823466385289e+38,
     "projClip_raster": "./raster/3318DC_clip_utm34s.tif",
 ```
-One raster DEM will be enough for the [village/campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus) strategy. Larger areas might require more.  
+One raster DEM will be enough for the [village/campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus) strategy. Larger areas might require more.
+&nbsp;
+
 The [districts](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts) ```"in_raster"``` parameter will accept one or many (e.g.: ```"in_raster": "./raster/LO19_050M_3418BA.tif ./raster/LO19_050M_3318DC.tif",```). NoData values are recommend and the workflow will mosaic where necessary, clip and project an input raster DEM to the defined crs.
 
 
