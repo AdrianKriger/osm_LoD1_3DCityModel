@@ -51,7 +51,7 @@ An extensive range of [osm.poly](https://wiki.openstreetmap.org/wiki/Osmosis/Pol
 
 `"update"` must be `"True"` the first time [`osm_LoD1_3DCityModel`](https://github.com/AdrianKriger/osm_LoD1_3DCityModel) is executed. Therafter `"False"` will use that file. [GeoFabrik](http://download.geofabrik.de/) creates new [osm.pbf](https://wiki.openstreetmap.org/wiki/PBF_Format) extracts daily.  
 
-`"Focus_area"` must exist in osm as a defined [`boundary=administrative`](https://wiki.openstreetmap.org/wiki/Tag:boundary%3Dadministrative). It can be one or comma seperated (`"Focus_area": "Cape Town Ward 18,Cape Town Ward 87,Cape Town Ward 86",`).
+`"Focus_area"` must exist in osm as a defined [`boundary=administrative`](https://wiki.openstreetmap.org/wiki/Tag:boundary%3Dadministrative). It can be one or comma seperated (e.g.: `"Focus_area": "Cape Town Ward 18,Cape Town Ward 87,Cape Town Ward 86",`).
 
 A number of `param.json` are available as [Examples](https://adriankriger.github.io/osm_LoD1_3DCityModel/docs/docs/examples).
 
