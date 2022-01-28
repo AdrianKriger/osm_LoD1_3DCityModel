@@ -53,7 +53,7 @@ An extensive range of [osm.poly](https://wiki.openstreetmap.org/wiki/Osmosis/Pol
 
 `"Focus_area"` must exist in osm as a defined [`boundary=administrative`](https://wiki.openstreetmap.org/wiki/Tag:boundary%3Dadministrative). It can be one or comma seperated (`"Focus_area": "Cape Town Ward 18,Cape Town Ward 87,Cape Town Ward 86",`).
 
-A number of param.json are available as [Examples](https://adriankriger.github.io/osm_LoD1_3DCityModel/docs/docs/examples).
+A number of `param.json` are available as [Examples](https://adriankriger.github.io/osm_LoD1_3DCityModel/docs/docs/examples).
 
 ### crs
 
