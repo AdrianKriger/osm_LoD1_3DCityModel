@@ -1,0 +1,32 @@
+{
+    "LargeArea": "Western Cape",
+    "FocusArea": "University Estate",
+    "osm_type": "relation",
+    
+    "crs": "EPSG:32734",
+
+    "ori-gjson_out": "./data/fp-cput.geojson",
+    "gjson-proj_out": "./data/fp_proj-cput.geojson",
+    "gjson-z_out": "./data/fp_proj_z-cput.geojson",
+    
+    "aoi": "./data/aoi.geojson",
+    "aoi_prj": "./data/aoi_proj.geojson",
+    
+    "in_raster": "./raster/LO19_050M_3318CD.tif",
+    "nodata": 3.402823466385289e+38,
+    "projClip_raster": "./raster/3318CD_clip_utm34s.tif",
+
+    "xyz": "./raster/rasElev.xyz",
+    
+    "cjsn_out": "./result/citjsn_uEstate3d.json",
+    
+    "cjsn_title": "LoD1 City model of Cape Peninsula University of Technology (Bellville Campus)",
+    "cjsn_referenceDate": "2021-07-31",
+    "cjsn_referenceSystem": "https://www.opengis.net/def/crs/EPSG/0/32734",
+    "cjsn_contactName": "arkriger", 
+    "cjsn_website": "www.linkedin.com/in/adrian-kriger", 
+    "cjsn_contactType": "private",
+    
+    "cjsn_CleanOut": "./result/citjsnClean_uEstate3d.json",
+    "obj-2_75D": "./result/obj275D_uEstate3d.obj"
+}
