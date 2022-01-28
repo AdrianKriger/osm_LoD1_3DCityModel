@@ -24,8 +24,8 @@ Due to the nature of the processing strategies aoi's are defined differently
 
 #### village/campus
 ```json
-    "Larea": "Western Cape",
-    "Farea": "Mamre",
+    "LargeArea": "Western Cape",
+    "FocusArea": "Mamre",
     "osm_type": "relation",
  ```
 With the village/campus strategy an aoi is defined `Large area -> focus area` or `State (Province) -> village / campus`. The area must exist in osm as either a [way or relation](https://wiki.openstreetmap.org/wiki/Elements). A number of variations are available as [Examples](https://adriankriger.github.io/osm_LoD1_3DCityModel/docs/docs/examples)
