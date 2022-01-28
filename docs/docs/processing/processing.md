@@ -9,7 +9,7 @@ permalink: /docs/docs/processing
 #  `osm_LoD1_3DCityModel`
 {: .no_toc }
 
-The following section aims to explain what `osm_LoD1_3DCityModel` creates, how it works and the necessary ingredients. 
+The following section aims to explain what `osm_LoD1_3DCityModel` produces, the creation process, the necessary ingredients and the usefulness of the product. 
 
 <!-- 
 
