@@ -18,7 +18,7 @@ nav_order: 3
 
 ## Ingredients
  
-A raster Digital Elevation/Terrain Model (DEM/DTM) is necessary.
+A raster Digital Elevation Model (DEM) is necessary. For the purposes of [`osm_LoD1_3DCityModel`](https://github.com/AdrianKriger/osm_LoD1_3DCityModel) a DEM is a bare-earth raster grid; the surface of the earth free of natural and man-made features.
 
 Hereafter; depending of the processing strategy the needs are slightly different. 
 
