@@ -57,3 +57,8 @@ Solid objects are walls and rooves stored as rectangular surfaces. In the [CityJ
   <img src="{{site.baseurl | prepend: site.url}}/img/objects_horizontal_view_solid_tuDelft.png" alt="alt text" width="650" height="350">
   <figcaption>Fig.3 - solid Building CityObjects's connected to the terrain. <span style="color:blue;opacity:0.8;"><em>--image TUDelft</em></span>.</figcaption>
 </center></figure>
+
+### Interactive Visualisation
+
+A dynamic visualisation is possible through a Jupyter notebook. [Interactive Visualization](https://adriankriger.github.io/osm_LoD1_3DCityModel/docs/interactive/) discusses this further.
+
