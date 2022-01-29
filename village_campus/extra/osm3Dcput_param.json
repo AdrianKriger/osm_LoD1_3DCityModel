@@ -20,12 +20,17 @@
     
     "cjsn_out": "./result/citjsn_cput3d.json",
     
-    "cjsn_title": "LoD1 City model of Cape Peninsula University of Technology (Bellville Campus)",
-    "cjsn_referenceDate": "2021-07-31",
+    "cjsn_title": "LoD1 City Model of Cape Peninsula University of Technology (Bellville Campus)",
+    "cjsn_referenceDate": "2022-01-31",
     "cjsn_referenceSystem": "https://www.opengis.net/def/crs/EPSG/0/32734",
     "cjsn_contactName": "arkriger", 
+    "cjsn_emailAddress": "adrian8kriger@gmail.com", 
     "cjsn_website": "www.linkedin.com/in/adrian-kriger", 
     "cjsn_contactType": "private",
+	"cjsn_+meta-description": "Chief Directorate: National Geo-spatial Information",
+	"cjsn_+meta-sourceSpatialResolution": "25 meter raster DEM",
+    "cjsn_+meta-sourceReferenceSystem": "urn:ogc:def:crs:EPSG:20481",
+    "cjsn_+meta-sourceCitation":"http://www.ngi.gov.za/",
     
     "cjsn_CleanOut": "./result/citjsnClean_cput3d.json",
     "obj-2_75D": "./result/obj275D_cput3d.obj"
