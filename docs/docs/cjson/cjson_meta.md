@@ -55,12 +55,14 @@ Acknowledging the source of the raster DEM is possible.
  
  The osm attribution is hardcoded (fixed) as 
  ```python
-    "source": [
-            {
-            "description": "OpenStreetMap contributors",
-            "sourceReferenceSystem": "urn:ogc:def:crs:EPSG:4326",
-            "sourceCitation": "https://www.openstreetmap.org",
-             }],
+    "source": 
+        [
+         {
+          "description": "OpenStreetMap contributors",
+          "sourceReferenceSystem": "urn:ogc:def:crs:EPSG:4326",
+          "sourceCitation": "https://www.openstreetmap.org",
+         }
+        ],
  ```
  
  
