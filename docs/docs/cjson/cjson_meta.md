@@ -22,17 +22,17 @@ It is recommended to define metadata for the 3D City Model in the respective `pa
 ## Title
 
 ```json
-    "cjsn_title": "LoD1 City model of rural village, Cape Town",
+    "cjsn_title": "LoD1 City Model of rural village, Mamre, Cape Town",
 ```
-##  referenceDate
+## referenceDate
 ```json    
     "cjsn_referenceDate": "2021-07-31",
 ```
-##  referenceSystem
+## referenceSystem
 ```json
     "cjsn_referenceSystem": "https://www.opengis.net/def/crs/EPSG/0/32734",
 ```
-##  pointOfContact
+## pointOfContact
 
 `"pointOfContact"` is defined through 
 
@@ -42,3 +42,25 @@ It is recommended to define metadata for the 3D City Model in the respective `pa
     "cjsn_website": "www.linkedin.com/in/adrian-kriger", 
     "cjsn_contactType": "private",
 ```
+## +metadata-extended
+
+Acknowledging the source of the raster DEM is possible. 
+```json
+	"cjsn_+meta-description": "Chief Directorate: National Geo-spatial Information",
+	"cjsn_+meta-sourceSpatialResolution": "25 meter raster DEM",
+    "cjsn_+meta-sourceReferenceSystem": "urn:ogc:def:crs:EPSG:20481",
+    "cjsn_+meta-sourceCitation":"http://www.ngi.gov.za/",
+ ```
+ 
+ The osm attribution is hardcoded (fixed) as 
+ ```python
+    "source": [
+            {
+            "description": "OpenStreetMap contributors",
+            "sourceReferenceSystem": "urn:ogc:def:crs:EPSG:4326",
+            "sourceCitation": "https://www.openstreetmap.org",
+             }],
+ ```
+ 
+ 
+
