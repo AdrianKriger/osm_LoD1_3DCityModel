@@ -22,7 +22,8 @@ Starting with a clean slate [osm3Ddistricts_param.json](https://github.com/Adria
 
 As a direct comparison; [osm3DdistrictsCity_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/extra/osm3DdistrictsCity_param.json) will do the same via a city-level.osm.pbf, with no `trim` necessary, for the same census ward / tract: `runtime: 0:24:17.938542`
 
-## Many Census Wards
-
-
 ## Many Census Wards with many raster DEM
+
+[osm3DdistrictsKaya_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/extra/osm3DdistrictsKaya_param.json) combines 12 adjacent census wards / tracts of [Khayelitsha](https://en.wikipedia.org/wiki/Khayelitsha) along with the mosaic, clip and reprojection of 2 raster DEM.
+
+The `param.json` reuses the `extract.osm.pbf` created in the previous, **One Census Ward**, example (`"CapeTown-extract.osm.pbf"`).
