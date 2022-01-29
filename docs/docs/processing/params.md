@@ -32,16 +32,16 @@ With the village/campus strategy an aoi is defined `Large area -> focus area` or
 
 #### district
 ```json
-    "osm-pbf": "CapeTown",
-    "update": "False",
+    "osm-pbf": "South Africa",
+    "update": "True",
     "pbf_directory": "data",
     
-    "trim": "no",
+    "trim": "yes",
     "osmconvert": "osmconvert64",
-    "osm_poly": "tshwane_gauteng.poly",
-    "trim_pbf": "Tshwane_gauteng_extract.pbf",
+    "osm_poly": "cape-town_western-cape.poly",
+    "trim_pbf": "CapeTown_wcape_extract.pbf",
     
-    "Focus_area": "Cape Town Ward 57",
+    "FocusArea": "Cape Town Ward 57",
 ```
 In an attempt to make the solution available to the broadest possible audience we start with national [.osm.pbf](https://wiki.openstreetmap.org/wiki/PBF_Format) and trim with a [osm.poly](https://wiki.openstreetmap.org/wiki/Osmosis/Polygon_Filter_File_Format) via [osmconvert](https://wiki.openstreetmap.org/wiki/Osmconvert). 
 
