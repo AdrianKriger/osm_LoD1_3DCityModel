@@ -26,4 +26,4 @@ As a direct comparison; [osm3DdistrictsCity_param.json](https://github.com/Adria
 
 [osm3DdistrictsKaya_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/extra/osm3DdistrictsKaya_param.json) combines 12 adjacent census wards / tracts of [Khayelitsha](https://en.wikipedia.org/wiki/Khayelitsha) along with the mosaic, clip and reprojection of 2 raster DEM.
 
-The `param.json` reuses the `extract.osm.pbf` created in the previous, **One Census Ward**, example (`"CapeTown-extract.osm.pbf"`).
+The `param.json` reuses the `extract.osm.pbf` created in the previous, **One Census Ward**, example (`"CapeTown-extract.osm.pbf"`). `runtime` is at `0:08:00.895749` due to the low number of [building:level](https://wiki.openstreetmap.org/wiki/Key:building:levels) tags (57 buildings).
