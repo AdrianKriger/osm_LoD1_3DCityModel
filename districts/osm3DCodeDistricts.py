@@ -14,7 +14,7 @@
 
 #additional thanks:
 #    - OpenStreetMap help: https://help.openstreetmap.org/users/19716/arkriger
-#    - cityjson community: https://github.com/cityjson/specs/discussions/79
+#    - cityjson community: https://github.com/cityjson
 #    - pyrosm            : https://github.com/HTenkanen/pyrosm/issues/167
 #########################
 import os
@@ -87,7 +87,7 @@ def getOsmPBF(jparams, path):
         fp = out_path
         
     osm = OSM(fp)
-    a_string = jparams['Focus_area']
+    a_string = jparams['FocusArea']
     shapes = a_string.split(",") 
     
     if len(shapes) == 1:
@@ -650,7 +650,7 @@ def output_cityjson(extent, minz, maxz, T, pts, jparams):
     #clean cityjson
     cm = cityjson.load(jparams['cjsn_out'])
     cm.remove_duplicate_vertices()
-    cityjson.save(cm, jparams['cjsn_ClOut'])
+    cityjson.save(cm, jparams['cjsn_CleanOut'])
 
 def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams): 
     #-- create the JSON data structure for the City Model
@@ -661,8 +661,8 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
     cm["vertices"] = []
     #-- Metadata is added manually
     cm["metadata"] = {
-    "datasetTitle": jparams['cjsn_datasetTitle'],
-    "datasetReferenceDate": jparams['datasetReferenceDate'],
+    "datasetTitle": jparams['cjsn_title'],
+    "datasetReferenceDate": jparams['cjsn_referenceDate'],
     #"dataSource": jparams['cjsn_source'],
     #"geographicLocation": jparams['cjsn_Locatn'],
     "referenceSystem": jparams['cjsn_referenceSystem'],
@@ -676,24 +676,43 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
       ],
     "datasetPointOfContact": {
         "contactName": jparams['cjsn_contactName'],
-        "website": jparams['cjsn_website'],
+        "emailAddress": jparams['cjsn_emailAddress'],
+        #"website": jparams['cjsn_website'],
         "contactType": jparams['cjsn_contactType'],
-        #"website": jparams['github']
+        "website": jparams['cjsn_website']
         },
     "+metadata-extended": {
         "lineage":
-            [{"featureIDs": ["terrain_id-1"],
+            [{"featureIDs": ["TINRelief"],
              "source": [
                  {
-                     "description": "Chief Directorate: National Geo-spatial Information",
-                     "sourceSpatialResolution": "25 metre raster DEM",
-                     "sourceReferenceSystem": "urn:ogc:def:crs:EPSG:20481"
+                     "description": jparams['cjsn_+meta-description'],
+                     "sourceSpatialResolution": jparams['cjsn_+meta-sourceSpatialResolution'],
+                     "sourceReferenceSystem": jparams['cjsn_+meta-sourceReferenceSystem'],
+                     "sourceCitation":jparams['cjsn_+meta-sourceCitation'],
                      }],
              "processStep": {
-                 "description" : "Transform raster terrain with gdal.Warp",
+                 "description" : "Processing of raster DEM using osm_LoD1_3DCityModel workflow",
                  "processor": {
                      "contactName": jparams['cjsn_contactName'],
                      "contactType": jparams['cjsn_contactType'],
+                     "website": "https://github.com/AdrianKriger/osm_LoD1_3DCityModel"
+                     }
+                 }
+            },
+            {"featureIDs": ["Building"],
+             "source": [
+                 {
+                     "description": "OpenStreetMap contributors",
+                     "sourceReferenceSystem": "urn:ogc:def:crs:EPSG:4326",
+                     "sourceCitation": "https://www.openstreetmap.org",
+                 }],
+             "processStep": {
+                 "description" : "Processing of building vector contributions using osm_LoD1_3DCityModel workflow",
+                 "processor": {
+                     "contactName": jparams['cjsn_contactName'],
+                     "contactType": jparams['cjsn_contactType'],
+                     "website": "https://github.com/AdrianKriger/osm_LoD1_3DCityModel"
                      }
                  }
             }]
@@ -830,7 +849,7 @@ def write275obj(jparams):
     """
     
     cm1 = cityjson.load(jparams['cjsn_out'])
-    with open(jparams['obj2_75D'], 'w+') as f:
+    with open(jparams['obj-2_75D'], 'w+') as f:
         re = cm1.export2obj()
         f.write(re.getvalue())
     
