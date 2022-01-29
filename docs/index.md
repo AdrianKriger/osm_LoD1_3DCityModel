@@ -9,7 +9,7 @@ permalink: /
 # Level-of-Detail 1 (LoD1) 3D City Models
 {: .fs-9 }
 
-[`osm_LoD1_3DCityModel`](https://github.com/AdrianKriger/osm_LoD1_3DCityModel) is a [python-based](https://en.wikipedia.org/wiki/Python_(programming_language)) workflow for the creation of LoD1 3D City Models (buildings and terrain) from OpenStreetMap (osm) contributions with elevation from a raster Digital Elevation Model (DEM). The workflow aims for simplicity.  
+[`osm_LoD1_3DCityModel`](https://github.com/AdrianKriger/osm_LoD1_3DCityModel) is a [python-based](https://en.wikipedia.org/wiki/Python_(programming_language)) workflow for the creation of LoD1 3D City Models (buildings and terrain) from [OpenStreetMap (osm) contributions](https://www.openstreetmap.org/about) with elevation from a raster Digital Elevation Model (DEM). The workflow aims for simplicity.  
 
 It takes 2D osm vector contributions (building outlines) with [`building:level`](https://wiki.openstreetmap.org/wiki/Key:building:levels) tagged and extrudes the polygon from the DEM (terrain).
 
