@@ -45,9 +45,10 @@ It is recommended to define metadata for the 3D City Model in the respective `pa
 ## +metadata-extended
 
 Acknowledging the source of the raster DEM is possible. 
+
 ```json
-	"cjsn_+meta-description": "Chief Directorate: National Geo-spatial Information",
-	"cjsn_+meta-sourceSpatialResolution": "25 meter raster DEM",
+    "cjsn_+meta-description": "Chief Directorate: National Geo-spatial Information",
+    "cjsn_+meta-sourceSpatialResolution": "25 meter raster DEM",
     "cjsn_+meta-sourceReferenceSystem": "urn:ogc:def:crs:EPSG:20481",
     "cjsn_+meta-sourceCitation":"http://www.ngi.gov.za/",
  ```
