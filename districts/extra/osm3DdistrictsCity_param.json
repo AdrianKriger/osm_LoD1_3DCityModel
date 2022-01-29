@@ -1,0 +1,41 @@
+{
+    "osm-pbf": "CapeTown",
+    "update": "True",
+    "pbf_directory": "data",
+    
+    "trim": "no",
+    "osmconvert": "osmconvert64",
+    "osm_poly": "cape-town_western-cape.poly",
+    "trim_pbf": "CapeTown_wcape_extract.pbf",
+    
+    "FocusArea": "Cape Town Ward 57",
+    
+    "crs": "EPSG:32734",
+    
+    "ori-gjson_out": "./data/fp.geojson",
+    "gjson-proj_out": "./data/fp_proj.geojson",
+    "gjson-z_out": "./data/fp_proj_z.geojson",
+    
+    "in_raster": "./raster/LO19_050M_3318CD.tif",
+    "nodata": 3.402823466385289e+38,
+    "projClip_raster": "./raster/3318CD_clip_utm34s.tif",
+    
+    "xyz": "./raster/rasElev.xyz",
+    
+    "cjsn_out": "./result/citjsn_57pbf.json",
+    
+    "cjsn_title": "LoD1 City Model of Cape Town census ward 57, South Africa",
+    "cjsn_referenceDate": "2022-01-01",
+    "cjsn_referenceSystem": "https://www.opengis.net/def/crs/EPSG/0/32734",
+    "cjsn_contactName": "arkriger", 
+    "cjsn_emailAddress": "adrian8kriger@gmail.com", 
+    "cjsn_website": "www.linkedin.com/in/adrian-kriger", 
+    "cjsn_contactType": "private",
+    "cjsn_+meta-description": "Chief Directorate: National Geo-spatial Information",
+    "cjsn_+meta-sourceSpatialResolution": "25 meter raster DEM",
+    "cjsn_+meta-sourceReferenceSystem": "urn:ogc:def:crs:EPSG:20481",
+    "cjsn_+meta-sourceCitation":"http://www.ngi.gov.za/",
+     
+    "cjsn_CleanOut": "./result/citjsnClean_57pbf.json",
+    "obj-2_75D": "./result/obj275D_57pbf.obj"
+}
