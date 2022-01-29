@@ -1,14 +1,14 @@
 {
-    "osm-pbf": "CapeTown",
+    "osm-pbf": "CapeTown-extract.osm.pbf",
     "update": "False",
     "pbf_directory": "data",
     
     "trim": "no",
     "osmconvert": "osmconvert64",
-    "osm_poly": "tshwane_gauteng.poly",
-    "trim_pbf": "Tshwane_gauteng_extract.pbf",
+    "osm_poly": "cape-town_western-cape.poly",
+    "trim_pbf": "CapeTown-extract.osm.pbf",
     
-    "Focus_area": "Cape Town Ward 18,Cape Town Ward 87,Cape Town Ward 89,Cape Town Ward 90,Cape Town Ward 91,Cape Town Ward 92,Cape Town Ward 93,Cape Town Ward 94,Cape Town Ward 98,Cape Town Ward 97,Cape Town Ward 95,Cape Town Ward 96", 
+    "FocusArea": "Cape Town Ward 18,Cape Town Ward 87,Cape Town Ward 89,Cape Town Ward 90,Cape Town Ward 91,Cape Town Ward 92,Cape Town Ward 93,Cape Town Ward 94,Cape Town Ward 98,Cape Town Ward 97,Cape Town Ward 95,Cape Town Ward 96", 
     
     "crs": "EPSG:32734",
 
@@ -24,16 +24,20 @@
     
     "cjsn_out": "./result/citjsn_mergepbf.json",
     
-    "cjsn_datasetTitle": "LoD1 City Model from osm.pbf with terrain from NGI",
-    "datasetReferenceDate": "2022-01-01",
+    "cjsn_title": "LoD1 City Model of  Khayelitsha, Cape Town",
+    "cjsn_referenceDate": "2022-01-01",
     "cjsn_referenceSystem": "https://www.opengis.net/def/crs/EPSG/0/32734",
     "cjsn_contactName": "arkriger", 
+    "cjsn_emailAddress": "adrian8kriger@gmail.com", 
     "cjsn_website": "www.linkedin.com/in/adrian-kriger", 
     "cjsn_contactType": "private",
-    "cjsn_+meta_lin_featureIDs": "terrain_id-1",
+    "cjsn_+meta-description": "Chief Directorate: National Geo-spatial Information",
+    "cjsn_+meta-sourceSpatialResolution": "25 meter raster DEM",
+    "cjsn_+meta-sourceReferenceSystem": "urn:ogc:def:crs:EPSG:20481",
+    "cjsn_+meta-sourceCitation":"http://www.ngi.gov.za/",
 
     
-    "cjsn_ClOut": "./result/citjsnCl_Kaya.json",
-    "obj2_75D": "./result/obj275D_Kaya.obj"
+    "cjsn_CleanOut": "./result/citjsnCl_Kaya.json",
+    "obj-2_75D": "./result/obj275D_Kaya.obj"
 
 }
