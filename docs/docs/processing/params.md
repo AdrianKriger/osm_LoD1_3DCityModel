@@ -45,13 +45,15 @@ With the village/campus strategy an aoi is defined `Large area -> focus area` or
 ```
 In an attempt to make the solution available to the broadest possible audience we start with national [.osm.pbf](https://wiki.openstreetmap.org/wiki/PBF_Format) and trim with a [osm.poly](https://wiki.openstreetmap.org/wiki/Osmosis/Polygon_Filter_File_Format) via [osmconvert](https://wiki.openstreetmap.org/wiki/Osmconvert). 
 
-[Pyrosm](https://pyrosm.readthedocs.io/en/latest/) harvests [osm.pbf](https://wiki.openstreetmap.org/wiki/PBF_Format) from [GeoFabrik](http://download.geofabrik.de/) and [BBBBike](https://download.bbbike.org/osm/bbbike/). [GeoFabrik](http://download.geofabrik.de/) creates fresh [osm.pbf](https://wiki.openstreetmap.org/wiki/PBF_Format) extracts daily. City level osm.pbf extracts are available for a number of regions and are listed on the respective [GeoFabrik](http://download.geofabrik.de/) and [BBBBike](https://download.bbbike.org/osm/bbbike/) websites. If your Area-of-Interest (aoi) does not need to a less substantial [osm.pbf](https://wiki.openstreetmap.org/wiki/PBF_Format); set `"trim": 'no'` and leave the osm.pbf as is. `"trim": 'yes'` otherwise. 
+[Pyrosm](https://pyrosm.readthedocs.io/en/latest/) harvests [osm.pbf](https://wiki.openstreetmap.org/wiki/PBF_Format) from [GeoFabrik](http://download.geofabrik.de/) and [BBBBike](https://download.bbbike.org/osm/bbbike/). City level osm.pbf extracts are available for a number of regions and are listed on the respective [GeoFabrik](http://download.geofabrik.de/) and [BBBBike](https://download.bbbike.org/osm/bbbike/) websites. If your Area-of-Interest (aoi) does not need to a less substantial [osm.pbf](https://wiki.openstreetmap.org/wiki/PBF_Format); set `"trim": 'no'` and leave the osm.pbf as is. `"trim": 'yes'` otherwise. 
 
 An extensive range of [osm.poly](https://wiki.openstreetmap.org/wiki/Osmosis/Polygon_Filter_File_Format) files can be accessed at James Chevalier's [GitHub](https://github.com/JamesChevalier/cities). 
 
 `"FocusArea"` must exist in osm as a defined [`boundary=administrative`](https://wiki.openstreetmap.org/wiki/Tag:boundary%3Dadministrative). It can be one or comma seperated (e.g.: `"FocusArea": "Cape Town Ward 18,Cape Town Ward 87,Cape Town Ward 86",`).
 
-`"update"` must be `"True"` the first time [`osm_LoD1_3DCityModel`](https://github.com/AdrianKriger/osm_LoD1_3DCityModel) is executed. Therafter `"False"` will use that file which must be fully stated (e.g.: `"osm-pbf": "South Africa.osm.pbf"`). A number of `param.json` are available as [Examples](https://adriankriger.github.io/osm_LoD1_3DCityModel/docs/docs/examples).
+`"update"` must be `"True"` the first time [`osm_LoD1_3DCityModel`](https://github.com/AdrianKriger/osm_LoD1_3DCityModel) is executed. `"False"` will reuse an existing `osm.pbf`.
+
+A number of `param.json` are available as [Examples](https://adriankriger.github.io/osm_LoD1_3DCityModel/docs/docs/examples) to illustrate its usage.
 
 ### crs
 
