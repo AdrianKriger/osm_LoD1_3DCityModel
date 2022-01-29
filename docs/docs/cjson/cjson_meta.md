@@ -29,6 +29,8 @@ It is recommended to define metadata for the 3D City Model in the respective `pa
     "cjsn_referenceDate": "2021-07-31",
 ```
 ## referenceSystem
+
+Coordinate reference system (crs) definition through [PURLs (Persistent Uniform Resource Locators)](https://www.opengis.net/docs/index.html).
 ```json
     "cjsn_referenceSystem": "https://www.opengis.net/def/crs/EPSG/0/32734",
 ```
@@ -53,16 +55,20 @@ Acknowledging the source of the raster DEM is possible.
     "cjsn_+meta-sourceCitation":"http://www.ngi.gov.za/",
  ```
  
- The osm attribution is hardcoded (fixed) as 
+ The osm attribution and `osm_LoD1_3DCityModel` processing is hardcoded (fixed) as: 
  ```python
-    "source": 
-        [
+    "source": [
          {
-          "description": "OpenStreetMap contributors",
-          "sourceReferenceSystem": "urn:ogc:def:crs:EPSG:4326",
-          "sourceCitation": "https://www.openstreetmap.org",
-         }
-        ],
+           "description": "OpenStreetMap contributors",
+           "sourceReferenceSystem": "urn:ogc:def:crs:EPSG:4326",
+           "sourceCitation": "https://www.openstreetmap.org",
+         }],
+    "processStep": {
+            "description" : "Processing of building vector contributions <raster DEM> using osm_LoD1_3DCityModel workflow",
+             "processor": {
+                   "contactName": param['cjsn_contactName'],
+                   "contactType": param['cjsn_contactType'],
+                   "website": "https://github.com/AdrianKriger/osm_LoD1_3DCityModel"
  ```
  
  
