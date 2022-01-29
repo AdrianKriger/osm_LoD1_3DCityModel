@@ -70,22 +70,26 @@ def getOsmPBF(jparams, path):
         
     #if jparams['own_pbf'] == "no":
         
-    if jparams['update'] == "False":
-        fp = get_data(jparams['osm-pbf'], update=False, directory=jparams['pbf_directory'])    
+    if jparams['trim'] == "no" and jparams['update'] == "False":
+        fp = './' + jparams['pbf_directory'] + '/' + jparams['osm-pbf']
         
-    if jparams['update'] == "True":
-        fp = get_data(jparams['osm-pbf'], update=True, directory=jparams['pbf_directory'])
-        
-    if jparams['trim'] == "yes":
-        osm_convert_path = os.path.join(path, jparams['osmconvert'])
-        in_path = fp
-        poly_path = os.path.join(path, Path(jparams['pbf_directory'], jparams['osm_poly']))
-        out_path = os.path.join(path, Path(jparams['pbf_directory'], jparams['trim_pbf']))
-        #os.system('{} {} -B={} -o={}'.format(osm_convert_path, in_path, poly_path, out_path))
-        subprocess.call('{} {} -B={} -o={}'.format(osm_convert_path, in_path, poly_path, out_path))
-
-        fp = out_path
-        
+    else: 
+        if jparams['update'] == "False":
+            fp = get_data(jparams['osm-pbf'], update=False, directory=jparams['pbf_directory'])    
+            
+        if jparams['update'] == "True":
+            fp = get_data(jparams['osm-pbf'], update=True, directory=jparams['pbf_directory'])
+            
+        if jparams['trim'] == "yes":
+            osm_convert_path = os.path.join(path, jparams['osmconvert'])
+            in_path = fp
+            poly_path = os.path.join(path, Path(jparams['pbf_directory'], jparams['osm_poly']))
+            out_path = os.path.join(path, Path(jparams['pbf_directory'], jparams['trim_pbf']))
+            #os.system('{} {} -B={} -o={}'.format(osm_convert_path, in_path, poly_path, out_path))
+            subprocess.call('{} {} -B={} -o={}'.format(osm_convert_path, in_path, poly_path, out_path))
+    
+            fp = out_path  
+    
     osm = OSM(fp)
     a_string = jparams['FocusArea']
     shapes = a_string.split(",") 
@@ -112,7 +116,7 @@ def getOsmPBF(jparams, path):
     osm = OSM(fp, bounding_box=bbox_geom)
     # Retrieve buildings
     focus = osm.get_buildings(extra_attributes=["addr:suburb"])
-     #-- save
+      #-- save
     focus.to_file(jparams['ori-gjson_out'], driver='GeoJSON')
     
     buffer = gpd.GeoDataFrame(aoi_proj, geometry = aoi_proj.geometry, crs=jparams['crs'])
