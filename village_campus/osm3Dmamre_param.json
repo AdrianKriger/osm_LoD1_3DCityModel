@@ -20,12 +20,17 @@
         
     "cjsn_out": "./result/citjsn_rural3d.json",
     
-    "cjsn_title": "LoD1 City model of rural village",
+    "cjsn_title": "LoD1 City Model of rural village, Mamre, Cape Town",
     "cjsn_referenceDate": "2021-07-31",
     "cjsn_referenceSystem": "https://www.opengis.net/def/crs/EPSG/0/32734",
     "cjsn_contactName": "arkriger", 
+	"cjsn_emailAddress": "adrian8kriger@gmail.com", 
     "cjsn_website": "www.linkedin.com/in/adrian-kriger", 
     "cjsn_contactType": "private",
+	"cjsn_+meta-description": "Chief Directorate: National Geo-spatial Information",
+	"cjsn_+meta-sourceSpatialResolution": "25 meter raster DEM",
+    "cjsn_+meta-sourceReferenceSystem": "urn:ogc:def:crs:EPSG:20481",
+    "cjsn_+meta-sourceCitation":"http://www.ngi.gov.za/",
     
     "cjsn_CleanOut": "./result/citjsnV1_rural3d.json",
     "obj-2_75D": "./result/obj275D_rural3d.obj"

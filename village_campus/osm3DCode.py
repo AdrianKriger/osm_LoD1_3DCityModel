@@ -14,7 +14,7 @@
 
 #additional thanks:
 #    - OpenStreetMap help: https://help.openstreetmap.org/users/19716/arkriger
-#    - cityjson community: https://github.com/cityjson/specs/discussions/79
+#    - cityjson community: https://github.com/cityjson
 #########################
 import os
 from itertools import chain
@@ -623,10 +623,46 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
       ],
     "datasetPointOfContact": {
         "contactName": jparams['cjsn_contactName'],
-        #"linkedin": jparams['cjsn_cont'],
+        "emailAddress": jparams['cjsn_emailAddress'],
         "contactType": jparams['cjsn_contactType'],
         "website": jparams['cjsn_website']
         },
+    "+metadata-extended": {
+        "lineage":
+            [{"featureIDs": ["TINRelief"],
+             "source": [
+                 {
+                     "description": jparams['cjsn_+meta-description'],
+                     "sourceSpatialResolution": jparams['cjsn_+meta-sourceSpatialResolution'],
+                     "sourceReferenceSystem": jparams['cjsn_+meta-sourceReferenceSystem'],
+                     "sourceCitation":jparams['cjsn_+meta-sourceCitation'],
+                     }],
+             "processStep": {
+                 "description" : "Processing of raster DEM using osm_LoD1_3DCityModel workflow",
+                 "processor": {
+                     "contactName": jparams['cjsn_contactName'],
+                     "contactType": jparams['cjsn_contactType'],
+                     "website": "https://github.com/AdrianKriger/osm_LoD1_3DCityModel"
+                     }
+                 }
+            },
+            {"featureIDs": ["Building"],
+             "source": [
+                 {
+                     "description": "OpenStreetMap contributors",
+                     "sourceReferenceSystem": "urn:ogc:def:crs:EPSG:4326",
+                     "sourceCitation": "https://www.openstreetmap.org",
+                 }],
+             "processStep": {
+                 "description" : "Processing of building vector contributions using osm_LoD1_3DCityModel workflow",
+                 "processor": {
+                     "contactName": jparams['cjsn_contactName'],
+                     "contactType": jparams['cjsn_contactType'],
+                     "website": "https://github.com/AdrianKriger/osm_LoD1_3DCityModel"
+                     }
+                 }
+            }]
+        }
     #"metadataStandard": jparams['metaStan'],
     #"metadataStandardVersion": jparams['metaStanV']
     }
