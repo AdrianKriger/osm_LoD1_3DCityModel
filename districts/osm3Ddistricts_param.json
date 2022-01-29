@@ -6,7 +6,7 @@
     "trim": "yes",
     "osmconvert": "osmconvert64",
     "osm_poly": "cape-town_western-cape.poly",
-    "trim_pbf": "CapeTown_wcape_extract.pbf",
+    "trim_pbf": "CapeTown-extract.osm.pbf",
     
     "FocusArea": "Cape Town Ward 57",
     
