@@ -39,7 +39,7 @@ With the village/campus strategy an aoi is defined `Large area -> focus area` or
     "trim": "yes",
     "osmconvert": "osmconvert64",
     "osm_poly": "cape-town_western-cape.poly",
-    "trim_pbf": "CapeTown_wcape_extract.pbf",
+    "trim_pbf": "CapeTown-extract.osm.pbf",
     
     "FocusArea": "Cape Town Ward 57",
 ```
@@ -51,7 +51,7 @@ An extensive range of [osm.poly](https://wiki.openstreetmap.org/wiki/Osmosis/Pol
 
 `"update"` must be `"True"` the first time [`osm_LoD1_3DCityModel`](https://github.com/AdrianKriger/osm_LoD1_3DCityModel) is executed. Therafter `"False"` will use that file. [GeoFabrik](http://download.geofabrik.de/) creates fresh [osm.pbf](https://wiki.openstreetmap.org/wiki/PBF_Format) extracts daily.  
 
-`"Focus_area"` must exist in osm as a defined [`boundary=administrative`](https://wiki.openstreetmap.org/wiki/Tag:boundary%3Dadministrative). It can be one or comma seperated (e.g.: `"Focus_area": "Cape Town Ward 18,Cape Town Ward 87,Cape Town Ward 86",`).
+`"FocusArea"` must exist in osm as a defined [`boundary=administrative`](https://wiki.openstreetmap.org/wiki/Tag:boundary%3Dadministrative). It can be one or comma seperated (e.g.: `"FocusArea": "Cape Town Ward 18,Cape Town Ward 87,Cape Town Ward 86",`).
 
 A number of `param.json` are available as [Examples](https://adriankriger.github.io/osm_LoD1_3DCityModel/docs/docs/examples).
 
