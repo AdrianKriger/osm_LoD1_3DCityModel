@@ -72,9 +72,9 @@ Coordinate Reference System (crs) of the City Model. The workflow will project t
 One raster DEM will be enough for the [village/campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus) strategy. Larger areas might require more.
 &nbsp;
 
-The [districts](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts) ```"in_raster"``` parameter will accept one or many (e.g.: ```"in_raster": "./raster/LO19_050M_3418BA.tif ./raster/LO19_050M_3318DC.tif",```). NoData values are recommend and the workflow will mosaic where necessary, clip and project an input raster DEM to the defined crs.
+The [districts](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts) ```"in_raster"``` parameter will accept one or many (e.g.: ```"in_raster": "./raster/LO19_050M_3418BA.tif ./raster/LO19_050M_3318DC.tif",```). `NoData` values are recommend and the workflow will mosaic where necessary, clip and project an input raster DEM to the defined crs.
 
-#### `NoData`
+#### NoData
 
 While village/campus and district `interactiveOnly`should execute successfully in any area; the [CityJSON](https://www.cityjson.org/) will not when an aoi extend's into `NoData` (typically the ocean). This means [these types of areas](https://www.openstreetmap.org/relation/2034620#map=14/-33.9128/18.4430) will fail to produce a LoD1 3D City Model while [these](https://www.openstreetmap.org/way/689159965) will pass. 
 
