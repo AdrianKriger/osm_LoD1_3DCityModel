@@ -76,7 +76,7 @@ The [districts](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/d
 
 #### NoData
 
-While village/campus and district `interactiveOnly`should execute successfully in any area; the [CityJSON](https://www.cityjson.org/) will not when an aoi extend's into `NoData` (typically the ocean). This means [these types of areas](https://www.openstreetmap.org/relation/2034620#map=14/-33.9128/18.4430) will fail to produce a LoD1 3D City Model while [these](https://www.openstreetmap.org/way/689159965) will pass. 
+While [village/campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus) and [districts](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts) `interactiveOnly.ipynb` should execute successfully in any area; the [CityJSON](https://www.cityjson.org/) will not when an aoi extend's into `NoData` (typically the ocean). This means [these types of areas](https://www.openstreetmap.org/relation/2034620#map=14/-33.9128/18.4430) will fail to produce a LoD1 3D City Model while [these](https://www.openstreetmap.org/way/689159965) will pass. 
 
 ### CityJSON and 2.75D.obj
 ```json
