@@ -45,7 +45,7 @@ MultiSurface outputs are the walls and rooves of buildings, along with the terra
 
 <figure><center>
   <img src="{{site.baseurl | prepend: site.url}}/img/objects_horizontal_view_multisurface_tuDelft.png" alt="alt text" width="650" height="350">
-  <figcaption>Fig.2 - illustrates a horizontal view of the 2.75D surface with the exterior of all features together. <span style="color:blue;opacity:0.8;"><em>--image TUDelft</em></span>.</figcaption>
+  <figcaption>Fig.2 - illustrates a horizontal view of the 2.75D surface with the exterior of all features together. <em>--image </em><cite><a href="https://github.com/tudelft3d/3dfier"> 3dfier</a></cite> by the<cite><a href="https://3d.bk.tudelft.nl/"> 3D geoinformation research group at TU Delft</a></cite>.</figcaption>
 </center></figure>   
 
 ### Solids
@@ -54,7 +54,7 @@ Solid objects are walls and rooves stored as rectangular surfaces. In the [CityJ
 
 <figure><center>
   <img src="{{site.baseurl | prepend: site.url}}/img/objects_horizontal_view_solid_tuDelft.png" alt="alt text" width="650" height="350">
-  <figcaption>Fig.3 - solid Building CityObjects's connected to the terrain. <span style="color:blue;opacity:0.8;"><em>--image TUDelft</em></span>.</figcaption>
+  <figcaption>Fig.3 - solid Building CityObjects's connected to the terrain. <em>--image </em><cite><a href="https://github.com/tudelft3d/3dfier"> 3dfier</a></cite> by the<cite><a href="https://3d.bk.tudelft.nl/"> 3D geoinformation research group at TU Delft</a></cite>.</figcaption>
 </center></figure>
 
 ### Interactive Visualisation
