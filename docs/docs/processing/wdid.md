@@ -24,7 +24,8 @@ The osm tag `building:level` is taken as a [proxy for the height of a building](
  &nbsp; &nbsp;
  <figure><center>
   <img src="{{site.baseurl | prepend: site.url}}/img/extrusion_tuDelft.png" alt="alt text" width="650" height="350">
-  <figcaption>Fig.1 - <code><b>The osm_LoD1_3DCityModel</b></code> process. <span style="color:blue;opacity:0.8;"><em>--image TUDelft</em></span>.</figcaption>
+  <!-- <figcaption>Fig.1 - <code><b>The osm_LoD1_3DCityModel</b></code> process. <span style="color:blue;opacity:0.8;"><em>--image TUDelft</em></span>.</figcaption> -->
+  <figcaption>Fig.1 - <code><b>The osm_LoD1_3DCityModel</b></code> process. <em>--image adapted from</em><cite><a href="https://github.com/tudelft3d/3dfier">3dfier</a></cite> by the 3D geoinformation research group at TU Delft.</figcaption>
 </center></figure>
 <!--
 <p align="center">
