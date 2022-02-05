@@ -23,6 +23,7 @@ Starting with a clean slate [osm3Ddistricts_param.json](https://github.com/Adria
 <!-- As a direct comparison [osm3DdistrictsCity_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/extra/osm3DdistrictsCity_param.json) will do the same via a `city-level.osm.pbf`, with no `trim` necessary, for the same census ward / tract with 1390 `buildings:levels` [tagged](https://wiki.openstreetmap.org/wiki/Key:building:levels): `runtime: 0:38:40.708790`.
 
  Geofabrik generates fresh extracts daily. BBBike ---*where this particular city-level.osm.pbf was harvested from*--- less frequently. -->
+Similarly *(`country-level.osm.pbf` to region via `osmconvert` and a `.poly`)* [districts interactiveOnly.ipynb](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/interactiveOnly.ipynb) will produce a dynamic `.html`. 
 
 ## Many Census Wards with many raster DEM
 
