@@ -31,7 +31,7 @@ Similarly *(`country-level.osm.pbf` to region via `osmconvert` and a `.poly`)* [
 
 The `param.json` will use an existing `.osm.pbf` (the `extract.osm.pbf` created in the previous, **One Census Ward**, example: `"CapeTown-extract.osm.pbf"`). `runtime` is at `0:08:00.895749` due to the low number of [building:level](https://wiki.openstreetmap.org/wiki/Key:building:levels) tags (57 buildings). 
 
-With the same rational; [interactiveOnlyMany.ipynb](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/extra/interactiveOnlyMany.ipynb) will reuse an `-extract.osm.pbf` and harvest more than one adjacent [`boundary=administrative`](https://wiki.openstreetmap.org/wiki/Tag:boundary%3Dadministrative).
+With the same rationale; [interactiveOnlyMany.ipynb](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/extra/interactiveOnlyMany.ipynb) will reuse an `-extract.osm.pbf` and harvest more than one adjacent [`boundary=administrative`](https://wiki.openstreetmap.org/wiki/Tag:boundary%3Dadministrative).
 
 ## Extra
 
