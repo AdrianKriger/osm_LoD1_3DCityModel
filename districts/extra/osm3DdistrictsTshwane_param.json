@@ -8,7 +8,7 @@
     "osm_poly": "tshwane_gauteng.poly",
     "trim_pbf": "Tshwane_gauteng_extract.pbf",
     
-    "Focus_area": "Tshwane Ward 58", 
+    "FocusArea": "Tshwane Ward 58", 
     
     "crs": "EPSG:32735",
 
@@ -24,14 +24,18 @@
     
     "cjsn_out": "./result/citjsn_tsw_pbf.json",
     
-    "cjsn_datasetTitle": "LoD1 City Model from osm.pbf with terrain from NGI",
-    "datasetReferenceDate": "2022-01-01",
+    "cjsn_title": "LoD1 City Model of Tshwane census ward 58, South Africa",
+    "cjsn_referenceDate": "2022-02-01",
     "cjsn_referenceSystem": "https://www.opengis.net/def/crs/EPSG/0/32735",
     "cjsn_contactName": "arkriger", 
+    "cjsn_emailAddress": "adrian8kriger@gmail.com", 
     "cjsn_website": "www.linkedin.com/in/adrian-kriger", 
     "cjsn_contactType": "private",
-    "cjsn_+meta_lin_featureIDs": "terrain_id-1",
+    "cjsn_+meta-description": "Chief Directorate: National Geo-spatial Information",
+    "cjsn_+meta-sourceSpatialResolution": "25 meter raster DEM",
+    "cjsn_+meta-sourceReferenceSystem": "urn:ogc:def:crs:EPSG:20531",
+    "cjsn_+meta-sourceCitation":"http://www.ngi.gov.za/",
 
-    "cjsn_ClOut": "./result/citjsnCl_tsw_pbf.json",
-    "obj2_75D": "./result/obj275D_tsw_pbf.obj"
+    "cjsn_CleanOut": "./result/citjsnClean_tsw_pbf.json",
+    "obj-2_75D": "./result/obj275D_tsw_pbf.obj"
 }
