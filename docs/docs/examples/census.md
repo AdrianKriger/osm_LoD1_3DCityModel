@@ -28,4 +28,8 @@ Starting with a clean slate [osm3Ddistricts_param.json](https://github.com/Adria
 
 [osm3DdistrictsKaya_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/extra/osm3DdistrictsKaya_param.json) combines the 12 adjacent census wards / tracts of [Khayelitsha](https://en.wikipedia.org/wiki/Khayelitsha) along with the mosaic, clip and reprojection of 2 raster DEM.
 
-The `param.json` will use an existing `.osm.pbf` (the `extract.osm.pbf` created in the previous, **One Census Ward**, example: `"CapeTown-extract.osm.pbf"`). `runtime` is at `0:08:00.895749` due to the low number of [building:level](https://wiki.openstreetmap.org/wiki/Key:building:levels) tags (57 buildings).
+The `param.json` will use an existing `.osm.pbf` (the `extract.osm.pbf` created in the previous, **One Census Ward**, example: `"CapeTown-extract.osm.pbf"`). `runtime` is at `0:08:00.895749` due to the low number of [building:level](https://wiki.openstreetmap.org/wiki/Key:building:levels) tags (57 buildings). 
+
+## Extra
+
+Its possible to `trim` a different region from the same `country-level.osm.pbf` (as **One Census Ward**) with a different `.poly`. [osm3DdistrictsTshwane_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/extra/osm3DdistrictsTshwane_param.json). `runtime: 0:06:20.492880` to produce a LoD1 City Model of one census ward / tract; 32 `buildings:levels` [tagged](https://wiki.openstreetmap.org/wiki/Key:building:levels).
