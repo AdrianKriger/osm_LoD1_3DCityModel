@@ -33,4 +33,4 @@ The `param.json` will use an existing `.osm.pbf` (the `extract.osm.pbf` created 
 
 ## Extra
 
-Its possible to `trim` a different region from the same `country-level.osm.pbf` (as **One Census Ward**) with a different `.poly`. [osm3DdistrictsTshwane_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/extra/osm3DdistrictsTshwane_param.json). `runtime: 0:06:20.492880` to produce a LoD1 City Model of one census ward / tract; 32 `buildings:levels` [tagged](https://wiki.openstreetmap.org/wiki/Key:building:levels).
+Its possible to `trim` a different region from the same `country-level.osm.pbf` (as **One Census Ward**) with a different `.poly`. [osm3DdistrictsTshwane_param.json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/districts/extra/osm3DdistrictsTshwane_param.json). `runtime: 0:06:20.492880` to produce a LoD1 City Model of one census ward / tract; 32 `buildings:levels` [tagged](https://wiki.openstreetmap.org/wiki/Key:building:levels) in another part of a country.
