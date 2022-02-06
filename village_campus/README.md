@@ -4,5 +4,5 @@ LOD1 3D City Model from [OSM contributions](https://pyrosm.readthedocs.io/en/lat
 
 Set parameters with a basic [json](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/osm3Dmamre_param.json) to execute [osm3DCode](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/osm3DCode.py) through [osm3DMain](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/osm3DMain.py). A dynamic visualization is possible with [interactiveOnly](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/interactiveOnly.ipynb)
 
-Please read the [Good-To-Know](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/Good-To-Know.md).
+While the [documentation](https://adriankriger.github.io/osm_LoD1_3DCityModel/) is more comprehensive; the legacy [Good-To-Know](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/Good-To-Know.md) is retained for prosperiity. 
 
