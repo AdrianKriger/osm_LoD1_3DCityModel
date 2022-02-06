@@ -50,4 +50,4 @@ An additional quality check is for a spike or two. Generally the root of this ch
 
 ## Licencing
 
-While this workflow is released under a *---some licence here---* be aware Shewchuck's [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) may not be sold or included in commercial products without a license. <!-- [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) is freely available but I cannot give it to you. I can tell you about it and where to find it but I cannot include it in a package. Like PenStreetMap it requires you to act, to participate. -->
+While this workflow is released under an [MIT Licence](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/LICENSE.txt) be aware Shewchuck's [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) may not be sold or included in commercial products without a license. <!-- [Triangle](https://www.cs.cmu.edu/~quake/triangle.html) is freely available but I cannot give it to you. I can tell you about it and where to find it but I cannot include it in a package. Like PenStreetMap it requires you to act, to participate. -->
