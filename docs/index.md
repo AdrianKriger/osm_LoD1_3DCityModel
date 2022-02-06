@@ -4,7 +4,7 @@ title: Home
 nav_order: 1
 description: "A python-based workflow for creation of Level-of-Detail 1 3D City Models."
 permalink: /
-last_modified_at: "%b %e %Y at %I:%M %p"
+<!-- last_modified_at: "%b %e %Y at %I:%M %p" -->
 ---
 
 # Level-of-Detail 1 (LoD1) 3D City Models
