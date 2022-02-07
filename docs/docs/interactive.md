@@ -18,3 +18,6 @@ The [Jupyter](https://eis n.wikipedia.org/wiki/Project_Jupyter#Jupyter_Notebook)
 
 
 <iframe src="{{site.baseurl | prepend: site.url}}/img/interactiveOnly.html" style="width: 800px; height: 400px; border: 0px"></iframe>
+
+
+The visualisation above employes the default [Carto Dark Matter](https://github.com/CartoDB/basemap-styles) basemap. [Pydeck] supports a number of [map_styles](https://deckgl.readthedocs.io/en/latest/deck.html) including the extensive [mapbox gallery](https://www.mapbox.com/gallery/).
