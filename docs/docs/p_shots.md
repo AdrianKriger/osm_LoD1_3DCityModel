@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Parting Shots
+title: Acknowledgement and Parting Shots
 nav_order: 7
 ---
 
