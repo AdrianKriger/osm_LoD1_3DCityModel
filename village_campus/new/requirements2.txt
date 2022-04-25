@@ -8,7 +8,7 @@ pyvista = 0.34.0
 
 
 #pip
-triangle  = 20220202 # - python wrapper around Jonathan Richard Shewchuk's at rufat.be/triangle
+triangle  = 20220202 # - python wrapper around Jonathan Richard Shewchuk's Triangle at rufat.be/triangle
 cjio = 0.7.3  # -  python CLI to process and manipulate CityJSON files
 overpass = 0.7
 osm2geojson = 0.1.33
