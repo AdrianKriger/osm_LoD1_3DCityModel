@@ -54,7 +54,6 @@ def main():
     #gt_reverse=gdal.InvGeoTransform(gt_forward)
     rb = src_ds.GetRasterBand(1)
     
-    
     ts = assignZ(jparams['gjson-proj_out'], gt_forward, rb) #jparams['projClip_raster'],
     writegjson(ts, jparams)#['gjson-z_out'])
     
@@ -80,14 +79,15 @@ def main():
     
       #-- check terrain with a plot
     pvPlot(t, pts, idx, hs)
-
+    
+    # dereference raster
+    src_ds = None
+    
     minz = df3['z'].min()
     maxz = df3['z'].max()
     #writeObj(pts, t, 'wvft_cput3d.obj') ~ this will write the terrain surface only
     output_cityjson(extent, minz, maxz, t, pts, jparams)
     write275obj(jparams)
-    src_ds = None
-    
     # if jparams['inter'] == 'True':
     #     write_interactive(area, jparams)
         
