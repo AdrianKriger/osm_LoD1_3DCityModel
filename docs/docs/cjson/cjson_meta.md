@@ -29,7 +29,7 @@ It is recommended to define metadata for the 3D City Model in the respective `pa
     "cjsn_referenceDate": "2021-07-31",
 ```
 ## referenceSystem
-
+ 
 Coordinate reference system (crs) definition is formatted according to the [OGC Name Type Specification](https://docs.opengeospatial.org/pol/09-048r5.html#_production_rule_for_specification_element_names):
 
 &emsp;&emsp;`http://www.opengis.net/def/crs/{authority}/{version}/{code}`  
