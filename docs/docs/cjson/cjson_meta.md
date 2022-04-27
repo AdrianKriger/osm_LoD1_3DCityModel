@@ -33,7 +33,7 @@ It is recommended to define metadata for the 3D City Model in the respective `pa
 Coordinate reference system (crs) definition is formatted according to the [OGC Name Type Specification](https://docs.opengeospatial.org/pol/09-048r5.html#_production_rule_for_specification_element_names):
 
 &emsp;`http://www.opengis.net/def/crs/{authority}/{version}/{code}`  
-&emsp;where `{authority}` designates the authority responsible for the definition of the crs (usually "EPSG" or "OGC"), 
+&emsp;where `{authority}` designates the authority responsible for the definition of the crs (usually "EPSG" or "OGC"),  
 &emsp;and `{version}` designates the specific version of the crs ("0" (zero) is used if there is no version).
         
 ```json
