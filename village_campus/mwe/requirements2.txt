@@ -1,7 +1,7 @@
 #### ESSENTIAL LIBRARIES FOR MAIN FUNCTIONALITY ####
-#-- pip when conda-forge is not available
+#-- follow conda best practice: pip after conda
 
-#conda
+#conda-forge
 python = 3.8.5
 geopandas = 0.10.2
 pyvista = 0.34.0
