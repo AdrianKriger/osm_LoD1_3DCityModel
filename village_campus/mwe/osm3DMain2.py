@@ -17,7 +17,7 @@ from datetime import timedelta
 from osm3DCode2 import requestOsmBld, projVec, requestOsmAoi, \
     prepareDEM, assignZ, getosmBld, writegjson, getosmArea, getXYZ, getBldVertices, \
         getAOIVertices, appendCoords, createSgmts, executeDelaunay, pvPlot, writeObj, \
-            output_cityjson, createXYZ, write275obj
+            output_cityjson, createXYZ, write275obj, write_Skygjson
     
 def main():
     start = time.time()
@@ -55,8 +55,9 @@ def main():
     rb = src_ds.GetRasterBand(1)
     
     
-    ts = assignZ(jparams['gjson-proj_out'], gt_forward, rb) #jparams['projClip_raster'],
+    ts, bridge = assignZ(jparams['gjson-proj_out'], gt_forward, rb) #jparams['projClip_raster'],
     writegjson(ts, jparams)#['gjson-z_out'])
+    write_Skygjson(bridge, jparams)
     
     dis, hs = getosmBld(jparams)
     

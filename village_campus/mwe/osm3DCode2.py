@@ -169,16 +169,20 @@ def assignZ(vfname, gt_forward, rb): # rfname,
     ~ .representative_point() used instead of .centroid
     """
     ts = gpd.read_file(vfname)
-    #ts['mean'] = pd.DataFrame(point_query(
-        #vectors=ts['geometry'].representative_point(), 
-        #raster=rfname))#, interpolate='nearest', nodata=0))#['mean']
+    
+    #-- skywalk --bridge
+    ts['bld'] = ts['tags'].apply(lambda x: x.get('building'))
+    bridge = ts[ts['bld'] == 'bridge'].copy()
+    ts.drop(ts.index[ts['bld'] == 'bridge'], inplace = True)
+    bridge['mean'] = bridge.apply(lambda row: rasterQuery(row.geometry, gt_forward, rb), axis = 1)
+    
     ts['mean'] = ts.apply(lambda row : rasterQuery(row.geometry, gt_forward, rb), axis = 1)
     
-    return ts
+    return ts, bridge
     
 def writegjson(ts, jparams):#, fname):
     """
-    read the rasterstats geojson and create new attributes in osm vector
+    read the gdal geojson and create new attributes in osm vector
     ~ ground height, relative building height and roof height.
     write the result to file.
     """
@@ -281,6 +285,62 @@ def writegjson(ts, jparams):#, fname):
     #-- store the data as GeoJSON
     with open(jparams['gjson-z_out'], 'w') as outfile:
         json.dump(footprints, outfile)
+
+def write_Skygjson(bridge, jparams):#, fname):
+    """
+    read the gdal skywalk geojson and create new attributes in osm vector
+    ~ ground height, relative building min_height and roof/max height.
+    write the result to file.
+    """
+    # take care of non-Polygon LineString's 
+    for i, row in bridge.iterrows():
+        if row.geometry.type == 'LineString' and len(row.geometry.coords) < 3:
+            bridge = bridge.drop(bridge.index[i])
+    
+    storeyheight = 2.8
+    #-- iterate through the list of buildings and create GeoJSON features rich in attributes
+    skyprints = {
+        "type": "FeatureCollection",
+        "features": []
+        }
+    
+    for i, row in bridge.iterrows():
+        f = {
+        "type" : "Feature"
+        }
+            
+        f["properties"] = {}
+            
+        #-- store all OSM attributes and prefix them with osm_ 
+        f["properties"]["osm_id"] = row.id
+        for p in row.tags:
+                #-- store other OSM attributes and prefix them with osm_
+            f["properties"]["osm_%s" % p] = row.tags[p]
+            
+        osm_shape = shape(row["geometry"])
+                #-- a few buildings are not polygons, rather linestrings. This converts them to polygons
+                #-- rare, but if not done it breaks the code later
+        if osm_shape.type == 'LineString':
+            osm_shape = Polygon(osm_shape)
+            #-- and multipolygons must be accounted for
+        elif osm_shape.type == 'MultiPolygon':
+            #osm_shape = Polygon(osm_shape[0])
+            for poly in osm_shape:
+                osm_shape = Polygon(poly)#[0])
+                #-- convert the shapely object to geojson
+                
+        f["geometry"] = mapping(osm_shape)
+
+        
+        f["properties"]['ground_height'] = round(row["mean"], 2)
+        f["properties"]['building_height'] = round(float(row.tags['building:levels']) * storeyheight, 2)
+        f["properties"]['min_height'] = round((float(row.tags['building:min_level']) * storeyheight) + row["mean"], 2)
+        f["properties"]['max_height'] = round(f["properties"]['building_height'] + row["mean"], 2)
+        skyprints['features'].append(f)
+                     
+    #-- store the data as GeoJSON
+    with open(jparams['SKYwalk_gjson-z_out'], 'w') as outfile:
+        json.dump(skyprints, outfile)
 
 def getXYZ(dis, aoi, jparams):
     """
@@ -604,7 +664,7 @@ def output_cityjson(extent, minz, maxz, T, pts, jparams):
     basic function to produce LoD1 City Model
     - buildings and terrain
     """
-     ##- open fiona object
+     ##- open building ---fiona object
     c = fiona.open(jparams['gjson-z_out'])
     lsgeom = [] #-- list of the geometries
     lsattributes = [] #-- list of the attributes
@@ -612,7 +672,16 @@ def output_cityjson(extent, minz, maxz, T, pts, jparams):
         lsgeom.append(shape(each['geometry'])) #-- geom are cast to Fiona's 
         lsattributes.append(each['properties'])
         
-    cm = doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams)    
+    ##- open skywalk ---fiona object
+    sky = fiona.open(jparams['SKYwalk_gjson-z_out'])
+    skywgeom = [] #-- list of the geometries
+    skywgeomattributes = [] #-- list of the attributes
+    for each in sky:
+        skywgeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
+        skywgeomattributes.append(each['properties'])
+        
+    cm = doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywgeom,
+                    skywgeomattributes)    
     json_str = json.dumps(cm, indent=2)
     fout = open(jparams['cjsn_out'], "w")
     fout.write(json_str)  
@@ -624,7 +693,8 @@ def output_cityjson(extent, minz, maxz, T, pts, jparams):
     cm.remove_duplicate_vertices()
     cityjson.save(cm, jparams['cjsn_CleanOut'])
 
-def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams): 
+def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywgeom,
+                    skywgeomattributes): 
     #-- create the JSON data structure for the City Model
     cm = {}
     cm["type"] = "CityJSON"
@@ -765,6 +835,60 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
         oneb['geometry'].append(g)
         #-- insert the building as one new city object
         cm['CityObjects'][lsattributes[i]['osm_id']] = oneb
+        
+    #-- then sykwalk
+    for (i, geom) in enumerate(skywgeom):
+        skyprint = geom
+        #-- one building
+        oneb = {}
+        oneb['type'] = 'Bridge'
+        oneb['attributes'] = {}
+        for k, v in list(skywgeomattributes[i].items()):
+            if v is None:
+                del skywgeomattributes[i][k]
+            #oneb['attributes'][k] = lsattributes[i][k]
+        for a in skywgeomattributes[i]:
+            oneb['attributes'][a] = skywgeomattributes[i][a]
+        
+        oneb['geometry'] = [] #-- a cityobject can have > 1
+        #-- the geometry
+        g = {} 
+        g['type'] = 'Solid'
+        g['lod'] = 1
+        allsurfaces = [] #-- list of surfaces forming the oshell of the solid
+        #-- exterior ring of each footprint
+        oring = list(skyprint.exterior.coords)
+        oring.pop() #-- remove last point since first==last
+        if skyprint.exterior.is_ccw == False:
+            #-- to get proper orientation of the normals
+            oring.reverse() 
+        extrude_walls(oring, skywgeomattributes[i]['max_height'], skywgeomattributes[i]['min_height'],
+                      allsurfaces, cm)
+        #-- interior rings of each footprint
+        irings = []
+        interiors = list(skyprint.interiors)
+        for each in interiors:
+            iring = list(each.coords)
+            iring.pop() #-- remove last point since first==last
+            if each.is_ccw == True:
+                #-- to get proper orientation of the normals
+                iring.reverse() 
+            irings.append(iring)
+            extrude_walls(iring, skywgeomattributes[i]['max_height'], skywgeomattributes[i]['min_height'],
+                          allsurfaces, cm)
+        #-- top-bottom surfaces
+        extrude_roof_ground(oring, irings, skywgeomattributes[i]['max_height'], 
+                            False, allsurfaces, cm)
+        extrude_roof_ground(oring, irings, skywgeomattributes[i]['min_height'], 
+                            True, allsurfaces, cm)
+        #-- add the extruded geometry to the geometry
+        g['boundaries'] = []
+        g['boundaries'].append(allsurfaces)
+        #g['boundaries'] = allsurfaces
+        #-- add the geom to the building 
+        oneb['geometry'].append(g)
+        #-- insert the building as one new city object
+        cm['CityObjects'][skywgeomattributes[i]['osm_id']] = oneb
 
     return cm
 
@@ -825,124 +949,4 @@ def write275obj(jparams):
     with open(jparams['obj-2_75D'], 'w+') as f:
         re = cm1.export2obj()
         f.write(re.getvalue())
-    
-# def write_interactive(area, jparams):
-#     """
-#     write an interactive .html via pydeck
-#     """
-#     gdf = gpd.GeoDataFrame.from_features(area['features'])
-#     #gdf.set_geometry("geometry", inplace=True, crs='EPSG:4326')
-
-#     bounds = gdf.geometry.bounds
-#     x = gdf.centroid.x
-#     y = gdf.centroid.y
-    
-#     bbox = [(bounds.minx, bounds.miny), (bounds.minx, bounds.maxy), 
-#             (bounds.maxx, bounds.maxy), (bounds.maxx, bounds.miny)]
-    
-#     with open(jparams['ori-gjson_out']) as f:
-#         gj = geojson.load(f)
-#     f.close()
-    
-#     storeyheight = 2.8
-
-#     #-- iterate through the list of buildings and create GeoJSON features rich in attributes
-#     footprints = {
-#         "type": "FeatureCollection",
-#         "features": []
-#         }
-    
-#     for i in gj['features']:
-#         f = {
-#         "type" : "Feature"
-#         }
-#         # at a minimum we only want building:levels tagged
-#         if 'building:levels' in i['properties']['tags']:
-#             f["properties"] = {}
-            
-#             for p in i["properties"]:
-
-#             #-- store all OSM attributes and prefix them with osm_
-#                 f["properties"]["osm_%s" % p] = i["properties"][p]
-#                 osm_shape = shape(i["geometry"])
-#                 #-- a few buildings are not polygons, rather linestrings. This converts them to polygons
-#                 #-- rare, but if not done it breaks the code later
-#                 if osm_shape.type == 'LineString':
-#                     osm_shape = Polygon(osm_shape)
-#                     #-- and multipolygons must be accounted for
-#                 elif osm_shape.type == 'MultiPolygon':
-#                     osm_shape = Polygon(osm_shape[0])
-#                     #-- convert the shapely object to geojson
-#                 f["geometry"] = mapping(osm_shape)
-    
-#         #-- finally calculate the height and store it as an attribute (extrusion of geometry 
-#         ## -- will be done in the next script)
-#                 f["properties"]['height'] = float(i["properties"]['tags']['building:levels']) * storeyheight + 1.3    
-#                 footprints['features'].append(f)
-    
-#     #-- store the data as GeoJSON
-#     with open(jparams['int-gjson_out'], 'w') as outfile:
-#         json.dump(footprints, outfile)
-    
-#     jsn = pd.read_json(jparams['int-gjson_out'])
-#     build_df = pd.DataFrame()
-    
-#     # Parse the geometry out to Pandas
-#     build_df["coordinates"] = jsn["features"].apply(lambda row: row["geometry"]["coordinates"])
-#     build_df["height"] = round(jsn["features"].apply(lambda row: row["properties"]["height"]), 1)
-    
-#     #we want to display data so extract values from the dictionary 
-#     build_df["tags"] = jsn["features"].apply(lambda row: row["properties"]["osm_tags"])
-#     build_df['level'] = build_df['tags'].apply(lambda x: x.get('building:levels'))
-#     build_df['name'] = build_df['tags'].apply(lambda x: x.get('name'))
-    
-#     ## ~ (x, y) - bl, tl, tr, br  ~~ or ~~ sw, nw, ne, se
-#     #area = [[[18.4377, -33.9307], [18.4377, -33.9283], [18.4418, -33.9283], [18.4418, -33.9307]]]
-#     area = [[[bbox[0][0][0], bbox[0][1][0]], [bbox[1][0][0], bbox[1][1][0]], 
-#              [bbox[2][0][0], bbox[2][1][0]], [bbox[3][0][0], bbox[3][1][0]]]]
-
-#     ## ~ (y, x)
-#     view_state = pdk.ViewState(latitude=y[0], longitude=x[0], zoom=16.5, max_zoom=19, pitch=72, 
-#                                    bearing=80)
-
-#     land = pdk.Layer(
-#         "PolygonLayer",
-#         area,
-#         stroked=False,
-#         # processes the data as a flat longitude-latitude pair
-#         get_polygon="-",
-#         get_fill_color=[0, 0, 0, 1],
-#         #material = True,
-#         #shadowEnabled = True
-#     )
-    
-#     building_layer = pdk.Layer(
-#         "PolygonLayer",
-#         build_df,
-#         #id="geojson",
-#         opacity=0.3,
-#         stroked=False,
-#         get_polygon="coordinates",
-#         filled=True,
-#         extruded=True,
-#         wireframe=False,
-#         get_elevation="height",
-#         get_fill_color="[255, 255, 255]", #255, 255, 255
-#         get_line_color=[255, 255, 255],
-#         #material = True, 
-#         #shadowEnabled = True, 
-#         auto_highlight=True,
-#         pickable=True,
-#     )
-    
-#     tooltip = {"html": "<b>Levels:</b> {level} <br/> <b>Name:</b> {name}"}
-    
-#     r = pdk.Deck(layers=[land, building_layer], 
-#                  #views=[{"@@type": "MapView", "controller": True}],
-#                  initial_view_state=view_state,
-#                  map_style = 'dark_no_labels', 
-#                  tooltip=tooltip)
-    
-#     #save
-#     r.to_html(jparams["intact"])
     
