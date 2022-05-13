@@ -314,14 +314,14 @@ def getosmBld(jparams):
     dis = gpd.read_file(jparams['gjson-z_out'])
     dis.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
  
-    # # remove duplicate vertices within tolerance 0.2 
-    # for index, row in dis.iterrows():
-    #     tmp_gdf = dis.copy()
-    #     tmp_gdf['distance'] = tmp_gdf.distance(row['geometry'])
-    #     closest_geom = list(tmp_gdf.sort_values('distance')['geometry'])[1]
-    #     # I took 1 because index 0 would be the row itself
-    #     snapped_geom = snap(row['geometry'], closest_geom, 0.2)
-    #     dis.loc[index, 'geometry'] = snapped_geom
+    # remove duplicate vertices within tolerance 0.2 
+    for index, row in dis.iterrows():
+        tmp_gdf = dis.copy()
+        tmp_gdf['distance'] = tmp_gdf.distance(row['geometry'])
+        closest_geom = list(tmp_gdf.sort_values('distance')['geometry'])[1]
+        # I took 1 because index 0 would be the row itself
+        snapped_geom = snap(row['geometry'], closest_geom, 0.2)
+        dis.loc[index, 'geometry'] = snapped_geom
     
      # - the following is left for reference
      #-- this serves two functions:
@@ -629,10 +629,10 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
     cm = {}
     cm["type"] = "CityJSON"
     cm["version"] = "1.1"
-    cm["transform"] = {
-        "scale": [0.0, 0.0, 0.0],
-        "translate": [1.0, 1.0, 1.0]
-        }
+    # cm["transform"] = {
+    #     "scale": [0.0, 0.0, 0.0],
+    #     "translate": [1.0, 1.0, 1.0]
+    #     },
     cm["CityObjects"] = {}
     cm["vertices"] = []
     #-- Metadata is added manually
@@ -758,9 +758,9 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
         extrude_roof_ground(oring, irings, lsattributes[i]['ground_height'], 
                             True, allsurfaces, cm)
         #-- add the extruded geometry to the geometry
-        #g['boundaries'] = []
-        #g['boundaries'].append(allsurfaces)
-        g['boundaries'] = allsurfaces
+        g['boundaries'] = []
+        g['boundaries'].append(allsurfaces)
+        #g['boundaries'] = allsurfaces
         #-- add the geom to the building 
         oneb['geometry'].append(g)
         #-- insert the building as one new city object
