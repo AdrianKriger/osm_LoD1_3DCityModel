@@ -2,9 +2,10 @@
 # env/osm3D_vc-env
 ######################
 # main() for osm3DCode2
-# author: arkriger - July 2021
+# author: arkriger - May 2022
 # github: https://github.com/AdrianKriger/osm_LoD1_3DCityModel
 #####################
+
 import os
 import sys
 import json
@@ -55,9 +56,10 @@ def main():
     rb = src_ds.GetRasterBand(1)
     
     
-    ts, bridge = assignZ(jparams['gjson-proj_out'], gt_forward, rb) #jparams['projClip_raster'],
+    ts, skywalk = assignZ(jparams['gjson-proj_out'], gt_forward, rb) #jparams['projClip_raster'],
     writegjson(ts, jparams)#['gjson-z_out'])
-    write_Skygjson(bridge, jparams)
+    if len(skywalk) > 0:
+        write_Skygjson(skywalk, jparams)
     
     dis, hs = getosmBld(jparams)
     
@@ -86,7 +88,7 @@ def main():
     maxz = df3['z'].max()
     src_ds = None
     #writeObj(pts, t, 'wvft_cput3d.obj') ~ this will write the terrain surface only
-    output_cityjson(extent, minz, maxz, t, pts, jparams)
+    output_cityjson(extent, minz, maxz, t, pts, jparams, skywalk)
     write275obj(jparams)
     
     # if jparams['inter'] == 'True':

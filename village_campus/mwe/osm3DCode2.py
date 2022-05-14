@@ -3,7 +3,7 @@
 #########################
 # code to create LoD1 3D City Model from volunteered public data (OpenStreetMap) with elevation via a raster DEM.
 
-# author: arkriger - April 2022
+# author: arkriger - May 2022
 # github: https://github.com/AdrianKriger/osm_LoD1_3DCityModel
 
 # script credit:
@@ -31,7 +31,7 @@ import pandas as pd
 import geopandas as gpd
 
 import shapely
-shapely.speedups.disable()
+#shapely.speedups.disable()
 import shapely.geometry as sg
 from shapely.geometry import Point, LineString, Polygon, shape, mapping
 from shapely.ops import snap
@@ -173,13 +173,14 @@ def assignZ(vfname, gt_forward, rb): # rfname,
     
     #-- skywalk --bridge
     ts['bld'] = ts['tags'].apply(lambda x: x.get('building'))
-    bridge = ts[ts['bld'] == 'bridge'].copy()
+    skywalk = ts[ts['bld'] == 'bridge'].copy()
     ts.drop(ts.index[ts['bld'] == 'bridge'], inplace = True)
-    bridge['mean'] = bridge.apply(lambda row: rasterQuery(row.geometry, gt_forward, rb), axis = 1)
+    if len(skywalk) > 0:
+        skywalk['mean'] = skywalk.apply(lambda row: rasterQuery(row.geometry, gt_forward, rb), axis = 1)
     
     ts['mean'] = ts.apply(lambda row : rasterQuery(row.geometry, gt_forward, rb), axis = 1)
     
-    return ts, bridge
+    return ts, skywalk
     
 def writegjson(ts, jparams):#, fname):
     """
@@ -219,6 +220,8 @@ def writegjson(ts, jparams):#, fname):
                     adr.append(row.tags['addr:flats'])
                 if 'addr:housenumber'in row.tags:
                     adr.append(row.tags['addr:housenumber'])
+                if 'addr:housename'in row.tags:
+                    adr.append(row.tags['addr:housename'])
                 if 'addr:street' in row.tags:
                     adr.append(row.tags['addr:street'])
                 if 'addr:suburb' in row.tags:
@@ -272,6 +275,8 @@ def writegjson(ts, jparams):#, fname):
             del value["properties"]["osm_addr:flats"]
         if 'osm_addr:housenumber' in value["properties"]:
             del value["properties"]["osm_addr:housenumber"]
+        if 'osm_addr:housename' in value["properties"]:
+            del value["properties"]["osm_addr:housename"]
         if 'osm_addr:street' in value["properties"]:
             del value["properties"]["osm_addr:street"]
         if 'osm_addr:suburb' in value["properties"]:
@@ -660,7 +665,7 @@ def writeObj(pts, dt, obj_filename):
                                           simplex[2] + 1))
     f_out.close()
     
-def output_cityjson(extent, minz, maxz, T, pts, jparams):
+def output_cityjson(extent, minz, maxz, T, pts, jparams, skywalk):
     """
     basic function to produce LoD1 City Model
     - buildings and terrain
@@ -674,28 +679,37 @@ def output_cityjson(extent, minz, maxz, T, pts, jparams):
         lsattributes.append(each['properties'])
         
     ##- open skywalk ---fiona object
-    sky = fiona.open(jparams['SKYwalk_gjson-z_out'])
-    skywgeom = [] #-- list of the geometries
-    skywgeomattributes = [] #-- list of the attributes
-    for each in sky:
-        skywgeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
-        skywgeomattributes.append(each['properties'])
-        
-    cm = doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywgeom,
-                    skywgeomattributes)    
-    json_str = json.dumps(cm, indent=2)
-    fout = open(jparams['cjsn_out'], "w")
-    fout.write(json_str)  
-     ##- close fiona object
-    c.close()
+    if len(skywalk) > 0:
+        sky = fiona.open(jparams['SKYwalk_gjson-z_out'])
+        skywgeom = [] #-- list of the geometries
+        skywgeomattributes = [] #-- list of the attributes
+        for each in sky:
+            skywgeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
+            skywgeomattributes.append(each['properties'])
+            
+        cm = doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywgeom,
+                        skywgeomattributes)    
+        json_str = json.dumps(cm, indent=2)
+        fout = open(jparams['cjsn_out'], "w")
+        fout.write(json_str)  
+         ##- close fiona object
+        c.close()
+    else: 
+        cm = doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywgeom=None,
+                         skywgeomattributes=None)    
+        json_str = json.dumps(cm, indent=2)
+        fout = open(jparams['cjsn_out'], "w")
+        fout.write(json_str)  
+         ##- close fiona object
+        c.close()
     
     #clean cityjson
     cm = cityjson.load(jparams['cjsn_out'])
     cm.remove_duplicate_vertices()
     cityjson.save(cm, jparams['cjsn_CleanOut'])
 
-def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywgeom,
-                    skywgeomattributes): 
+def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywgeom=None,
+                    skywgeomattributes=None): 
     #-- create the JSON data structure for the City Model
     cm = {}
     cm["type"] = "CityJSON"
@@ -838,58 +852,59 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywg
         cm['CityObjects'][lsattributes[i]['osm_id']] = oneb
         
     #-- then sykwalk
-    for (i, geom) in enumerate(skywgeom):
-        skyprint = geom
-        #-- one building
-        oneb = {}
-        oneb['type'] = 'Bridge'
-        oneb['attributes'] = {}
-        for k, v in list(skywgeomattributes[i].items()):
-            if v is None:
-                del skywgeomattributes[i][k]
-            #oneb['attributes'][k] = lsattributes[i][k]
-        for a in skywgeomattributes[i]:
-            oneb['attributes'][a] = skywgeomattributes[i][a]
-        
-        oneb['geometry'] = [] #-- a cityobject can have > 1
-        #-- the geometry
-        g = {} 
-        g['type'] = 'Solid'
-        g['lod'] = 1
-        allsurfaces = [] #-- list of surfaces forming the oshell of the solid
-        #-- exterior ring of each footprint
-        oring = list(skyprint.exterior.coords)
-        oring.pop() #-- remove last point since first==last
-        if skyprint.exterior.is_ccw == False:
-            #-- to get proper orientation of the normals
-            oring.reverse() 
-        extrude_walls(oring, skywgeomattributes[i]['max_height'], skywgeomattributes[i]['min_height'],
-                      allsurfaces, cm)
-        #-- interior rings of each footprint
-        irings = []
-        interiors = list(skyprint.interiors)
-        for each in interiors:
-            iring = list(each.coords)
-            iring.pop() #-- remove last point since first==last
-            if each.is_ccw == True:
+    if skywgeom != None:
+        for (i, geom) in enumerate(skywgeom):
+            skyprint = geom
+            #-- one building
+            oneb = {}
+            oneb['type'] = 'Bridge'
+            oneb['attributes'] = {}
+            for k, v in list(skywgeomattributes[i].items()):
+                if v is None:
+                    del skywgeomattributes[i][k]
+                #oneb['attributes'][k] = lsattributes[i][k]
+            for a in skywgeomattributes[i]:
+                oneb['attributes'][a] = skywgeomattributes[i][a]
+            
+            oneb['geometry'] = [] #-- a cityobject can have > 1
+            #-- the geometry
+            g = {} 
+            g['type'] = 'Solid'
+            g['lod'] = 1
+            allsurfaces = [] #-- list of surfaces forming the oshell of the solid
+            #-- exterior ring of each footprint
+            oring = list(skyprint.exterior.coords)
+            oring.pop() #-- remove last point since first==last
+            if skyprint.exterior.is_ccw == False:
                 #-- to get proper orientation of the normals
-                iring.reverse() 
-            irings.append(iring)
-            extrude_walls(iring, skywgeomattributes[i]['max_height'], skywgeomattributes[i]['min_height'],
+                oring.reverse() 
+            extrude_walls(oring, skywgeomattributes[i]['max_height'], skywgeomattributes[i]['min_height'],
                           allsurfaces, cm)
-        #-- top-bottom surfaces
-        extrude_roof_ground(oring, irings, skywgeomattributes[i]['max_height'], 
-                            False, allsurfaces, cm)
-        extrude_roof_ground(oring, irings, skywgeomattributes[i]['min_height'], 
-                            True, allsurfaces, cm)
-        #-- add the extruded geometry to the geometry
-        g['boundaries'] = []
-        g['boundaries'].append(allsurfaces)
-        #g['boundaries'] = allsurfaces
-        #-- add the geom to the building 
-        oneb['geometry'].append(g)
-        #-- insert the building as one new city object
-        cm['CityObjects'][skywgeomattributes[i]['osm_id']] = oneb
+            #-- interior rings of each footprint
+            irings = []
+            interiors = list(skyprint.interiors)
+            for each in interiors:
+                iring = list(each.coords)
+                iring.pop() #-- remove last point since first==last
+                if each.is_ccw == True:
+                    #-- to get proper orientation of the normals
+                    iring.reverse() 
+                irings.append(iring)
+                extrude_walls(iring, skywgeomattributes[i]['max_height'], skywgeomattributes[i]['min_height'],
+                              allsurfaces, cm)
+            #-- top-bottom surfaces
+            extrude_roof_ground(oring, irings, skywgeomattributes[i]['max_height'], 
+                                False, allsurfaces, cm)
+            extrude_roof_ground(oring, irings, skywgeomattributes[i]['min_height'], 
+                                True, allsurfaces, cm)
+            #-- add the extruded geometry to the geometry
+            g['boundaries'] = []
+            g['boundaries'].append(allsurfaces)
+            #g['boundaries'] = allsurfaces
+            #-- add the geom to the building 
+            oneb['geometry'].append(g)
+            #-- insert the building as one new city object
+            cm['CityObjects'][skywgeomattributes[i]['osm_id']] = oneb
 
     return cm
 
