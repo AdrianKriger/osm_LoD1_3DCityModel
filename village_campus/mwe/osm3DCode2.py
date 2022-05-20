@@ -337,10 +337,13 @@ def write_Skygjson(bridge, jparams):#, fname):
                 
         f["geometry"] = mapping(osm_shape)
 
-        
         f["properties"]['ground_height'] = round(row["mean"], 2)
+        if row.tags['min_height'] != None:
+            f["properties"]['min_height'] = round((float(row.tags['min_height'])) + row["mean"], 2)
+        else:
+            f["properties"]['min_height'] = round((float(row.tags['building:min_level']) * storeyheight) + row["mean"], 2)
+            
         f["properties"]['building_height'] = round(float(row.tags['building:levels']) * storeyheight, 2)
-        f["properties"]['min_height'] = round((float(row.tags['building:min_level']) * storeyheight) + row["mean"], 2)
         f["properties"]['max_height'] = round(f["properties"]['building_height'] + row["mean"], 2)
         skyprints['features'].append(f)
                      
@@ -705,7 +708,7 @@ def output_cityjson(extent, minz, maxz, T, pts, jparams, skywalk):
     
     #clean cityjson
     cm = cityjson.load(jparams['cjsn_out'])
-    cm.remove_duplicate_vertices()
+    #cm.remove_duplicate_vertices()
     cityjson.save(cm, jparams['cjsn_CleanOut'])
 
 def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywgeom=None,
@@ -724,8 +727,6 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywg
     cm["metadata"] = {
     "title": jparams['cjsn_title'],
     "referenceDate": jparams['cjsn_referenceDate'],
-    #"dataSource": jparams['cjsn_source'],
-    #"geographicLocation": jparams['cjsn_Locatn'],
     "referenceSystem": jparams['cjsn_referenceSystem'],
     "geographicalExtent": [
         extent[0],
@@ -777,8 +778,6 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywg
                  }
             }]
         }
-    #"metadataStandard": jparams['metaStan'],
-    #"metadataStandardVersion": jparams['metaStanV']
     }
       ##-- do terrain
     add_terrain_v(pts, cm)
