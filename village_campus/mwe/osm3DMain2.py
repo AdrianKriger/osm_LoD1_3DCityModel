@@ -18,7 +18,7 @@ from datetime import timedelta
 from osm3DCode2 import requestOsmBld, projVec, requestOsmAoi, \
     prepareDEM, assignZ, getosmBld, writegjson, getosmArea, getXYZ, getBldVertices, \
         getAOIVertices, appendCoords, createSgmts, executeDelaunay, pvPlot, writeObj, \
-            output_cityjson, createXYZ, write275obj, write_Skygjson
+            output_cityjson, createXYZ, write275obj, write_Skygjson, write_roof
     
 def main():
     start = time.time()
@@ -56,10 +56,12 @@ def main():
     rb = src_ds.GetRasterBand(1)
     
     
-    ts, skywalk = assignZ(jparams['gjson-proj_out'], gt_forward, rb) #jparams['projClip_raster'],
+    ts, skywalk, roof = assignZ(jparams['gjson-proj_out'], gt_forward, rb) #jparams['projClip_raster'],
     writegjson(ts, jparams)#['gjson-z_out'])
     if len(skywalk) > 0:
         write_Skygjson(skywalk, jparams)
+    if len(roof) > 0:
+        write_roof(roof, jparams)
     
     dis, hs = getosmBld(jparams)
     
@@ -88,7 +90,7 @@ def main():
     maxz = df3['z'].max()
     src_ds = None
     #writeObj(pts, t, 'wvft_cput3d.obj') ~ this will write the terrain surface only
-    output_cityjson(extent, minz, maxz, t, pts, jparams, skywalk)
+    output_cityjson(extent, minz, maxz, t, pts, jparams, skywalk, roof)
     write275obj(jparams)
     
     # if jparams['inter'] == 'True':

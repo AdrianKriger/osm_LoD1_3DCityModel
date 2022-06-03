@@ -178,9 +178,15 @@ def assignZ(vfname, gt_forward, rb): # rfname,
     if len(skywalk) > 0:
         skywalk['mean'] = skywalk.apply(lambda row: rasterQuery(row.geometry, gt_forward, rb), axis = 1)
     
+    #-- building=roof
+    roof = ts[ts['bld'] == 'roof'].copy()
+    ts.drop(ts.index[ts['bld'] == 'roof'], inplace = True)
+    if len(roof) > 0:
+        roof['mean'] = roof.apply(lambda row: rasterQuery(row.geometry, gt_forward, rb), axis = 1)
+    
     ts['mean'] = ts.apply(lambda row : rasterQuery(row.geometry, gt_forward, rb), axis = 1)
     
-    return ts, skywalk
+    return ts, skywalk, roof
     
 def writegjson(ts, jparams):#, fname):
     """
@@ -350,6 +356,49 @@ def write_Skygjson(bridge, jparams):#, fname):
     #-- store the data as GeoJSON
     with open(jparams['SKYwalk_gjson-z_out'], 'w') as outfile:
         json.dump(skyprints, outfile)
+        
+def write_roof(roof, jparams):#, fname):
+    storeyheight = 2.8
+    #-- iterate through the list of buildings and create GeoJSON features rich in attributes
+    _roof = {
+        "type": "FeatureCollection",
+        "features": []
+    }
+    for i, row in roof.iterrows():
+        f = {
+        "type" : "Feature"
+        }
+
+        f["properties"] = {}
+                
+                #-- store all OSM attributes and prefix them with osm_ 
+        f["properties"]["osm_id"] = row.id
+        for p in row.tags:
+            f["properties"]["osm_%s" % p] = row.tags[p]
+                
+        osm_shape = shape(row["geometry"])
+                    #-- a few buildings are not polygons, rather linestrings. This converts them to polygons
+                    #-- rare, but if not done it breaks the code later
+        if osm_shape.type == 'LineString':
+            osm_shape = Polygon(osm_shape)
+                    #-- and multipolygons must be accounted for
+        elif osm_shape.type == 'MultiPolygon':
+                    #osm_shape = Polygon(osm_shape[0])
+            for poly in osm_shape:
+                osm_shape = Polygon(poly)#[0])
+                        #-- convert the shapely object to geojson
+                    
+        f["geometry"] = mapping(osm_shape)
+                
+        f["properties"]['ground_height'] = round(row["mean"], 2)
+        #print('id: ', f["properties"]["osm_id"], row.tags['building:levels'])
+        f["properties"]['bottom_roof_height'] = round(float(row.tags['building:levels']) * storeyheight + row["mean"], 2) 
+        f["properties"]['top_roof_height'] = round(f["properties"]['bottom_roof_height'] + 1.5, 2)
+        _roof['features'].append(f)
+        
+    #-- store the data as GeoJSON
+    with open(jparams['roof_gjson-z_out'], 'w') as outfile:
+        json.dump(_roof, outfile)
 
 def getXYZ(dis, aoi, jparams):
     """
@@ -668,7 +717,7 @@ def writeObj(pts, dt, obj_filename):
                                           simplex[2] + 1))
     f_out.close()
     
-def output_cityjson(extent, minz, maxz, T, pts, jparams, skywalk):
+def output_cityjson(extent, minz, maxz, T, pts, jparams, skywalk, roof):
     """
     basic function to produce LoD1 City Model
     - buildings and terrain
@@ -689,30 +738,36 @@ def output_cityjson(extent, minz, maxz, T, pts, jparams, skywalk):
         for each in sky:
             skywgeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
             skywgeomattributes.append(each['properties'])
-            
-        cm = doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywgeom,
-                        skywgeomattributes)    
-        json_str = json.dumps(cm, indent=2)
-        fout = open(jparams['cjsn_out'], "w")
-        fout.write(json_str)  
-         ##- close fiona object
-        c.close()
-    else: 
-        cm = doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywgeom=None,
-                         skywgeomattributes=None)    
-        json_str = json.dumps(cm, indent=2)
-        fout = open(jparams['cjsn_out'], "w")
-        fout.write(json_str)  
-         ##- close fiona object
-        c.close()
+    else:
+        skywgeom = None
+        skywgeomattributes = None
+           
+    if len(roof) > 0:
+        _roof = fiona.open(jparams['roof_gjson-z_out'])
+        roofgeom = [] #-- list of the geometries
+        roofgeomattributes = [] #-- list of the attributes
+        for each in _roof:
+            roofgeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
+            roofgeomattributes.append(each['properties'])
+    else:
+        roofgeom = None
+        roofgeomattributes = None
+        
+    cm = doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywgeom,
+                     skywgeomattributes, roofgeom, roofgeomattributes)    
+    json_str = json.dumps(cm, indent=2)
+    fout = open(jparams['cjsn_out'], "w")
+    fout.write(json_str)  
+    ##- close fiona object
+    c.close() 
     
-    #clean cityjson
+    ##--clean cityjson
     cm = cityjson.load(jparams['cjsn_out'])
     #cm.remove_duplicate_vertices()
     cityjson.save(cm, jparams['cjsn_CleanOut'])
 
 def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywgeom=None,
-                    skywgeomattributes=None): 
+                    skywgeomattributes=None, roofgeom=None, roofgeomattributes=None): 
     #-- create the JSON data structure for the City Model
     cm = {}
     cm["type"] = "CityJSON"
@@ -904,6 +959,63 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywg
             oneb['geometry'].append(g)
             #-- insert the building as one new city object
             cm['CityObjects'][skywgeomattributes[i]['osm_id']] = oneb
+            
+    #-- then roof
+    if roofgeom != None:
+        for (i, geom) in enumerate(roofgeom):
+            roofprint = geom
+        #-- one building
+            oneb = {}
+            oneb['type'] = 'Building'
+            oneb['attributes'] = {}
+            for k, v in list(roofgeomattributes[i].items()):
+                if v is None:
+                    del roofgeomattributes[i][k]
+            #oneb['attributes'][k] = lsattributes[i][k]
+            for a in roofgeomattributes[i]:
+                oneb['attributes'][a] = roofgeomattributes[i][a]
+        
+            oneb['geometry'] = [] #-- a cityobject can have > 1
+        #-- the geometry
+            g = {} 
+            g['type'] = 'Solid'
+            g['lod'] = 1
+            allsurfaces = [] #-- list of surfaces forming the oshell of the solid
+        #-- exterior ring of each footprint
+            oring = list(roofprint.exterior.coords)
+            oring.pop() #-- remove last point since first==last
+            if roofprint.exterior.is_ccw == False:
+            #-- to get proper orientation of the normals
+                oring.reverse() 
+            extrude_walls(oring, roofgeomattributes[i]['top_roof_height'], 
+                          roofgeomattributes[i]['bottom_roof_height'],
+                          allsurfaces, cm)
+        #-- interior rings of each footprint
+            irings = []
+            interiors = list(roofprint.interiors)
+            for each in interiors:
+                iring = list(each.coords)
+                iring.pop() #-- remove last point since first==last
+                if each.is_ccw == True:
+                #-- to get proper orientation of the normals
+                    iring.reverse() 
+                irings.append(iring)
+                extrude_walls(iring, roofgeomattributes[i]['top_roof_height'], 
+                              roofgeomattributes[i]['bottom_roof_height'],
+                              allsurfaces, cm)
+        #-- top-bottom surfaces
+            extrude_roof_ground(oring, irings, roofgeomattributes[i]['top_roof_height'], 
+                                False, allsurfaces, cm)
+            extrude_roof_ground(oring, irings, roofgeomattributes[i]['bottom_roof_height'], 
+                                True, allsurfaces, cm)
+        #-- add the extruded geometry to the geometry
+            g['boundaries'] = []
+            g['boundaries'].append(allsurfaces)
+        #g['boundaries'] = allsurfaces
+        #-- add the geom to the building 
+            oneb['geometry'].append(g)
+        #-- insert the building as one new city object
+            cm['CityObjects'][roofgeomattributes[i]['osm_id']] = oneb
 
     return cm
 
