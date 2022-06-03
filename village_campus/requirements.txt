@@ -1,31 +1,16 @@
 #### ESSENTIAL LIBRARIES FOR MAIN FUNCTIONALITY ####
-#-- pip when conda-forge is not available
+#-- conda-forge then pip
 
+#conda
 python = 3.8.5
+geopandas = 0.10.2
+pyvista = 0.34.0
+pydeck = 0.7.1 
 
-requests = 2.25.1
+#pip
+triangle  = 20220202 # - python wrapper around Jonathan Richard Shewchuk's at rufat.be/triangle
+cjio = 0.7.3  # -  python CLI to process and manipulate CityJSON files
 overpass = 0.7
-osm2geojson = 0.1.29
+osm2geojson = 0.1.33
+openlocationcode = 1.0.1 # - google 'plus codes' at https://github.com/google/open-location-code
 
-numpy = 1.20.2
-pandas = 1.2.4
-geopandas = 0.9.0
-shapely = 1.7.1                            #-- will be moving towards 1.8.0
-fiona = 1.8.18
-geojson = 2.5.0
-
-# - google 'plus codes' at https://github.com/google/open-location-code
-openlocationcode = 1.0.1
-
-# -  python CLI to process and manipulate CityJSON files
-cjio = 0.6.8    
-
-gdal = 3.2.1
-rasterstats = 0.15.0                      #-- will be moving towards 0.16.0 to accomodate shapely update
-
-# - python wrapper around Jonathan Richard Shewchuk's at rufat.be/triangle
-triangle  = 20200404  
-
-# - interactive visualization
-pydeck = 0.6.2
-pyvista = 0.31.1
