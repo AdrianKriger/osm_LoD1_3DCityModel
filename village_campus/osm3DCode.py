@@ -48,7 +48,7 @@ from cjio import cityjson
 from osgeo import gdal, ogr
 from rasterstats import zonal_stats, point_query
 
-import pydeck as pdk
+#import pydeck as pdk
 
 import pyvista as pv
 import triangle as tr
@@ -584,7 +584,7 @@ def output_cityjson(extent, minz, maxz, T, pts, jparams):
     lsgeom = [] #-- list of the geometries
     lsattributes = [] #-- list of the attributes
     for each in c:
-        lsgeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
+        lsgeom.append(shape(each['geometry'])) #-- geom are cast to Fiona's 
         lsattributes.append(each['properties'])
         
     cm = doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams)    
@@ -604,6 +604,10 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
     cm = {}
     cm["type"] = "CityJSON"
     cm["version"] = "1.1"
+    cm["transform"] = {
+        "scale": [0.0, 0.0, 0.0],
+        "translate": [1.0, 1.0, 1.0]
+        }
     cm["CityObjects"] = {}
     cm["vertices"] = []
     #-- Metadata is added manually
@@ -729,8 +733,9 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams):
         extrude_roof_ground(oring, irings, lsattributes[i]['ground_height'], 
                             True, allsurfaces, cm)
         #-- add the extruded geometry to the geometry
-        g['boundaries'] = []
-        g['boundaries'].append(allsurfaces)
+        #g['boundaries'] = []
+        #g['boundaries'].append(allsurfaces)
+        g['boundaries'] = allsurfaces
         #-- add the geom to the building 
         oneb['geometry'].append(g)
         #-- insert the building as one new city object
