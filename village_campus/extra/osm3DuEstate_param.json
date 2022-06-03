@@ -5,9 +5,11 @@
     
     "crs": "EPSG:32734",
 
-    "ori-gjson_out": "./data/fp-cput.geojson",
-    "gjson-proj_out": "./data/fp_proj-cput.geojson",
-    "gjson-z_out": "./data/fp_proj_z-cput.geojson",
+    "ori-gjson_out": "./data/fp.geojson",
+    "gjson-proj_out": "./data/fp_proj.geojson",
+    "gjson-z_out": "./data/fp_proj_z.geojson",
+    "SKYwalk_gjson-z_out": "./data/skywalk_z.geojson",
+    "roof_gjson-z_out": "./data/roof_z.geojson",
     
     "aoi": "./data/aoi.geojson",
     "aoi_prj": "./data/aoi_proj.geojson",
@@ -21,10 +23,10 @@
     "cjsn_out": "./result/citjsn_uEstate3d.json",
     
     "cjsn_title": "LoD1 City Model of urban neighbourhood, Walmer Estate, Cape Town",
-    "cjsn_referenceDate": "2022-01-31",
+    "cjsn_referenceDate": "2022-05-15",
     "cjsn_referenceSystem": "https://www.opengis.net/def/crs/EPSG/0/32734",
     "cjsn_contactName": "arkriger", 
-	"cjsn_emailAddress": "adrian8kriger@gmail.com", 
+    "cjsn_emailAddress": "adrian8kriger@gmail.com", 
     "cjsn_website": "www.linkedin.com/in/adrian-kriger", 
     "cjsn_contactType": "private",
 	"cjsn_+meta-description": "Chief Directorate: National Geo-spatial Information",
@@ -34,4 +36,5 @@
     
     "cjsn_CleanOut": "./result/citjsnClean_uEstate3d.json",
     "obj-2_75D": "./result/obj275D_uEstate3d.obj"
+
 }

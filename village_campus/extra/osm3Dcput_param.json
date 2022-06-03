@@ -8,6 +8,13 @@
     "ori-gjson_out": "./data/fp-cput.geojson",
     "gjson-proj_out": "./data/fp_proj-cput.geojson",
     "gjson-z_out": "./data/fp_proj_z-cput.geojson",
+    "SKYwalk_gjson-z_out": "./data/skywalk_z-cput.geojson",
+    "roof_gjson-z_out": "./data/roof_z-cput.geojson",
+    
+    
+    "gjson-rd": "./data/roads-cput.geojson",
+    "gjson_proj-rd": "./data/roads-cput_proj.geojson",
+    "gjson_rd_out": "./data/roads-cput_out.geojson",
     
     "aoi": "./data/aoi.geojson",
     "aoi_prj": "./data/aoi_proj.geojson",
