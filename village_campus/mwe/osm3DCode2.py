@@ -19,8 +19,8 @@
 #########################
 import os
 from itertools import chain
-from math import floor
-import struct
+#from math import floor
+#import struct
 
 import requests
 import overpass
@@ -251,7 +251,7 @@ def writegjson(ts, jparams):#, fname):
                 #-- and multipolygons must be accounted for
             elif osm_shape.type == 'MultiPolygon':
                 #osm_shape = Polygon(osm_shape[0])
-                for poly in osm_shape:
+                for poly in osm_shape.geoms:
                     osm_shape = Polygon(poly)#[0])
                     #-- convert the shapely object to geojson
             
@@ -337,7 +337,7 @@ def write_Skygjson(bridge, jparams):#, fname):
             #-- and multipolygons must be accounted for
         elif osm_shape.type == 'MultiPolygon':
             #osm_shape = Polygon(osm_shape[0])
-            for poly in osm_shape:
+            for poly in osm_shape.geoms:
                 osm_shape = Polygon(poly)#[0])
                 #-- convert the shapely object to geojson
                 
@@ -368,33 +368,34 @@ def write_roof(roof, jparams):#, fname):
         f = {
         "type" : "Feature"
         }
+        if 'building:levels' in row['tags']:
 
-        f["properties"] = {}
-                
-                #-- store all OSM attributes and prefix them with osm_ 
-        f["properties"]["osm_id"] = row.id
-        for p in row.tags:
-            f["properties"]["osm_%s" % p] = row.tags[p]
-                
-        osm_shape = shape(row["geometry"])
-                    #-- a few buildings are not polygons, rather linestrings. This converts them to polygons
-                    #-- rare, but if not done it breaks the code later
-        if osm_shape.type == 'LineString':
-            osm_shape = Polygon(osm_shape)
-                    #-- and multipolygons must be accounted for
-        elif osm_shape.type == 'MultiPolygon':
-                    #osm_shape = Polygon(osm_shape[0])
-            for poly in osm_shape:
-                osm_shape = Polygon(poly)#[0])
-                        #-- convert the shapely object to geojson
+            f["properties"] = {}
                     
-        f["geometry"] = mapping(osm_shape)
-                
-        f["properties"]['ground_height'] = round(row["mean"], 2)
-        #print('id: ', f["properties"]["osm_id"], row.tags['building:levels'])
-        f["properties"]['bottom_roof_height'] = round(float(row.tags['building:levels']) * storeyheight + row["mean"], 2) 
-        f["properties"]['top_roof_height'] = round(f["properties"]['bottom_roof_height'] + 1.5, 2)
-        _roof['features'].append(f)
+                    #-- store all OSM attributes and prefix them with osm_ 
+            f["properties"]["osm_id"] = row.id
+            for p in row.tags:
+                f["properties"]["osm_%s" % p] = row.tags[p]
+                    
+            osm_shape = shape(row["geometry"])
+                        #-- a few buildings are not polygons, rather linestrings. This converts them to polygons
+                        #-- rare, but if not done it breaks the code later
+            if osm_shape.type == 'LineString':
+                osm_shape = Polygon(osm_shape)
+                        #-- and multipolygons must be accounted for
+            elif osm_shape.type == 'MultiPolygon':
+                        #osm_shape = Polygon(osm_shape[0])
+                for poly in osm_shape.geoms:
+                    osm_shape = Polygon(poly)#[0])
+                            #-- convert the shapely object to geojson
+                        
+            f["geometry"] = mapping(osm_shape)
+                    
+            f["properties"]['ground_height'] = round(row["mean"], 2)
+            #print('id: ', f["properties"]["osm_id"], row.tags['building:levels'])
+            f["properties"]['bottom_roof_height'] = round(float(row.tags['building:levels']) * storeyheight + row["mean"], 2) 
+            f["properties"]['top_roof_height'] = round(f["properties"]['bottom_roof_height'] + 1, 2)
+            _roof['features'].append(f)
         
     #-- store the data as GeoJSON
     with open(jparams['roof_gjson-z_out'], 'w') as outfile:
