@@ -19,8 +19,6 @@
 #########################
 import os
 from itertools import chain
-#from math import floor
-#import struct
 
 import requests
 import overpass
@@ -31,7 +29,6 @@ import pandas as pd
 import geopandas as gpd
 
 import shapely
-#shapely.speedups.disable()
 import shapely.geometry as sg
 from shapely.geometry import Point, LineString, Polygon, shape, mapping
 from shapely.ops import snap
@@ -49,14 +46,15 @@ from openlocationcode import openlocationcode as olc
 from cjio import cityjson
 
 from osgeo import gdal, ogr
-#from rasterstats import zonal_stats, point_query
-
-#import pydeck as pdk
 
 import pyvista as pv
 import triangle as tr
 
 import matplotlib.pyplot as plt
+
+from shapely.wkt import loads
+import itertools
+from scipy.spatial import Voronoi, voronoi_plot_2d, Delaunay
 
 import time
 from datetime import timedelta
@@ -126,6 +124,167 @@ def requestOsmAoi(jparams):
         json.dump(area, outfile)
         
     return area
+
+def requestOsmRoads(jparams):
+    """
+    request osm roads - save
+    """
+    query = """
+    [out:json][timeout:25];
+    (area[name='{0}'] ->.b;
+    // -- target area ~ can be way or relation
+    {1}(area.b)[name='{2}'];
+    map_to_area -> .a;
+        // I want all roads
+        way["highway"][highway!~"^(footway|path)$"](area.a);
+    );
+    out body;
+    >;
+    out skel qt;
+    """.format(jparams['LargeArea'], jparams['osm_type'], jparams['FocusArea'])
+    
+    url = "http://overpass-api.de/api/interpreter"
+    rd = requests.get(url, params={'data': query})
+    gj_rd = osm2geojson.json2geojson(rd.json())
+    #-- store the data as GeoJSON
+    with open(jparams['gjson-rd'], 'w') as outfile:
+        json.dump(gj_rd, outfile)
+        
+    return gj_rd 
+
+def segmentize(geom):
+        wkt = geom.wkt  # shapely Polygon to wkt
+        geom = ogr.CreateGeometryFromWkt(wkt)  # create ogr geometry
+        geom.Segmentize(5)  # densify geometry
+        wkt2 = geom.ExportToWkt()  # ogr geometry to wkt
+        new = loads(wkt2)  # wkt to shapely Polygon
+        return new
+    
+def buffer(row):
+    return row.geometry.buffer(round(float(row['lanes']) * 1.2, 2), cap_style=1)
+
+# #https://stackoverflow.com/questions/50916422/python-typeerror-object-of-type-int64-is-not-json-serializable
+# def np_encoder(object):
+#     if isinstance(object, np.generic):
+#         return object.item()
+
+def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
+    """
+    process ---buffer with out overlap--- the osm roads
+    """
+    
+    rd = gpd.read_file(jparams['gjson_proj-rd'])
+    rd.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
+    rd['lanes'] = rd['tags'].apply(lambda x: x.get('lanes'))
+    rd['lanes'] = pd.to_numeric(rd['lanes'])
+    #rd['covered'] = rd['tags'].apply(lambda x: x.get('covered'))
+    rd['bridge'] = rd['tags'].apply(lambda x: x.get('bridge'))
+    rd['name'] = rd['tags'].apply(lambda x: x.get('name'))# if pd.isnull(fillna(np.nan)))
+    rd.name = rd.name.fillna(np.nan)
+    rd['highway'] = rd['tags'].apply(lambda x: x.get('highway'))
+    #bridge = rd[rd['bridge'] == 'yes'].copy()
+    rd = rd[rd['geometry'].type != 'Polygon']#) & (rd['lanes'] != np.nan)]
+    rd.dropna(subset=['lanes'], inplace=True)
+
+    rd['geometry'] = rd['geometry'].apply(segmentize)
+    
+    inters = []
+    for line1, line2 in itertools.combinations(rd.geometry, 2):
+        if line1.intersects(line2):
+            inter = line1.intersection(line2)
+            if "Point" == inter.type:
+                inters.append(inter)
+            elif "MultiPoint" == inter.type:
+                inters.extend([pt for pt in inter])
+            elif "MultiLineString" == inter.type:
+                multiLine = [line for line in inter]
+                first_coords = multiLine[0].coords[0]
+                last_coords = multiLine[len(multiLine)-1].coords[1]
+                inters.append(Point(first_coords[0], first_coords[1]))
+                inters.append(Point(last_coords[0], last_coords[1]))
+            elif "GeometryCollection" == inter.type:
+                for geom in inter:
+                    if "Point" == geom.type:
+                        inters.append(geom)
+                    elif "MultiPoint" == geom.type:
+                        inters.extend([pt for pt in geom])
+                    elif "MultiLineString" == geom.type:
+                        multiLine = [line for line in geom]
+                        first_coords = multiLine[0].coords[0]
+                        last_coords = multiLine[len(multiLine)-1].coords[1]
+                        inters.append(Point(first_coords[0], first_coords[1]))
+                        inters.append(Point(last_coords[0], last_coords[1]))
+                        
+    pnts = gpd.GeoDataFrame(crs=jparams['crs'], geometry=inters)
+    p_buffer = pnts.buffer(2)
+    p_buffer = gpd.GeoDataFrame(crs=jparams['crs'], geometry=p_buffer)
+    
+    rd_e = gpd.overlay(rd, p_buffer, how='difference')
+    rd_e = rd_e.explode()
+    rd_e.reset_index(drop=True, inplace=True)
+    
+    pt = [line.__geo_interface__['coordinates'] for line in rd_e.geometry]
+    pt_array = np.array(np.concatenate(pt))
+    
+    po = [i for i in aoibuffer.geometry]
+    x,y = po[0].exterior.coords.xy
+    po = np.dstack((x,y))
+    po_array = np.array(np.concatenate(po))
+    pt_array = np.concatenate((pt_array, po_array), axis=0)
+    
+    vor = Voronoi(pt_array)
+    lines = [shapely.geometry.LineString(vor.vertices[line]) for line in vor.ridge_vertices if -1 not in line]
+    polys = shapely.ops.polygonize(lines)
+    vo = gpd.GeoDataFrame(geometry=gpd.GeoSeries(polys), crs=jparams['crs'])
+    
+    join = gpd.sjoin(vo, rd_e, how="left", op="intersects")
+    
+    rd_b = rd.copy()
+    rd_b['geometry'] = rd_b.apply(buffer, axis=1)
+    rd_b = gpd.geoseries.GeoSeries([geom for geom in rd_b.unary_union.geoms])
+    rd_b.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
+    rd_b = rd_b.explode()
+    rd_b = gpd.clip(rd_b, aoi)
+    one = gpd.clip(join, rd_b)
+    one.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
+    
+    one.drop(one.index[one['bridge'] == 'yes'], inplace = True)
+    one = one.dissolve(by=['name', 'highway'], as_index=False, dropna=False)
+    one = one.explode()
+    one.reset_index(drop=True, inplace=True)
+    
+    one['x'] = one.geometry.representative_point().x
+    one['y'] = one.geometry.representative_point().y
+    one['ground_height'] = one.apply(lambda row: rasterQuery2(row.x, row.y, gt_forward, rb), axis = 1)
+
+    roads = {
+        "type": "FeatureCollection",
+        "features": []
+        }
+    for i, row in one.iterrows():
+        f = {
+        "type" : "Feature"
+        }
+        f["properties"] = {}
+                
+            #-- store all OSM attributes and prefix them with osm_ 
+        f["properties"]["osm_id"] = row.id
+        for p in row.tags:
+            f["properties"]["osm_%s" % p] = row.tags[p]
+                #print(p)
+        #osm_shape = shape(row["geometry"])
+        #f["geometry"] = mapping(osm_shape)
+        if 'width' not in row['tags']:
+            f["properties"]['road_width'] = round(int(row['lanes']) * 2, 2)
+    
+        roads['features'].append(f)
+    #-- store the data as GeoJSON
+    with open(jparams['gjson_rd_out'], 'w') as outfile:
+        json.dump(roads, outfile)#, default=np_encoder)
+    
+    hsr = one[['x', 'y', 'ground_height']].copy()
+    
+    return one, hsr
 
 def prepareDEM(extent, jparams):
     """
@@ -467,7 +626,7 @@ def getosmArea(filen, b_type, crs):
     """
     aoi = gpd.read_file(filen)
     
-    # when relations return may areas
+    # when relations may areas
     if b_type == 'relation' and len(aoi) > 1:
         for i, row in aoi.iterrows():
             if row.tags != None and 'place' in row.tags:
@@ -479,13 +638,13 @@ def getosmArea(filen, b_type, crs):
         
     aoi = aoi.set_crs(crs)
                         
-    buffer = gpd.GeoDataFrame(aoi, geometry = aoi.geometry)
-    buffer['geometry'] = aoi.buffer(150, cap_style = 2, join_style = 2)
+    aoibuffer = gpd.GeoDataFrame(aoi, geometry = aoi.geometry)
+    aoibuffer['geometry'] = aoi.buffer(150, cap_style = 2, join_style = 2)
     
-    extent = [buffer.total_bounds[0] - 250, buffer.total_bounds[1] - 250, 
-              buffer.total_bounds[2] + 250, buffer.total_bounds[3] + 250]
+    extent = [aoibuffer.total_bounds[0] - 250, aoibuffer.total_bounds[1] - 250, 
+              aoibuffer.total_bounds[2] + 250, aoibuffer.total_bounds[3] + 250]
     
-    return aoi, extent
+    return aoi, aoibuffer, extent
 
 def getBldVertices(dis):
     """
@@ -567,6 +726,156 @@ def getBldVertices(dis):
         
     return ac, c
 
+def getRdVertices(one, idx01, acoi, hs, gt_forward, rb):
+    r_coords = []
+    r_coords02 = []
+    dps = 2
+    segs = {}
+    segs02 = {}
+    geoms = {}
+    
+    idx1 = []
+    arr = []
+    acoi_copy = acoi.copy()
+    l1 = len(acoi_copy)
+    Ahsr = pd.DataFrame(columns=['x', 'y', 'ground_height']) #[]
+    temp_Ahsr = pd.DataFrame(columns=['x', 'y', 'ground_height']) #[]
+    pnt_df = pd.DataFrame(columns=['x', 'y', 'z'])
+    t_list = []
+    rd_pts = []
+    
+    count = 0
+    for ids, row in one.iterrows():
+       
+        oring = list(row.geometry.exterior.coords)
+        coords_rounded = []
+        po = []
+        for x, y in oring:
+            z = rasterQuery2(x, y, gt_forward, rb)
+ 
+            rounded_x = round(x, dps)
+            rounded_y = round(y, dps)
+            rounded_z = round(z, dps)
+            coords_rounded.append((rounded_x, rounded_y, rounded_z))
+            r_coords.append([rounded_x, rounded_y, rounded_z])
+            r_coords02.append([rounded_x, rounded_y, rounded_z])
+            
+        for i in range(0, len(coords_rounded)-1):
+            x1, y1, z1 = coords_rounded[i]
+            x2, y2, z2 = coords_rounded[i+1]
+            # deduplicate lines which overlap but go in different directions
+            if (x1 < x2):
+                key = (x1, y1, x2, y2)
+            else:
+                if (x1 == x2):
+                    if (y1 < y2):
+                        key = (x1, y1, x2, y2)
+                    else:
+                        key = (x2, y2, x1, y1)
+                else:
+                    key = (x2, y2, x1, y1)
+            if key not in segs:
+                segs[key] = 1
+            else:
+                segs[key] += 1
+            if key not in segs02:
+                segs02[key] = 1
+            else:
+                segs02[key] += 1
+                
+        ##-- if polygon has interior (circular roads with 'islands')   
+        g = row.geometry.interiors
+        for i, interior in enumerate(g):
+
+            if interior != None:
+                x, y = interior.centroid.xy
+
+                arr.append([x[0], y[0], row['ground_height']])
+                ho = Ahsr.append(pd.DataFrame(arr, columns=['x', 'y', 'ground_height']))
+                temp_Ahsr = hs.append(ho)
+                arr = temp_Ahsr[['x', 'y']].round(3).values.tolist()
+
+            coords_rounded = []
+            for pair in list(interior.coords):
+                x = pair[0]
+                y = pair[1]
+                z = rasterQuery2(x, y, gt_forward, rb)
+                rounded_x = round(x, dps)
+                rounded_y = round(y, dps)
+                rounded_z = round(z, dps)
+                coords_rounded.append((rounded_x, rounded_y, rounded_z))
+                r_coords.append([rounded_x, rounded_y, rounded_z])
+                r_coords02.append([rounded_x, rounded_y, rounded_z])
+                
+            for i in range(0, len(coords_rounded)-1):
+                x1, y1, z1 = coords_rounded[i]
+                x2, y2, z2 = coords_rounded[i+1]
+               #-- deduplicate lines which overlap but go in different directions
+                if (x1 < x2):
+                    key = (x1, y1, x2, y2)
+                else:
+                    if (x1 == x2):
+                        if (y1 < y2):
+                            key = (x1, y1, x2, y2)
+                        else:
+                            key = (x2, y2, x1, y1)
+                    else:
+                        key = (x2, y2, x1, y1)
+                if key not in segs:
+                    segs[key] = 1
+                else:
+                    segs[key] += 1
+                if key not in segs02:
+                    segs02[key] = 1
+                else:
+                    segs02[key] += 1
+                    
+        
+        crx = pd.DataFrame.from_dict(segs02, orient="index").reset_index()
+        crx.rename(columns={'index':'coords'}, inplace=True)
+        
+        acrx = pd.DataFrame(r_coords02, columns=['x', 'y', 'z'])
+        acrx = acrx.sort_values(by = 'z', ascending=False)
+        acrx.drop_duplicates(subset=['x','y'], keep= 'first', inplace=True)
+        acrx = acrx.reset_index(drop=True)
+        
+        acoi_copy = acoi_copy.append(acrx, ignore_index=True)
+        r_pts = acoi_copy[['x', 'y', 'z']].values
+        rd_pts.append(r_pts)
+        pts = acoi_copy[['x', 'y']].values
+    
+        for i, row in crx.iterrows():
+            frx, fry = row.coords[0], row.coords[1]
+            tox, toy = row.coords[2], row.coords[3]
+            [index_f] = (acrx[(acrx['x'] == frx) & (acrx['y'] == fry)].index.values)
+            [index_t] = (acrx[(acrx['x'] == tox) & (acrx['y'] == toy)].index.values)
+            idx1.append([l1 + index_f, l1 + index_t])
+        #idxAll.append(idx1)
+        
+        if len(arr) >= 1:
+            A = dict(vertices=pts, segments=idx1, holes=arr)
+        else:
+            A = dict(vertices=pts, segments=idx1)
+        Tr = tr.triangulate(A, 'pVV')  # the VV will print stats in the cmd
+        t = Tr.get('triangles').tolist()
+        t_list.append(t)
+        arr = [] #np.empty((0,2), int)
+        segs02 = {}
+        r_coords02 = []
+        idx1 = []
+        acoi_copy = acoi.copy()
+                                      
+    cr = pd.DataFrame.from_dict(segs, orient="index").reset_index()
+    cr.rename(columns={'index':'coords'}, inplace=True)
+        
+    acr = pd.DataFrame(r_coords, columns=['x', 'y', 'z'])
+    acr = acr.sort_values(by = 'z', ascending=False)
+    acr.drop_duplicates(subset=['x','y'], keep= 'first', inplace=True)
+    acr = acr.reset_index(drop=True)
+    
+    return t_list, rd_pts, acr, cr
+    
+
 def rasterQuery2(mx, my, gt_forward, rb):
     
     px = int((mx - gt_forward[0]) / gt_forward[1])
@@ -646,6 +955,8 @@ def createSgmts(ac, c, gdf, idx):
     """
     
     l = len(gdf) #- 1
+    lr = 0
+    idx01 = []
     
     for i, row in c.iterrows():
         frx, fry = row.coords[0], row.coords[1]
@@ -654,8 +965,9 @@ def createSgmts(ac, c, gdf, idx):
         [index_f] = (ac[(ac['x'] == frx) & (ac['y'] == fry)].index.values)
         [index_t] = (ac[(ac['x'] == tox) & (ac['y'] == toy)].index.values)
         idx.append([l + index_f, l + index_t])
+        idx01.append([lr + index_f, lr + index_t])
     
-    return idx
+    return idx, idx01
 
 def executeDelaunay(hs, df3, idx):
     """
@@ -717,6 +1029,65 @@ def writeObj(pts, dt, obj_filename):
         f_out.write("f {} {} {}\n".format(simplex[0] + 1, simplex[1] + 1, 
                                           simplex[2] + 1))
     f_out.close()
+
+def output_cityjsonR(extent, minz, maxz, T, pts, t_list, rd_pts, jparams, bridge, roof, acoi):
+    """
+    basic function to produce LoD1 City Model
+    - buildings and terrain
+    """
+     ##- open buildings ---fiona object
+    c = fiona.open(jparams['gjson-z_out'])
+    lsgeom = [] #-- list of the geometries
+    lsattributes = [] #-- list of the attributes
+    for each in c:
+        lsgeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
+        lsattributes.append(each['properties'])
+    
+    ##- open roads ---fiona object
+    rd = fiona.open(jparams['gjson_rd_out'])
+    #rdgeom = [] #-- list of the geometries
+    rdattributes = [] #-- list of the attributes
+    for each in rd:
+        #lsgeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
+        rdattributes.append(each['properties'])
+        
+    ##- open skywalk ---fiona object
+    if len(bridge) > 0:
+        sky = fiona.open(jparams['SKYwalk_gjson-z_out'])
+        skywgeom = [] #-- list of the geometries
+        skywgeomattributes = [] #-- list of the attributes
+        for each in sky:
+            skywgeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
+            skywgeomattributes.append(each['properties'])
+    else:
+        skywgeom = None
+        skywgeomattributes = None
+           
+    if len(roof) > 0:
+        _roof = fiona.open(jparams['roof_gjson-z_out'])
+        roofgeom = [] #-- list of the geometries
+        roofgeomattributes = [] #-- list of the attributes
+        for each in _roof:
+            roofgeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
+            roofgeomattributes.append(each['properties'])
+    else:
+        roofgeom = None
+        roofgeomattributes = None
+        
+    cm = doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, minz, maxz, 
+                       T, pts, 
+                       acoi,
+                       jparams, skywgeom, skywgeomattributes, roofgeom, roofgeomattributes)   
+    
+    json_str = json.dumps(cm, indent=2)
+    fout = open(jparams['cjsn_out'], "w")
+    fout.write(json_str)  
+         ##- close fiona object
+    c.close() 
+
+    #clean cityjson
+    cm = cityjson.load(jparams['cjsn_out'])
+    cityjson.save(cm, jparams['cjsn_CleanOut'])
     
 def output_cityjson(extent, minz, maxz, T, pts, jparams, skywalk, roof):
     """
@@ -1067,6 +1438,363 @@ def extrude_walls(ring, height, ground, allsurfaces, cm):
     cm['vertices'].append([ring[-1][0], ring[-1][1], height])
     t = len(cm['vertices'])
     allsurfaces.append([[t-4, t-3, t-2, t-1]])
+
+def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, minz, maxz, 
+                  T, pts, 
+                  acoi, 
+                  jparams, skywgeom=None,
+                  skywgeomattributes=None, roofgeom=None, roofgeomattributes=None): 
+    #-- create the JSON data structure for the City Model
+    cm = {}
+    cm["type"] = "CityJSON"
+    cm["version"] = "1.1"
+    #cm["transform"] = {
+    #    "scale": [0.0, 0.0, 0.0],
+    #    "translate": [1.0, 1.0, 1.0]
+    #},
+    cm["CityObjects"] = {}
+    cm["vertices"] = []
+    #-- Metadata is added manually
+    cm["metadata"] = {
+    "title": jparams['cjsn_title'],
+    "referenceDate": jparams['cjsn_referenceDate'],
+    #"dataSource": jparams['cjsn_source'],
+    #"geographicLocation": jparams['cjsn_Locatn'],
+    "referenceSystem": jparams['cjsn_referenceSystem'],
+    "geographicalExtent": [
+        extent[0],
+        extent[1],
+        minz ,
+        extent[1],
+        extent[1],
+        maxz
+      ],
+    "datasetPointOfContact": {
+        "contactName": jparams['cjsn_contactName'],
+        "emailAddress": jparams['cjsn_emailAddress'],
+        "contactType": jparams['cjsn_contactType'],
+        "website": jparams['cjsn_website']
+        },
+    "+metadata-extended": {
+        "lineage":
+            [{"featureIDs": ["TINRelief"],
+             "source": [
+                 {
+                     "description": jparams['cjsn_+meta-description'],
+                     "sourceSpatialResolution": jparams['cjsn_+meta-sourceSpatialResolution'],
+                     "sourceReferenceSystem": jparams['cjsn_+meta-sourceReferenceSystem'],
+                     "sourceCitation":jparams['cjsn_+meta-sourceCitation'],
+                     }],
+             "processStep": {
+                 "description" : "Processing of raster DEM using osm_LoD1_3DCityModel workflow",
+                 "processor": {
+                     "contactName": jparams['cjsn_contactName'],
+                     "contactType": jparams['cjsn_contactType'],
+                     "website": "https://github.com/AdrianKriger/osm_LoD1_3DCityModel"
+                     }
+                 }
+            },
+            {"featureIDs": ["Building"],
+             "source": [
+                 {
+                     "description": "OpenStreetMap contributors",
+                     "sourceReferenceSystem": "urn:ogc:def:crs:EPSG:4326",
+                     "sourceCitation": "https://www.openstreetmap.org",
+                 }],
+             "processStep": {
+                 "description" : "Processing of building vector contributions using osm_LoD1_3DCityModel workflow",
+                 "processor": {
+                     "contactName": jparams['cjsn_contactName'],
+                     "contactType": jparams['cjsn_contactType'],
+                     "website": "https://github.com/AdrianKriger/osm_LoD1_3DCityModel"
+                     }
+                 }
+            }]
+        }
+    #"metadataStandard": jparams['metaStan'],
+    #"metadataStandardVersion": jparams['metaStanV']
+    }
+      ##-- do terrain
+    add_terrain_v(pts, cm)
+    grd = {}
+    grd['type'] = 'TINRelief'
+    grd['geometry'] = [] #-- a cityobject can have >1 
+      #-- the geometry
+    g = {} 
+    g['type'] = 'CompositeSurface'
+    g['lod'] = 1
+    g['boundaries'] = []
+    allsurfaces = [] #-- list of surfaces
+    add_terrain_b(T, allsurfaces)
+    g['boundaries'] = allsurfaces
+    #print(g['boundaries'])
+    #g['boundaries'].append(allsurfaces)
+      #-- add the geom 
+    grd['geometry'].append(g)
+      #-- insert the terrain as one new city object
+    cm['CityObjects']['terrain01'] = grd
+    
+    ##-- do roads
+    #for (i, t) in zip(enumerate(rd_pts), t_list):
+    count = 0
+    for (r, t) in zip(rd_pts, t_list):
+        r = r[len(acoi):, :]
+        add_rd_v(r, cm)
+        onerd = {}
+        onerd['type'] = 'Road'
+        onerd['geometry'] = [] #-- a cityobject can have >1 
+          #-- the geometry
+        g = {} 
+        g['type'] = 'MultiSurface'
+        g['lod'] = 1
+        g['boundaries'] = []
+        allsurfaces = [] #-- list of surfaces
+        add_rd_b(t, r, acoi, allsurfaces, cm)
+        
+        onerd['attributes'] = {}
+        for k, v in list(rdattributes[count].items()):
+            if v is None:
+                del rdattributes[count][k]
+        for a in rdattributes[count]:
+            onerd['attributes'][a] = rdattributes[count][a]
+            
+        g['boundaries'] = allsurfaces
+        #g['boundaries'].append(allsurfaces)
+          #-- add the geom 
+        onerd['geometry'].append(g)
+        #onerd['geometry'] = g
+          #-- insert one road as one new city object
+        cm['CityObjects'][rdattributes[count]['osm_id']] = onerd
+        count = count + 1
+    
+     #-- then buildings
+    for (i, geom) in enumerate(lsgeom):
+        footprint = geom
+        #-- one building
+        oneb = {}
+        oneb['type'] = 'Building'
+        oneb['attributes'] = {}
+        for k, v in list(lsattributes[i].items()):
+            if v is None:
+                del lsattributes[i][k]
+            #oneb['attributes'][k] = lsattributes[i][k]
+        for a in lsattributes[i]:
+            oneb['attributes'][a] = lsattributes[i][a]
+        
+        oneb['geometry'] = [] #-- a cityobject can have > 1
+        #-- the geometry
+        g = {} 
+        g['type'] = 'Solid'
+        g['lod'] = 1
+        allsurfaces = [] #-- list of surfaces forming the oshell of the solid
+        #-- exterior ring of each footprint
+        oring = list(footprint.exterior.coords)
+        oring.pop() #-- remove last point since first==last
+        if footprint.exterior.is_ccw == False:
+            #-- to get proper orientation of the normals
+            oring.reverse() 
+        extrude_walls(oring, lsattributes[i]['roof_height'], lsattributes[i]['ground_height'],
+                      allsurfaces, cm)
+        #-- interior rings of each footprint
+        irings = []
+        interiors = list(footprint.interiors)
+        for each in interiors:
+            iring = list(each.coords)
+            iring.pop() #-- remove last point since first==last
+            if each.is_ccw == True:
+                #-- to get proper orientation of the normals
+                iring.reverse() 
+            irings.append(iring)
+            extrude_walls(iring, lsattributes[i]['roof_height'], lsattributes[i]['ground_height'],
+                          allsurfaces, cm)
+        #-- top-bottom surfaces
+        extrude_roof_ground(oring, irings, lsattributes[i]['roof_height'], 
+                            False, allsurfaces, cm)
+        extrude_roof_ground(oring, irings, lsattributes[i]['ground_height'], 
+                            True, allsurfaces, cm)
+        #-- add the extruded geometry to the geometry
+        g['boundaries'] = []
+        g['boundaries'].append(allsurfaces)
+        #g['boundaries'] = allsurfaces
+        #-- add the geom to the building 
+        oneb['geometry'].append(g)
+        #-- insert the building as one new city object
+        cm['CityObjects'][lsattributes[i]['osm_id']] = oneb
+        
+    #-- then sykwalk
+    if skywgeom != None:
+        for (i, geom) in enumerate(skywgeom):
+            skyprint = geom
+        #-- one building
+            oneb = {}
+            oneb['type'] = 'Bridge'
+            oneb['attributes'] = {}
+            for k, v in list(skywgeomattributes[i].items()):
+                if v is None:
+                    del skywgeomattributes[i][k]
+            #oneb['attributes'][k] = lsattributes[i][k]
+            for a in skywgeomattributes[i]:
+                oneb['attributes'][a] = skywgeomattributes[i][a]
+        
+            oneb['geometry'] = [] #-- a cityobject can have > 1
+        #-- the geometry
+            g = {} 
+            g['type'] = 'Solid'
+            g['lod'] = 1
+            allsurfaces = [] #-- list of surfaces forming the oshell of the solid
+        #-- exterior ring of each footprint
+            oring = list(skyprint.exterior.coords)
+            oring.pop() #-- remove last point since first==last
+            if skyprint.exterior.is_ccw == False:
+            #-- to get proper orientation of the normals
+                oring.reverse() 
+            extrude_walls(oring, skywgeomattributes[i]['max_height'], skywgeomattributes[i]['min_height'],
+                          allsurfaces, cm)
+        #-- interior rings of each footprint
+            irings = []
+            interiors = list(skyprint.interiors)
+            for each in interiors:
+                iring = list(each.coords)
+                iring.pop() #-- remove last point since first==last
+                if each.is_ccw == True:
+                #-- to get proper orientation of the normals
+                    iring.reverse() 
+                irings.append(iring)
+                extrude_walls(iring, skywgeomattributes[i]['max_height'], skywgeomattributes[i]['min_height'],
+                              allsurfaces, cm)
+        #-- top-bottom surfaces
+            extrude_roof_ground(oring, irings, skywgeomattributes[i]['max_height'], 
+                                False, allsurfaces, cm)
+            extrude_roof_ground(oring, irings, skywgeomattributes[i]['min_height'], 
+                                True, allsurfaces, cm)
+        #-- add the extruded geometry to the geometry
+            g['boundaries'] = []
+            g['boundaries'].append(allsurfaces)
+        #g['boundaries'] = allsurfaces
+        #-- add the geom to the building 
+            oneb['geometry'].append(g)
+        #-- insert the building as one new city object
+            cm['CityObjects'][skywgeomattributes[i]['osm_id']] = oneb
+    #return cm
+
+    #-- then roof
+    if roofgeom != None:
+        for (i, geom) in enumerate(roofgeom):
+            roofprint = geom
+        #-- one building
+            oneb = {}
+            oneb['type'] = 'Building'
+            oneb['attributes'] = {}
+            for k, v in list(roofgeomattributes[i].items()):
+                if v is None:
+                    del roofgeomattributes[i][k]
+            #oneb['attributes'][k] = lsattributes[i][k]
+            for a in roofgeomattributes[i]:
+                oneb['attributes'][a] = roofgeomattributes[i][a]
+        
+            oneb['geometry'] = [] #-- a cityobject can have > 1
+        #-- the geometry
+            g = {} 
+            g['type'] = 'Solid'
+            g['lod'] = 1
+            allsurfaces = [] #-- list of surfaces forming the oshell of the solid
+        #-- exterior ring of each footprint
+            oring = list(roofprint.exterior.coords)
+            oring.pop() #-- remove last point since first==last
+            if roofprint.exterior.is_ccw == False:
+            #-- to get proper orientation of the normals
+                oring.reverse() 
+            extrude_walls(oring, roofgeomattributes[i]['top_roof_height'], 
+                          roofgeomattributes[i]['bottom_roof_height'],
+                          allsurfaces, cm)
+        #-- interior rings of each footprint
+            irings = []
+            interiors = list(roofprint.interiors)
+            for each in interiors:
+                iring = list(each.coords)
+                iring.pop() #-- remove last point since first==last
+                if each.is_ccw == True:
+                #-- to get proper orientation of the normals
+                    iring.reverse() 
+                irings.append(iring)
+                extrude_walls(iring, roofgeomattributes[i]['top_roof_height'], 
+                              roofgeomattributes[i]['bottom_roof_height'],
+                              allsurfaces, cm)
+        #-- top-bottom surfaces
+            extrude_roof_ground(oring, irings, roofgeomattributes[i]['top_roof_height'], 
+                                False, allsurfaces, cm)
+            extrude_roof_ground(oring, irings, roofgeomattributes[i]['bottom_roof_height'], 
+                                True, allsurfaces, cm)
+        #-- add the extruded geometry to the geometry
+            g['boundaries'] = []
+            g['boundaries'].append(allsurfaces)
+        #g['boundaries'] = allsurfaces
+        #-- add the geom to the building 
+            oneb['geometry'].append(g)
+        #-- insert the building as one new city object
+            cm['CityObjects'][roofgeomattributes[i]['osm_id']] = oneb
+
+    return cm
+
+# def add_terrain_v(pts, cm):
+#     for p in pts:
+#         cm['vertices'].append([p[0], p[1], p[2]])
+    
+# def add_terrain_b(T, allsurfaces):
+#     for i in T:
+#         allsurfaces.append([[i[0], i[1], i[2]]]) 
+        
+def add_rd_v(pts, cm):
+    #cm['vertices'] = pts
+    for p in pts:
+        cm['vertices'].append([p[0], p[1], p[2]])
+        #print(cm['vertices'])
+
+def add_rd_b(T, r, acoi, allsurfaces, cm):
+    for i in T:
+        #allsurfaces.append([[i[0], i[1], i[2]]]) 
+        allsurfaces.append([[i[0]+len(cm['vertices'])-len(r)-len(acoi), 
+                             i[1]+len(cm['vertices'])-len(r)-len(acoi), 
+                             i[2]+len(cm['vertices'])-len(r)-len(acoi)]])
+        
+# def extrude_roof_ground(orng, irngs, height, reverse, allsurfaces, cm):
+#     oring = copy.deepcopy(orng)
+#     irings = copy.deepcopy(irngs)
+#     if reverse == True:
+#         oring.reverse()
+#         for each in irings:
+#             each.reverse()
+#     for (i, pt) in enumerate(oring):
+#         cm['vertices'].append([pt[0], pt[1], height])
+#         oring[i] = (len(cm['vertices']) - 1)
+#     for (i, iring) in enumerate(irings):
+#         for (j, pt) in enumerate(iring):
+#             cm['vertices'].append([pt[0], pt[1], height])
+#             irings[i][j] = (len(cm['vertices']) - 1)
+#     output = []
+#     output.append(oring)
+#     for each in irings:
+#         output.append(each)
+#     allsurfaces.append(output)
+
+# def extrude_walls(ring, height, ground, allsurfaces, cm):
+#     #-- each edge become a wall, ie a rectangle
+#     for (j, v) in enumerate(ring[:-1]):
+#         l = []
+#         cm['vertices'].append([ring[j][0],   ring[j][1],   ground])
+#         cm['vertices'].append([ring[j+1][0], ring[j+1][1], ground])
+#         cm['vertices'].append([ring[j+1][0], ring[j+1][1], height])
+#         cm['vertices'].append([ring[j][0],   ring[j][1],   height])
+#         t = len(cm['vertices'])
+#         allsurfaces.append([[t-4, t-3, t-2, t-1]])    
+#     #-- last-first edge
+#     l = []
+#     cm['vertices'].append([ring[-1][0], ring[-1][1], ground])
+#     cm['vertices'].append([ring[0][0],  ring[0][1],  ground])
+#     cm['vertices'].append([ring[0][0],  ring[0][1],  height])
+#     cm['vertices'].append([ring[-1][0], ring[-1][1], height])
+#     t = len(cm['vertices'])
+#     allsurfaces.append([[t-4, t-3, t-2, t-1]])
     
 def write275obj(jparams):
     """

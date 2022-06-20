@@ -15,10 +15,18 @@ from osgeo import gdal
 import time
 from datetime import timedelta
 
-from osm3DCode2 import requestOsmBld, projVec, requestOsmAoi, \
-    prepareDEM, assignZ, getosmBld, writegjson, getosmArea, getXYZ, getBldVertices, \
-        getAOIVertices, appendCoords, createSgmts, executeDelaunay, pvPlot, writeObj, \
-            output_cityjson, createXYZ, write275obj, write_Skygjson, write_roof
+from osm3DCode2 import (requestOsmBld, projVec, requestOsmAoi, getosmArea, 
+                        prepareDEM, createXYZ, 
+                        requestOsmRoads, prepareRoads, 
+                        assignZ, writegjson, write_Skygjson, write_roof, getosmBld,
+                        getXYZ, 
+                        getBldVertices, createSgmts, appendCoords, 
+                        getRdVertices, 
+                        getAOIVertices, 
+                        executeDelaunay, pvPlot, 
+                        output_cityjsonR, #doVcBndGeomRd, 
+                        output_cityjson, 
+                        writeObj, write275obj)
     
 def main():
     start = time.time()
@@ -34,12 +42,12 @@ def main():
     path = os.path.join(path, d_name)
     os.makedirs(path, exist_ok=True)
     
-    requestOsmBld(jparams)
-    projVec(jparams['gjson-proj_out'], jparams['ori-gjson_out'], jparams['crs'])
-    requestOsmAoi(jparams)
-    projVec(jparams['aoi_prj'], jparams['aoi'], jparams['crs'])
-    aoi, extent = getosmArea(jparams['aoi_prj'], jparams['osm_type'], jparams['crs'])
-    
+    #requestOsmBld(jparams)
+    #projVec(jparams['gjson-proj_out'], jparams['ori-gjson_out'], jparams['crs'])
+    #requestOsmAoi(jparams)
+    #projVec(jparams['aoi_prj'], jparams['aoi'], jparams['crs'])
+    aoi, aoibuffer, extent = getosmArea(jparams['aoi_prj'], jparams['osm_type'], jparams['crs'])
+       
     path = os.getcwd()
     r_name = 'result'
     path = os.path.join(path, r_name)
@@ -55,6 +63,10 @@ def main():
     #gt_reverse=gdal.InvGeoTransform(gt_forward)
     rb = src_ds.GetRasterBand(1)
     
+    if jparams['roads'] == "Yes":
+        #requestOsmRoads(jparams)
+        #projVec(jparams['gjson_proj-rd'], jparams['gjson-rd'], jparams['crs'])
+        one, hsr = prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb)
     
     ts, skywalk, roof = assignZ(jparams['gjson-proj_out'], gt_forward, rb) #jparams['projClip_raster'],
     writegjson(ts, jparams)#['gjson-z_out'])
@@ -63,34 +75,52 @@ def main():
     if len(roof) > 0:
         write_roof(roof, jparams)
     
-    dis, hs = getosmBld(jparams)
+    dis, hs2 = getosmBld(jparams)
     
-    gdf = getXYZ(dis, aoi, jparams)
+    if jparams['roads'] == "Yes":
+        hs = hs2.append(hsr)
+        dis_c = dis.copy()
+        dis_c = dis_c.append(one)
+        gdf = getXYZ(dis_c, aoibuffer, jparams)
+    else:
+        gdf = getXYZ(dis, aoibuffer, jparams)
+    
+    #gdf = getXYZ(dis, aoibuffer, jparams)
     ac, c = getBldVertices(dis)
+    idx = []
+    idx, idx01 = createSgmts(ac, c, gdf, idx)
     df2 = appendCoords(gdf, ac)
     
-    idx = []
-    idx = createSgmts(ac, c, gdf, idx)
-    
-    acoi, ca = getAOIVertices(aoi, gt_forward, rb) # jparams['projClip_raster'],
+    if jparams['roads'] == "Yes":
+         acoi, ca = getAOIVertices(aoi, gt_forward, rb) # jparams['projClip_raster'],
+         idx, idx01 = createSgmts(acoi, ca, df2, idx)
+         df3 = appendCoords(df2, acoi)
+         
+         t_list, rd_pts, acr, cr = getRdVertices(one, idx01, acoi, hs2, gt_forward, rb)
+         idx, idx01 = createSgmts(acr, cr, df3, idx)
+         df3 = appendCoords(df3, acr)
+    else:
+        acoi, ca = getAOIVertices(aoi, gt_forward, rb) # jparams['projClip_raster'],
+        idx, idx01 = createSgmts(acoi, ca, df2, idx)
+        df3 = appendCoords(df2, acoi)
         
-    idx = createSgmts(acoi, ca, df2, idx)
-    df3 = appendCoords(df2, acoi)
     pts = df3[['x', 'y', 'z']].values
-    
-      #-- change the dtype to 'float64'
+     #-- change the dtype to 'float64'
     pts = pts.astype('float64')
 
     t = executeDelaunay(hs, df3, idx)
     
       #-- check terrain with a plot
-    pvPlot(t, pts, idx, hs)
+    pvPlot(t, pts, idx, hs2)
 
     minz = df3['z'].min()
     maxz = df3['z'].max()
     src_ds = None
     #writeObj(pts, t, 'wvft_cput3d.obj') ~ this will write the terrain surface only
-    output_cityjson(extent, minz, maxz, t, pts, jparams, skywalk, roof)
+    if jparams['roads'] == "Yes":
+        output_cityjsonR(extent, minz, maxz, t, pts, t_list, rd_pts, jparams, skywalk, roof, acoi)
+    else: 
+        output_cityjson(extent, minz, maxz, t, pts, jparams, skywalk, roof)
     write275obj(jparams)
     
     # if jparams['inter'] == 'True':

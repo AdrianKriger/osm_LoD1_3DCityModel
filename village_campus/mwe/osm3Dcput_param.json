@@ -11,10 +11,10 @@
     "SKYwalk_gjson-z_out": "./data/skywalk_z-cput.geojson",
     "roof_gjson-z_out": "./data/roof_z-cput.geojson",
     
-    
-    "gjson-rd": "./data/roads-cput.geojson",
-    "gjson_proj-rd": "./data/roads-cput_proj.geojson",
-    "gjson_rd_out": "./data/roads-cput_out.geojson",
+    "roads": "Yes",
+    "gjson-rd": "./data/rds-cput.geojson",
+    "gjson_proj-rd": "./data/rds-cput_proj.geojson",
+    "gjson_rd_out": "./data/rds-cput_out.geojson",
     
     "aoi": "./data/aoi.geojson",
     "aoi_prj": "./data/aoi_proj.geojson",
@@ -39,6 +39,6 @@
     "cjsn_+meta-sourceReferenceSystem": "urn:ogc:def:crs:EPSG:20481",
     "cjsn_+meta-sourceCitation":"http://www.ngi.gov.za/",
     
-    "cjsn_CleanOut": "./result/citjsnClean_cput3d.json",
+    "cjsn_CleanOut": "./result/citjsnClean_cput3d-str.json",
     "obj-2_75D": "./result/obj275D_cput3d.obj"
 }
