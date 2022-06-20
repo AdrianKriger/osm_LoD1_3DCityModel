@@ -858,6 +858,7 @@ def getRdVertices(one, idx01, acoi, hs, gt_forward, rb):
         else:
             A = dict(vertices=pts, segments=idx1)
         Tr = tr.triangulate(A, 'pVV')  # the VV will print stats in the cmd
+        time.sleep(7)
         t = Tr.get('triangles').tolist()
         t_list.append(t)
         arr = [] #np.empty((0,2), int)
