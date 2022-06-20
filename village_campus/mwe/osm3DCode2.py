@@ -743,6 +743,7 @@ def getRdVertices(one, idx01, acoi, hs, gt_forward, rb):
     pnt_df = pd.DataFrame(columns=['x', 'y', 'z'])
     t_list = []
     rd_pts = []
+    idxAll = []
     
     count = 0
     for ids, row in one.iterrows():
@@ -850,7 +851,7 @@ def getRdVertices(one, idx01, acoi, hs, gt_forward, rb):
             [index_f] = (acrx[(acrx['x'] == frx) & (acrx['y'] == fry)].index.values)
             [index_t] = (acrx[(acrx['x'] == tox) & (acrx['y'] == toy)].index.values)
             idx1.append([l1 + index_f, l1 + index_t])
-        #idxAll.append(idx1)
+        idxAll.append(idx1)
         
         if len(arr) >= 1:
             A = dict(vertices=pts, segments=idx1, holes=arr)

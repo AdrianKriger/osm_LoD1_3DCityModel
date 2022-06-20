@@ -42,10 +42,10 @@ def main():
     path = os.path.join(path, d_name)
     os.makedirs(path, exist_ok=True)
     
-    #requestOsmBld(jparams)
-    #projVec(jparams['gjson-proj_out'], jparams['ori-gjson_out'], jparams['crs'])
-    #requestOsmAoi(jparams)
-    #projVec(jparams['aoi_prj'], jparams['aoi'], jparams['crs'])
+    requestOsmBld(jparams)
+    projVec(jparams['gjson-proj_out'], jparams['ori-gjson_out'], jparams['crs'])
+    requestOsmAoi(jparams)
+    projVec(jparams['aoi_prj'], jparams['aoi'], jparams['crs'])
     aoi, aoibuffer, extent = getosmArea(jparams['aoi_prj'], jparams['osm_type'], jparams['crs'])
        
     path = os.getcwd()
@@ -64,8 +64,8 @@ def main():
     rb = src_ds.GetRasterBand(1)
     
     if jparams['roads'] == "Yes":
-        #requestOsmRoads(jparams)
-        #projVec(jparams['gjson_proj-rd'], jparams['gjson-rd'], jparams['crs'])
+        requestOsmRoads(jparams)
+        projVec(jparams['gjson_proj-rd'], jparams['gjson-rd'], jparams['crs'])
         one, hsr = prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb)
     
     ts, skywalk, roof = assignZ(jparams['gjson-proj_out'], gt_forward, rb) #jparams['projClip_raster'],
