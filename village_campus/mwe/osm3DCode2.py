@@ -261,6 +261,7 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
         "type": "FeatureCollection",
         "features": []
         }
+    count = 1000000
     for i, row in one.iterrows():
         f = {
         "type" : "Feature"
@@ -268,7 +269,7 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
         f["properties"] = {}
                 
             #-- store all OSM attributes and prefix them with osm_ 
-        f["properties"]["osm_id"] = row.id
+        f["properties"]["id"] = count #row.id
         for p in row.tags:
             f["properties"]["osm_%s" % p] = row.tags[p]
                 #print(p)
@@ -278,6 +279,7 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
             f["properties"]['road_width'] = round(int(row['lanes']) * 2, 2)
     
         roads['features'].append(f)
+        count += 1
     #-- store the data as GeoJSON
     with open(jparams['gjson_rd_out'], 'w') as outfile:
         json.dump(roads, outfile)#, default=np_encoder)
@@ -861,6 +863,7 @@ def getRdVertices(one, idx01, acoi, hs, gt_forward, rb):
         time.sleep(7)
         t = Tr.get('triangles').tolist()
         t_list.append(t)
+        
         arr = [] #np.empty((0,2), int)
         segs02 = {}
         r_coords02 = []
@@ -1538,27 +1541,30 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
     
     ##-- do roads
     #for (i, t) in zip(enumerate(rd_pts), t_list):
-    count = 0
-    for (r, t) in zip(rd_pts, t_list):
-        r = r[len(acoi):, :]
-        add_rd_v(r, cm)
+    #count = 1
+    #for (rp, tinR) in zip(rd_pts, t_list):
+    for i, (rp, tinR) in enumerate(zip(rd_pts, t_list)):
+        #rp = rd_pts[count]
+        rp = rp[len(acoi):, :]
+        add_rd_v(rp, cm)
         onerd = {}
         onerd['type'] = 'Road'
         onerd['geometry'] = [] #-- a cityobject can have >1 
           #-- the geometry
         g = {} 
         g['type'] = 'MultiSurface'
-        g['lod'] = 1
+        g['lod'] = 1    
+
         g['boundaries'] = []
         allsurfaces = [] #-- list of surfaces
-        add_rd_b(t, r, acoi, allsurfaces, cm)
-        
+        add_rd_b(tinR, rp, acoi, allsurfaces, cm)
+        #add_rd_b(t_list[count], rp, acoi, allsurfaces, cm)
         onerd['attributes'] = {}
-        for k, v in list(rdattributes[count].items()):
+        for k, v in list(rdattributes[i].items()):
             if v is None:
-                del rdattributes[count][k]
-        for a in rdattributes[count]:
-            onerd['attributes'][a] = rdattributes[count][a]
+                del rdattributes[i][k]
+        for a in rdattributes[i]:
+            onerd['attributes'][a] = rdattributes[i][a]
             
         g['boundaries'] = allsurfaces
         #g['boundaries'].append(allsurfaces)
@@ -1566,8 +1572,9 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
         onerd['geometry'].append(g)
         #onerd['geometry'] = g
           #-- insert one road as one new city object
-        cm['CityObjects'][rdattributes[count]['osm_id']] = onerd
-        count = count + 1
+        cm['CityObjects'][rdattributes[i]['id']] = onerd
+        #count = count + 1
+        #break
     
      #-- then buildings
     for (i, geom) in enumerate(lsgeom):
