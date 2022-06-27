@@ -52,10 +52,6 @@ import triangle as tr
 
 import matplotlib.pyplot as plt
 
-from shapely.wkt import loads
-import itertools
-from scipy.spatial import Voronoi, voronoi_plot_2d, Delaunay
-
 import time
 from datetime import timedelta
 
@@ -152,17 +148,6 @@ def requestOsmRoads(jparams):
         
     return gj_rd 
 
-def segmentize(geom):
-        wkt = geom.wkt  # shapely Polygon to wkt
-        geom = ogr.CreateGeometryFromWkt(wkt)  # create ogr geometry
-        geom.Segmentize(5)  # densify geometry
-        wkt2 = geom.ExportToWkt()  # ogr geometry to wkt
-        new = loads(wkt2)  # wkt to shapely Polygon
-        return new
-    
-def buffer(row):
-    return row.geometry.buffer(round(float(row['lanes']) * 1.2, 2), cap_style=1)
-
 # #https://stackoverflow.com/questions/50916422/python-typeerror-object-of-type-int64-is-not-json-serializable
 # def np_encoder(object):
 #     if isinstance(object, np.generic):
@@ -172,6 +157,27 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
     """
     process ---buffer with out overlap--- the osm roads
     """
+    from shapely.wkt import loads
+    import itertools
+    from scipy.spatial import Voronoi#, voronoi_plot_2d, Delaunay
+    
+    def segmentize(geom):
+        wkt = geom.wkt  # shapely Polygon to wkt
+        geom = ogr.CreateGeometryFromWkt(wkt)  # create ogr geometry
+        geom.Segmentize(5)  # densify geometry
+        wkt2 = geom.ExportToWkt()  # ogr geometry to wkt
+        new = loads(wkt2)  # wkt to shapely Polygon
+        return new
+    
+    ##-- https://stackoverflow.com/questions/33883200/pandas-how-to-fill-nan-none-values-based-on-the-other-columns
+    def calc_width(row):
+        if np.isnan(row['width']):
+            """if nan, calculate the width based on lanes"""
+            return row['lanes'] * 2.2
+    
+    def buffer(row):
+        #return row.geometry.buffer(round(float(row['lanes']) * 1.2, 2), cap_style=1)
+        return row.geometry.buffer(round(float(row['width']) / 2, 2), cap_style=1)
     
     rd = gpd.read_file(jparams['gjson_proj-rd'])
     rd.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
@@ -185,6 +191,10 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
     #bridge = rd[rd['bridge'] == 'yes'].copy()
     rd = rd[rd['geometry'].type != 'Polygon']#) & (rd['lanes'] != np.nan)]
     rd.dropna(subset=['lanes'], inplace=True)
+    
+    rd['lanes'] = pd.to_numeric(rd['lanes'])
+    rd['width'] = pd.to_numeric(rd['width'])
+    rd['width'] = rd.apply(calc_width, axis=1)
 
     rd['geometry'] = rd['geometry'].apply(segmentize)
     
@@ -249,7 +259,7 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
     one.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
     
     one.drop(one.index[one['bridge'] == 'yes'], inplace = True)
-    one = one.dissolve(by=['name', 'highway'], as_index=False, dropna=False)
+    one = one.dissolve(by=['name', 'highway', 'surface', 'oneway', 'lanes'], as_index=False, dropna=False)
     one = one.explode()
     one.reset_index(drop=True, inplace=True)
     
@@ -276,7 +286,7 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
         #osm_shape = shape(row["geometry"])
         #f["geometry"] = mapping(osm_shape)
         if 'width' not in row['tags']:
-            f["properties"]['road_width'] = round(int(row['lanes']) * 2, 2)
+            f["properties"]['calculated_width'] = round(int(row['lanes']) * 2, 2)
     
         roads['features'].append(f)
         count += 1
@@ -331,9 +341,10 @@ def assignZ(vfname, gt_forward, rb): # rfname,
     ~ .representative_point() used instead of .centroid
     """
     ts = gpd.read_file(vfname)
+    ts.drop(ts.index[ts['type'] == 'node'], inplace = True)
+    ts['bld'] = ts['tags'].apply(lambda x: x.get('building'))
     
     #-- skywalk --bridge
-    ts['bld'] = ts['tags'].apply(lambda x: x.get('building'))
     skywalk = ts[ts['bld'] == 'bridge'].copy()
     ts.drop(ts.index[ts['bld'] == 'bridge'], inplace = True)
     if len(skywalk) > 0:
@@ -355,7 +366,7 @@ def writegjson(ts, jparams):#, fname):
     ~ ground height, relative building height and roof height.
     write the result to file.
     """
-    # take care of non-Polygon LineString's 
+    #-- take care of non-Polygon LineString's 
     for i, row in ts.iterrows():
         if row.geometry.type == 'LineString' and len(row.geometry.coords) < 3:
             ts = ts.drop(ts.index[i])
@@ -371,10 +382,8 @@ def writegjson(ts, jparams):#, fname):
         f = {
         "type" : "Feature"
         }
-        # at a minimum we only want building:levels tagged
-        #if row.tags['building:levels'] != row.tags['building:levels'].astype(str): #'building:levels' in row.tags and 
-        #if row['type'] != 'node' and 'tags' in row is not None and 'building:levels' in row['tags'] and type(row['tags']['building:levels']) is not str:
-        if row['type'] != 'node' and row['tags'] != None and 'building:levels' in row['tags']:#\
+        #-- at a minimum we only want building:levels tagged
+        if row['type'] != 'node' and row['tags'] != None and 'building:levels' in row['tags']:
     
             f["properties"] = {}
             
@@ -416,6 +425,7 @@ def writegjson(ts, jparams):#, fname):
                     osm_shape = Polygon(poly)#[0])
                     #-- convert the shapely object to geojson
             
+            #-- google plus_code
             wgs84 = pyproj.CRS('EPSG:4326')
             utm = pyproj.CRS(jparams['crs'])
             p = osm_shape.representative_point()
@@ -424,13 +434,7 @@ def writegjson(ts, jparams):#, fname):
             f["properties"]["plus_code"] = olc.encode(wgs_point.y, wgs_point.x, 11)
                 
             f["geometry"] = mapping(osm_shape)
-    
-            #-- finally calculate the height and store it as an attribute
-            # if row["mean"] == None:
-            #     z = float(0)
-            # if row["mean"] != None:
-            #     z = round(row["mean"], 2)
-            
+               
             f["properties"]['ground_height'] = round(row["mean"], 2)
             #print('id: ', f["properties"]["osm_id"], row.tags['building:levels'])
             f["properties"]['building_height'] = round(float(row.tags['building:levels']) * storeyheight + 1.3, 2) 
