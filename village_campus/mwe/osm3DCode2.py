@@ -180,6 +180,7 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
         return row.geometry.buffer(round(float(row['width']) / 2, 2), cap_style=1)
     
     rd = gpd.read_file(jparams['gjson_proj-rd'])
+    rd.drop(rd.index[rd['type'] == 'node'], inplace = True)
     rd.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
     rd['lanes'] = rd['tags'].apply(lambda x: x.get('lanes'))
     rd['lanes'] = pd.to_numeric(rd['lanes'])
