@@ -196,6 +196,7 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
     rd['lanes'] = pd.to_numeric(rd['lanes'])
     rd['width'] = pd.to_numeric(rd['width'])
     rd['width'] = rd.apply(calc_width, axis=1)
+    rd.dropna(subset=['width'], inplace=True)
 
     rd['geometry'] = rd['geometry'].apply(segmentize)
     
