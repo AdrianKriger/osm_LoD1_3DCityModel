@@ -148,6 +148,32 @@ def requestOsmRoads(jparams):
         
     return gj_rd 
 
+def requestOsmParking(jparams):
+    """
+    request osm parking_entrance - save
+    """
+    query = """
+    [out:json][timeout:25];
+    (area[name='{0}'] ->.b;
+    // -- target area ~ can be way or relation
+    {1}(area.b)[name='{2}'];
+    map_to_area -> .a;
+        // I want all roads
+        node["amenity"="parking_entrance"](area.a);
+    );
+    out body;
+    >;
+    out skel qt;
+    """.format(jparams['LargeArea'], jparams['osm_type'], jparams['FocusArea'])
+    
+    url = "http://overpass-api.de/api/interpreter"
+    pk = requests.get(url, params={'data': query})
+    #rr = r.read()
+    gj_pk = osm2geojson.json2geojson(pk.json())
+    #-- store the data as GeoJSON
+    with open(jparams['gjson-pk'], 'w') as outfile:
+        json.dump(gj_pk, outfile)
+
 # #https://stackoverflow.com/questions/50916422/python-typeerror-object-of-type-int64-is-not-json-serializable
 # def np_encoder(object):
 #     if isinstance(object, np.generic):
@@ -178,21 +204,27 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
     def buffer(row):
         #return row.geometry.buffer(round(float(row['lanes']) * 1.2, 2), cap_style=1)
         return row.geometry.buffer(round(float(row['width']) / 2, 2), cap_style=1)
-    
+       
     rd = gpd.read_file(jparams['gjson_proj-rd'])
     rd.drop(rd.index[rd['type'] == 'node'], inplace = True)
     rd.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
+    
     rd['lanes'] = rd['tags'].apply(lambda x: x.get('lanes'))
-    rd['lanes'] = pd.to_numeric(rd['lanes'])
-    #rd['covered'] = rd['tags'].apply(lambda x: x.get('covered'))
-    rd['bridge'] = rd['tags'].apply(lambda x: x.get('bridge'))
+    rd['width'] = rd['tags'].apply(lambda x: x.get('width'))
     rd['name'] = rd['tags'].apply(lambda x: x.get('name'))# if pd.isnull(fillna(np.nan)))
-    rd.name = rd.name.fillna(np.nan)
     rd['highway'] = rd['tags'].apply(lambda x: x.get('highway'))
+    rd['surface'] = rd['tags'].apply(lambda x: x.get('surface'))
+    rd['oneway'] = rd['tags'].apply(lambda x: x.get('oneway'))
+    
+    rd['bridge'] = rd['tags'].apply(lambda x: x.get('bridge'))
+    rd['tunnel'] = rd['tags'].apply(lambda x: x.get('tunnel'))
+    
     #bridge = rd[rd['bridge'] == 'yes'].copy()
+    tunnel =  rd[rd['tunnel'].isin(['yes', 'building_passage', 'avalanche_protector'])]
+    
+    #-- remove pedestrian area + drop lanes with no values + calc width based on lanes when no width + drop width with no values
     rd = rd[rd['geometry'].type != 'Polygon']#) & (rd['lanes'] != np.nan)]
     rd.dropna(subset=['lanes'], inplace=True)
-    
     rd['lanes'] = pd.to_numeric(rd['lanes'])
     rd['width'] = pd.to_numeric(rd['width'])
     rd['width'] = rd.apply(calc_width, axis=1)
@@ -253,16 +285,46 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
     
     rd_b = rd.copy()
     rd_b['geometry'] = rd_b.apply(buffer, axis=1)
-    rd_b = gpd.geoseries.GeoSeries([geom for geom in rd_b.unary_union.geoms])
-    rd_b.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
+    #rd_b = gpd.geoseries.GeoSeries([geom for geom in rd_b.unary_union.geoms])
+    #rd_b.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
+    rd_b = gpd.GeoDataFrame(geometry=gpd.GeoSeries([geom for geom in rd_b.unary_union.geoms]), crs=jparams['crs'])
     rd_b = rd_b.explode()
+    
+    #-- buffer the tunnel features and cut from the roads
+    t_buffer = tunnel.buffer(1, cap_style=2)
+    t_buffer = gpd.GeoDataFrame(crs=jparams['crs'], geometry=t_buffer)
+    rd_b = gpd.overlay(rd_b, t_buffer, how='difference')
+    rd_b = rd_b.explode()
+    
+    #-- buffer the parking entrance and cut from roads   
+    pk = gpd.read_file(jparams['gjson_proj-pk'])
+    pk.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
+    #pk.drop(rd.index[rd['type'] != 'node'], inplace = True)
+    pk = pk[pk['geometry'].type == 'Point']
+    pk.dropna(subset=['tags'], inplace=True)
+    pk['entrance'] = pk['tags'].apply(lambda x: x.get('amenity'))
+    pk =  pk[pk['entrance'].isin(['parking_entrance'])]
+    pk_buffer = pk.buffer(2.4, cap_style=3)
+    pk_buffer = pk_buffer.geometry.rotate(45)                           ### --- I don't know why???
+    pk_buffer = gpd.GeoDataFrame(crs=jparams['crs'], geometry=pk_buffer)
+    rd_b = gpd.overlay(rd_b, pk_buffer, how='difference')
+    
+    #-- trim the roads to the aoi
     rd_b = gpd.clip(rd_b, aoi)
     one = gpd.clip(join, rd_b)
     one.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
     
+    #-- bridges and tunnels
     one.drop(one.index[one['bridge'] == 'yes'], inplace = True)
+    one.drop(one.index[one['tunnel'].isin(['yes', 'building_passage', 'avalanche_protector'])], inplace = True) #rd[rd['tunnel'].isin(['yes', 'building_passage'])]
+
+    #-- groupby and dissolve -> we do this so that similar features (road segments) join together
     one = one.dissolve(by=['name', 'highway', 'surface', 'oneway', 'lanes'], as_index=False, dropna=False)
     one = one.explode()
+    
+    #-- account for null/None values
+    one.loc[one["id"].isnull(), "id"] = (one["id"].isnull().cumsum()).astype(float) #"Other" + 
+    one.loc[one["tags"].isnull(), "tags"] = [{'processing': 'ExtraFeature'}]
     one.reset_index(drop=True, inplace=True)
     
     one['x'] = one.geometry.representative_point().x
@@ -282,13 +344,14 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
                 
             #-- store all OSM attributes and prefix them with osm_ 
         f["properties"]["id"] = count #row.id
+        f["properties"]["osm_id"] = row.id
         for p in row.tags:
             f["properties"]["osm_%s" % p] = row.tags[p]
                 #print(p)
         #osm_shape = shape(row["geometry"])
         #f["geometry"] = mapping(osm_shape)
-        if 'width' not in row['tags']:
-            f["properties"]['calculated_width'] = round(int(row['lanes']) * 2, 2)
+        #if 'width' not in row['tags']:
+            #f["properties"]['calculated_width'] = round(int(row['lanes']) * 2, 2)
     
         roads['features'].append(f)
         count += 1

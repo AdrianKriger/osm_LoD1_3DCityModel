@@ -5,20 +5,27 @@
     
     "crs": "EPSG:32734",
 
-    "ori-gjson_out": "./data/fp.geojson",
-    "gjson-proj_out": "./data/fp_proj.geojson",
-    "gjson-z_out": "./data/fp_proj_z.geojson",
-    "SKYwalk_gjson-z_out": "./data/skywalk_z.geojson",
-    "roof_gjson-z_out": "./data/roof_z.geojson",
+    "ori-gjson_out": "./data/fp_u.geojson",
+    "gjson-proj_out": "./data/fp_u_proj.geojson",
+    "gjson-z_out": "./data/fp_u_proj_z.geojson",
+    "SKYwalk_gjson-z_out": "./data/skywalk_u_z.geojson",
+    "roof_gjson-z_out": "./data/roof__uz.geojson",
     
-    "aoi": "./data/aoi.geojson",
-    "aoi_prj": "./data/aoi_proj.geojson",
+    "roads": "Yes",
+    "gjson-rd": "./data/rds-_ue.geojson",
+    "gjson_proj-rd": "./data/rds-ue_proj.geojson",
+    "gjson_rd_out": "./data/rds-ue_out.geojson",
+    "gjson-pk": "./data/rds-uepk.geojson",
+    "gjson_proj-pk": "./data/rds-uepk_proj.geojson",
+    
+    "aoi": "./data/aoi_u.geojson",
+    "aoi_prj": "./data/aoi_u_proj.geojson",
     
     "in_raster": "./raster/LO19_050M_3318CD.tif",
     "nodata": 3.402823466385289e+38,
-    "projClip_raster": "./raster/3318CD_clip_utm34s.tif",
+    "projClip_raster": "./raster/3318CD_Ueclip_utm34s.tif",
 
-    "xyz": "./raster/rasElev.xyz",
+    "xyz": "./raster/rasElev_UE.xyz",
     
     "cjsn_out": "./result/citjsn_uEstate3d.json",
     
