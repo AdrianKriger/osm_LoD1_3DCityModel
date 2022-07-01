@@ -32,7 +32,7 @@ def main():
     start = time.time()
     
     try:
-        jparams = json.load(open('osm3DuEstate_param.json'))
+        jparams = json.load(open('osm3Dcput_param.json'))
     except:
         print("ERROR: something is wrong with the param.json file.")
         sys.exit()
@@ -65,11 +65,11 @@ def main():
     rb = src_ds.GetRasterBand(1)
     
     if jparams['roads'] == "Yes":
-        requestOsmRoads(jparams)
-        projVec(jparams['gjson_proj-rd'], jparams['gjson-rd'], jparams['crs'])
-        requestOsmParking(jparams)
-        projVec(jparams['gjson_proj-pk'], jparams['gjson-pk'], jparams['crs'])
-        one, bridge, hsr = prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb)
+        rd = requestOsmRoads(jparams)
+        #projVec(jparams['gjson_proj-rd'], jparams['gjson-rd'], jparams['crs'])
+        pk = requestOsmParking(jparams)
+        #projVec(jparams['gjson_proj-pk'], jparams['gjson-pk'], jparams['crs'])
+        one, bridge, hsr = prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb)
         if jparams['bridge'] == 'Yes':
             prep_Brdgjson(bridge, jparams)
     
@@ -141,7 +141,7 @@ def main():
     
      #-- cput runtime: 0:00:44.313927 ~ university campus: 50 buildings / with 57 roads: 0:06:35.585379
      #-- rural runtime: 0:16:30.662577 ~ rural village: population 9 000
-     #-- neighbourhood runtime: 0:01:20.869754 ~ urban neighbourhood: population ~ 1 000, 305 buildings / with 29 roads: 0:06:08.407861
+     #-- neighbourhood runtime: 0:01:20.869754 ~ urban neighbourhood: population ~ 1 000, 305 buildings / with 29 roads: 0:03:41.608917
 
 if __name__ == "__main__":
     main()
