@@ -166,12 +166,24 @@ def requestOsmRoads(jparams):
     
     url = "http://overpass-api.de/api/interpreter"
     rd = requests.get(url, params={'data': query})
-    gj_rd = osm2geojson.json2geojson(rd.json())
+    #gj_rd = osm2geojson.json2geojson(rd.json())
+    rds = osm2geojson.json2shapes(rd.json())
     #-- store the data as GeoJSON
-    with open(jparams['gjson-rd'], 'w') as outfile:
-        json.dump(gj_rd, outfile)
-        
-    return gj_rd 
+    #with open(jparams['gjson-rd'], 'w') as outfile:
+        #json.dump(gj_rd, outfile)
+    
+    rd = gpd.GeoDataFrame(rds, crs="EPSG:4326").set_geometry('shape')
+    #gdf = gdf.rename(columns={'shape':'geometry'})
+    rd.to_crs(crs=jparams['crs'], inplace=True)
+    rd['type'] = rd['properties'].apply(lambda x: x.get('type'))
+    rd['tags'] = rd['properties'].apply(lambda x: x.get('tags'))
+    rd['id'] = rd['properties'].apply(lambda x: x.get('id'))
+    #aoi.rename(columns={'shape':'geometry'}, inplace=True)
+    rd.rename_geometry('geometry', inplace=True)
+    rd = rd.explode()
+    rd.reset_index(drop=True, inplace=True)
+    
+    return rd 
 
 def requestOsmParking(jparams):
     """
@@ -194,17 +206,31 @@ def requestOsmParking(jparams):
     url = "http://overpass-api.de/api/interpreter"
     pk = requests.get(url, params={'data': query})
     #rr = r.read()
-    gj_pk = osm2geojson.json2geojson(pk.json())
+    #gj_pk = osm2geojson.json2geojson(pk.json())
+    gj_pk = osm2geojson.json2shapes(pk.json())
     #-- store the data as GeoJSON
-    with open(jparams['gjson-pk'], 'w') as outfile:
-        json.dump(gj_pk, outfile)
+    #with open(jparams['gjson-pk'], 'w') as outfile:
+        #json.dump(gj_pk, outfile)
+        
+    pk = gpd.GeoDataFrame(gj_pk, crs="EPSG:4326").set_geometry('shape')
+    #gdf = gdf.rename(columns={'shape':'geometry'})
+    pk.to_crs(crs=jparams['crs'], inplace=True)
+    pk['type'] = pk['properties'].apply(lambda x: x.get('type'))
+    pk['tags'] = pk['properties'].apply(lambda x: x.get('tags'))
+    pk['id'] = pk['properties'].apply(lambda x: x.get('id'))
+    #aoi.rename(columns={'shape':'geometry'}, inplace=True)
+    pk.rename_geometry('geometry', inplace=True)
+    #pk = pk.explode()
+    pk.reset_index(drop=True, inplace=True)
+        
+    return pk
 
 # #https://stackoverflow.com/questions/50916422/python-typeerror-object-of-type-int64-is-not-json-serializable
 # def np_encoder(object):
 #     if isinstance(object, np.generic):
 #         return object.item()
 
-def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
+def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     """
     process ---buffer with out overlap--- the osm roads
     """
@@ -232,10 +258,11 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
     def ownbuffer02(row):
         return row.geometry.buffer(round(float(row['width']) / 2, 2), cap_style=2)
        
-    rd = gpd.read_file(jparams['gjson_proj-rd'])
+    #rd = gpd.read_file(jparams['gjson_proj-rd'])
+    rd = rd.copy()
     rd.drop(rd.index[rd['type'] == 'node'], inplace = True)
     rd.dropna(subset=['tags'], inplace=True)
-    rd.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
+    #rd.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
     
     #-- extract values
     rd['lanes'] = rd['tags'].apply(lambda x: x.get('lanes'))
@@ -328,9 +355,10 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
     rd_b = rd_b.explode()
     
     #-- buffer the parking entrance and cut from roads   
-    pk = gpd.read_file(jparams['gjson_proj-pk'])
-    pk.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
+    #pk = gpd.read_file(jparams['gjson_proj-pk'])
+    #pk.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
     #pk.drop(rd.index[rd['type'] != 'node'], inplace = True)
+    pk = pk.copy()
     pk = pk[pk['geometry'].type == 'Point']
     pk.dropna(subset=['tags'], inplace=True)
     pk['entrance'] = pk['tags'].apply(lambda x: x.get('amenity'))
@@ -411,7 +439,7 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
         roads['features'].append(f)
         count += 1
     #-- store the data as GeoJSON
-    with open(jparams['gjson_rd_out'], 'w') as outfile:
+    with open(jparams['osm_roads'], 'w') as outfile:
         json.dump(roads, outfile)#, default=np_encoder)
     
     hsr = one[['x', 'y', 'ground_height']].copy()
@@ -1221,7 +1249,7 @@ def output_cityjsonR(extent, minz, maxz, T, pts, t_list, rd_pts, jparams, bridge
         lsattributes.append(each['properties'])
     
     ##- open roads ---fiona object
-    rd = fiona.open(jparams['gjson_rd_out'])
+    rd = fiona.open(jparams['osm_roads'])
     #rdgeom = [] #-- list of the geometries
     rdattributes = [] #-- list of the attributes
     for each in rd:
