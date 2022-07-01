@@ -78,11 +78,23 @@ def requestOsmBld(jparams):
     url = "http://overpass-api.de/api/interpreter"
     r = requests.get(url, params={'data': query})
     #rr = r.read()
-    gj = osm2geojson.json2geojson(r.json())
+    #gj = osm2geojson.json2geojson(r.json())
+    shapes_with_props = osm2geojson.json2shapes(r.json())
     
     #-- store the data as GeoJSON
-    with open(jparams['ori-gjson_out'], 'w') as outfile:
-        json.dump(gj, outfile)
+    #with open(jparams['ori-gjson_out'], 'w') as outfile:
+        #json.dump(gj, outfile)
+        
+    ts = gpd.GeoDataFrame(shapes_with_props, crs="EPSG:4326").set_geometry('shape')
+    #gdf = gdf.rename(columns={'shape':'geometry'})
+    ts.to_crs(crs=jparams['crs'], inplace=True)
+    ts.rename(columns={'shape':'geometry'}, inplace=True)
+    ts['type'] = ts['properties'].apply(lambda x: x.get('type'))
+    ts['tags'] = ts['properties'].apply(lambda x: x.get('tags'))
+    ts['id'] = ts['properties'].apply(lambda x: x.get('id'))
+    ts['bld'] = ts['tags'].apply(lambda x: x.get('building'))
+
+    return ts
         
 def projVec(outfile, infile, crs):
     """
@@ -201,25 +213,28 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
             """if nan, calculate the width based on lanes"""
             return row['lanes'] * 2.2
     
-    def buffer(row):
-        #return row.geometry.buffer(round(float(row['lanes']) * 1.2, 2), cap_style=1)
+    def ownbuffer(row):
         return row.geometry.buffer(round(float(row['width']) / 2, 2), cap_style=1)
+    
+    def ownbuffer02(row):
+        return row.geometry.buffer(round(float(row['width']) / 2, 2), cap_style=2)
        
     rd = gpd.read_file(jparams['gjson_proj-rd'])
     rd.drop(rd.index[rd['type'] == 'node'], inplace = True)
+    rd.dropna(subset=['tags'], inplace=True)
     rd.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
     
+    #-- extract values
     rd['lanes'] = rd['tags'].apply(lambda x: x.get('lanes'))
     rd['width'] = rd['tags'].apply(lambda x: x.get('width'))
     rd['name'] = rd['tags'].apply(lambda x: x.get('name'))# if pd.isnull(fillna(np.nan)))
+    rd['ref'] = rd['tags'].apply(lambda x: x.get('ref'))
+    rd['destination'] = rd['tags'].apply(lambda x: x.get('destination'))
     rd['highway'] = rd['tags'].apply(lambda x: x.get('highway'))
     rd['surface'] = rd['tags'].apply(lambda x: x.get('surface'))
     rd['oneway'] = rd['tags'].apply(lambda x: x.get('oneway'))
     
-    rd['bridge'] = rd['tags'].apply(lambda x: x.get('bridge'))
     rd['tunnel'] = rd['tags'].apply(lambda x: x.get('tunnel'))
-    
-    #bridge = rd[rd['bridge'] == 'yes'].copy()
     tunnel =  rd[rd['tunnel'].isin(['yes', 'building_passage', 'avalanche_protector'])]
     
     #-- remove pedestrian area + drop lanes with no values + calc width based on lanes when no width + drop width with no values
@@ -229,6 +244,11 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
     rd['width'] = pd.to_numeric(rd['width'])
     rd['width'] = rd.apply(calc_width, axis=1)
     rd.dropna(subset=['width'], inplace=True)
+    
+    rd['bridge'] = rd['tags'].apply(lambda x: x.get('bridge'))
+    rd['bridge_structure'] = rd['tags'].apply(lambda x: x.get('bridge:structure'))
+    bridge = rd[rd['bridge'] == 'yes'].copy()
+    #rd.drop(rd.index[rd['bridge'] == 'yes'], inplace = True)
 
     rd['geometry'] = rd['geometry'].apply(segmentize)
     
@@ -284,9 +304,7 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
     join = gpd.sjoin(vo, rd_e, how="left", op="intersects")
     
     rd_b = rd.copy()
-    rd_b['geometry'] = rd_b.apply(buffer, axis=1)
-    #rd_b = gpd.geoseries.GeoSeries([geom for geom in rd_b.unary_union.geoms])
-    #rd_b.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
+    rd_b['geometry'] = rd_b.apply(ownbuffer, axis=1)
     rd_b = gpd.GeoDataFrame(geometry=gpd.GeoSeries([geom for geom in rd_b.unary_union.geoms]), crs=jparams['crs'])
     rd_b = rd_b.explode()
     
@@ -319,10 +337,34 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
     one.drop(one.index[one['tunnel'].isin(['yes', 'building_passage', 'avalanche_protector'])], inplace = True) #rd[rd['tunnel'].isin(['yes', 'building_passage'])]
 
     #-- groupby and dissolve -> we do this so that similar features (road segments) join together
-    one = one.dissolve(by=['name', 'highway', 'surface', 'oneway', 'lanes'], as_index=False, dropna=False)
+    one = one.dissolve(by=['name', 'highway', 'surface', 'oneway', 'lanes', 'ref', 'destination'], 
+                       as_index=False, dropna=False)
     one = one.explode()
+    one.reset_index(drop=True, inplace=True)
+    
+    # #-- process bridge ---we want the most basic case; a bridge with two nodes either side of a span
+    # bridge['vertex_counter'] = 0
+
+    # for index, row in bridge.iterrows():
+    #     if row.bridge == 'yes':
+    #         bridge.at[index,'vertex_counter'] = len(row['geometry'].coords)
+            
+    # bridge = bridge[bridge['vertex_counter'] == 2]
+    # bridge_b = bridge.copy()
+    # bridge_b['geometry'] = bridge_b.apply(ownbuffer02, axis=1)
+    # #-- cut the one bridge from the street network
+    # for i, row in bridge_b.iterrows():
+    #     hw = row.highway
+    #     su = row.surface
+    #     second = one.loc[(one['highway'] == hw) & (one['surface'] == su)]
+    #     #idx = one.loc[(one['highway'] == hw) & (one['surface'] == su)].index.to_list()
+    #     first = gpd.GeoDataFrame(crs=jparams['crs'], geometry=[row.geometry])
+    #     second02 = gpd.GeoDataFrame(crs=jparams['crs'], geometry=second.geometry)
+    #     result = gpd.overlay(second02, first, how='difference')
+    #     one.iloc[second.index, one.columns.get_loc('geometry')] = result
     
     #-- account for null/None values
+    one.dropna(subset=['geometry'], inplace=True)
     one.loc[one["id"].isnull(), "id"] = (one["id"].isnull().cumsum()).astype(float) #"Other" + 
     one.loc[one["tags"].isnull(), "tags"] = [{'processing': 'ExtraFeature'}]
     one.reset_index(drop=True, inplace=True)
@@ -361,7 +403,7 @@ def prepareRoads(jparams, aoi, aoibuffer, gt_forward, rb):
     
     hsr = one[['x', 'y', 'ground_height']].copy()
     
-    return one, hsr
+    return one, bridge, hsr
 
 def prepareDEM(extent, jparams):
     """
@@ -400,15 +442,14 @@ def rasterQuery(geom, gt_forward, rb):
     
     return intval[0][0]
 
-def assignZ(vfname, gt_forward, rb): # rfname,
+def assignZ(ts, gt_forward, rb): # rfname,
     """
     assign a height attribute - mean ground - to the osm vector 
     ~ .representative_point() used instead of .centroid
     """
-    ts = gpd.read_file(vfname)
+    #ts = gpd.read_file(vfname)
     ts.drop(ts.index[ts['type'] == 'node'], inplace = True)
-    ts['bld'] = ts['tags'].apply(lambda x: x.get('building'))
-    
+
     #-- skywalk --bridge
     skywalk = ts[ts['bld'] == 'bridge'].copy()
     ts.drop(ts.index[ts['bld'] == 'bridge'], inplace = True)
@@ -422,7 +463,7 @@ def assignZ(vfname, gt_forward, rb): # rfname,
         roof['mean'] = roof.apply(lambda row: rasterQuery(row.geometry, gt_forward, rb), axis = 1)
     
     ts['mean'] = ts.apply(lambda row : rasterQuery(row.geometry, gt_forward, rb), axis = 1)
-    
+        
     return ts, skywalk, roof
     
 def writegjson(ts, jparams):#, fname):
@@ -525,19 +566,60 @@ def writegjson(ts, jparams):#, fname):
             del value["properties"]["osm_addr:province"]
                 
     #-- store the data as GeoJSON
-    with open(jparams['gjson-z_out'], 'w') as outfile:
+    with open(jparams['osm_bldings'], 'w') as outfile:
         json.dump(footprints, outfile)
 
-def write_Skygjson(bridge, jparams):#, fname):
+def prep_Brdgjson(bridge, jparams):#, fname):
+    """
+    read the gdal skywalk geojson and create new attributes in osm vector
+    ~ ground height, relative building min_height and roof/max height.
+    write the result to file.
+    """
+    
+    #-- iterate through the list of buildings and create GeoJSON features rich in attributes
+    _bridge = {
+        "type": "FeatureCollection",
+        "features": []
+        }
+    
+    for i, row in bridge.iterrows():
+        f = {
+        "type" : "Feature"
+        }
+            
+        f["properties"] = {}
+            
+        f["properties"]["osm_id"] = row.id
+        for p in row.tags:
+                #-- store other OSM attributes and prefix them with osm_
+            f["properties"]["osm_%s" % p] = row.tags[p]
+            
+        osm_shape = shape(row["geometry"])
+
+        if osm_shape.type == 'LineString':
+            osm_shape = Polygon(osm_shape)
+        #-- and multipolygons must be accounted for
+        elif osm_shape.type == 'MultiPolygon':
+            for poly in osm_shape.geoms:
+                osm_shape = Polygon(poly)#[0])
+                
+        f["geometry"] = mapping(osm_shape)
+        _bridge['features'].append(f)
+                     
+    #-- store the data as GeoJSON
+    with open(jparams['brdge_gjson_out'], 'w') as outfile:
+        json.dump(_bridge, outfile)
+
+def prep_Skygjson(skywalk, jparams):#, fname):
     """
     read the gdal skywalk geojson and create new attributes in osm vector
     ~ ground height, relative building min_height and roof/max height.
     write the result to file.
     """
     # take care of non-Polygon LineString's 
-    for i, row in bridge.iterrows():
+    for i, row in skywalk.iterrows():
         if row.geometry.type == 'LineString' and len(row.geometry.coords) < 3:
-            bridge = bridge.drop(bridge.index[i])
+            skywalk = skywalk.drop(skywalk.index[i])
     
     storeyheight = 2.8
     #-- iterate through the list of buildings and create GeoJSON features rich in attributes
@@ -546,7 +628,7 @@ def write_Skygjson(bridge, jparams):#, fname):
         "features": []
         }
     
-    for i, row in bridge.iterrows():
+    for i, row in skywalk.iterrows():
         f = {
         "type" : "Feature"
         }
@@ -584,10 +666,11 @@ def write_Skygjson(bridge, jparams):#, fname):
         skyprints['features'].append(f)
                      
     #-- store the data as GeoJSON
-    with open(jparams['SKYwalk_gjson-z_out'], 'w') as outfile:
-        json.dump(skyprints, outfile)
+    #with open(jparams['SKYwalk_gjson-z_out'], 'w') as outfile:
+        #json.dump(skyprints, outfile)
+    return skyprints
         
-def write_roof(roof, jparams):#, fname):
+def prep_roof(roof, jparams):#, fname):
     storeyheight = 2.8
     #-- iterate through the list of buildings and create GeoJSON features rich in attributes
     _roof = {
@@ -628,8 +711,10 @@ def write_roof(roof, jparams):#, fname):
             _roof['features'].append(f)
         
     #-- store the data as GeoJSON
-    with open(jparams['roof_gjson-z_out'], 'w') as outfile:
-        json.dump(_roof, outfile)
+    #with open(jparams['roof_gjson-z_out'], 'w') as outfile:
+        #json.dump(_roof, outfile)
+        
+    return _roof
 
 def getXYZ(dis, aoi, jparams):
     """
@@ -660,7 +745,7 @@ def getosmBld(jparams):
     read osm buildings to gdf, extract the representative_point() for each polygon
     and create a basic xyz_df;
     """
-    dis = gpd.read_file(jparams['gjson-z_out'])
+    dis = gpd.read_file(jparams['osm_bldings'])
     dis.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
  
     # remove duplicate vertices within tolerance 0.2 
@@ -854,7 +939,8 @@ def getRdVertices(one, idx01, acoi, hs, gt_forward, rb):
                 segs02[key] = 1
             else:
                 segs02[key] += 1
-                
+         
+        arr01 = hs[['x', 'y']].round(3).values.tolist()        
         ##-- if polygon has interior (circular roads with 'islands')   
         g = row.geometry.interiors
         for i, interior in enumerate(g):
@@ -927,9 +1013,9 @@ def getRdVertices(one, idx01, acoi, hs, gt_forward, rb):
         if len(arr) >= 1:
             A = dict(vertices=pts, segments=idx1, holes=arr)
         else:
-            A = dict(vertices=pts, segments=idx1)
+            A = dict(vertices=pts, segments=idx1, holes=arr01)
         Tr = tr.triangulate(A, 'pVV')  # the VV will print stats in the cmd
-        time.sleep(7)
+        time.sleep(5)
         t = Tr.get('triangles').tolist()
         t_list.append(t)
         
@@ -1043,13 +1129,13 @@ def createSgmts(ac, c, gdf, idx):
     
     return idx, idx01
 
-def executeDelaunay(hs, df3, idx):
+def executeDelaunay(hs, df4, idx):
     """
     perform Triangle ~ constrained Delaunay with concavitities removed
     - return the simplices: indices of vertices that create the triangles
     """      
     holes = hs[['x', 'y']].round(3).values.tolist()
-    pts = df3[['x', 'y']].values #, 'z']].values
+    pts = df4[['x', 'y']].values #, 'z']].values
         
     A = dict(vertices=pts, segments=idx, holes=holes)
     Tr = tr.triangulate(A, 'pVV')  # the VV will print stats in the cmd
@@ -1104,13 +1190,15 @@ def writeObj(pts, dt, obj_filename):
                                           simplex[2] + 1))
     f_out.close()
 
-def output_cityjsonR(extent, minz, maxz, T, pts, t_list, rd_pts, jparams, bridge, roof, acoi):
+def output_cityjsonR(extent, minz, maxz, T, pts, t_list, rd_pts, jparams, bridge, skywalk, 
+                     roof, acoi,
+                     gt_forward, rb):
     """
     basic function to produce LoD1 City Model
     - buildings and terrain
     """
      ##- open buildings ---fiona object
-    c = fiona.open(jparams['gjson-z_out'])
+    c = fiona.open(jparams['osm_bldings'])
     lsgeom = [] #-- list of the geometries
     lsattributes = [] #-- list of the attributes
     for each in c:
@@ -1124,24 +1212,38 @@ def output_cityjsonR(extent, minz, maxz, T, pts, t_list, rd_pts, jparams, bridge
     for each in rd:
         #lsgeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
         rdattributes.append(each['properties'])
+    
+    if jparams['bridge'] == 'Yes':
+        brg = fiona.open(jparams['brdge_gjson_out'])
+        brggeom = [] #-- list of the geometries
+        brggeomattributes = [] #-- list of the attributes
+        for each in brg:
+            brggeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
+            brggeomattributes.append(each['properties'])
+    else:
+        brggeom = None
+        brggeomattributes = None
         
     ##- open skywalk ---fiona object
-    if len(bridge) > 0:
-        sky = fiona.open(jparams['SKYwalk_gjson-z_out'])
+    if len(skywalk) > 1: #['features']
+        #sky = fiona.open(jparams['SKYwalk_gjson-z_out'])
         skywgeom = [] #-- list of the geometries
         skywgeomattributes = [] #-- list of the attributes
-        for each in sky:
+        #for each in sky:
+        for (s, each) in enumerate(skywalk['features']):
             skywgeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
             skywgeomattributes.append(each['properties'])
     else:
         skywgeom = None
         skywgeomattributes = None
            
-    if len(roof) > 0:
-        _roof = fiona.open(jparams['roof_gjson-z_out'])
+    #if len(roof) > 0:
+    if len(roof) > 1: #['features']
+        #_roof = fiona.open(jparams['roof_gjson-z_out'])
         roofgeom = [] #-- list of the geometries
         roofgeomattributes = [] #-- list of the attributes
-        for each in _roof:
+        #for each in _roof:
+        for (s, each) in enumerate(roof['features']):
             roofgeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
             roofgeomattributes.append(each['properties'])
     else:
@@ -1150,8 +1252,9 @@ def output_cityjsonR(extent, minz, maxz, T, pts, t_list, rd_pts, jparams, bridge
         
     cm = doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, minz, maxz, 
                        T, pts, 
-                       acoi,
-                       jparams, skywgeom, skywgeomattributes, roofgeom, roofgeomattributes)   
+                       acoi, jparams, gt_forward, rb,
+                       skywgeom, skywgeomattributes, 
+                       brggeom, brggeomattributes, roofgeom, roofgeomattributes)   
     
     json_str = json.dumps(cm, indent=2)
     fout = open(jparams['cjsn_out'], "w")
@@ -1169,7 +1272,7 @@ def output_cityjson(extent, minz, maxz, T, pts, jparams, skywalk, roof):
     - buildings and terrain
     """
      ##- open building ---fiona object
-    c = fiona.open(jparams['gjson-z_out'])
+    c = fiona.open(jparams['osm_bldings'])
     lsgeom = [] #-- list of the geometries
     lsattributes = [] #-- list of the attributes
     for each in c:
@@ -1177,22 +1280,25 @@ def output_cityjson(extent, minz, maxz, T, pts, jparams, skywalk, roof):
         lsattributes.append(each['properties'])
         
     ##- open skywalk ---fiona object
-    if len(skywalk) > 0:
-        sky = fiona.open(jparams['SKYwalk_gjson-z_out'])
+    if len(skywalk) > 1:
+        #sky = fiona.open(jparams['SKYwalk_gjson-z_out'])
         skywgeom = [] #-- list of the geometries
         skywgeomattributes = [] #-- list of the attributes
-        for each in sky:
+        #for each in sky:
+        for (s, each) in enumerate(skywalk['features']):
             skywgeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
             skywgeomattributes.append(each['properties'])
     else:
         skywgeom = None
         skywgeomattributes = None
            
-    if len(roof) > 0:
-        _roof = fiona.open(jparams['roof_gjson-z_out'])
+    #if len(roof) > 0:
+    if len(skywalk) > 1:
+        #_roof = fiona.open(jparams['roof_gjson-z_out'])
         roofgeom = [] #-- list of the geometries
         roofgeomattributes = [] #-- list of the attributes
-        for each in _roof:
+        #for each in _roof:
+        for (s, each) in enumerate(roof['features']):
             roofgeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
             roofgeomattributes.append(each['properties'])
     else:
@@ -1219,8 +1325,8 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywg
     cm["type"] = "CityJSON"
     cm["version"] = "1.1"
     # cm["transform"] = {
-    #     "scale": [0.0, 0.0, 0.0],
-    #     "translate": [1.0, 1.0, 1.0]
+    #     "scale": [0.001, 0.001, 0.001],
+    #     "translate": [extent[0], extent[0], minz]
     #     },
     cm["CityObjects"] = {}
     cm["vertices"] = []
@@ -1515,9 +1621,11 @@ def extrude_walls(ring, height, ground, allsurfaces, cm):
 
 def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, minz, maxz, 
                   T, pts, 
-                  acoi, 
-                  jparams, skywgeom=None,
-                  skywgeomattributes=None, roofgeom=None, roofgeomattributes=None): 
+                  acoi, jparams, gt_forward, rb, 
+                  skywgeom=None, skywgeomattributes=None, 
+                  brggeom=None, brggeomattributes=None,
+                  roofgeom=None, roofgeomattributes=None): 
+    
     #-- create the JSON data structure for the City Model
     cm = {}
     cm["type"] = "CityJSON"
@@ -1699,6 +1807,56 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
         #-- insert the building as one new city object
         cm['CityObjects'][lsattributes[i]['osm_id']] = oneb
         
+    #-- then bridge
+    if brggeom != None:
+        for (i, geom) in enumerate(brggeom):
+            brgprint = geom
+        #-- one building
+            oneb = {}
+            oneb['type'] = 'Bridge'
+            oneb['attributes'] = {}
+            for k, v in list(brggeomattributes[i].items()):
+                if v is None:
+                    del brggeomattributes[i][k]
+            #oneb['attributes'][k] = lsattributes[i][k]
+            for a in brggeomattributes[i]:
+                oneb['attributes'][a] = brggeomattributes[i][a]
+            oneb['geometry'] = [] #-- a cityobject can have > 1
+        #-- the geometry
+            g = {} 
+            g['type'] = 'Solid'
+            g['lod'] = 1
+            allsurfaces = [] #-- list of surfaces forming the oshell of the solid
+        #-- exterior ring of each footprint
+            oring = list(brgprint.exterior.coords)
+            oring.pop() #-- remove last point since first==last
+            if brgprint.exterior.is_ccw == False:
+            #-- to get proper orientation of the normals
+                oring.reverse() 
+            bridge_sides(oring, gt_forward, rb, allsurfaces, cm)
+        #-- interior rings of each footprint
+            irings = []
+            interiors = list(brgprint.interiors)
+            for each in interiors:
+                iring = list(each.coords)
+                iring.pop() #-- remove last point since first==last
+                if each.is_ccw == True:
+                #-- to get proper orientation of the normals
+                    iring.reverse() 
+                irings.append(iring)
+                bridge_sides(iring, gt_forward, rb, allsurfaces, cm)
+        #-- top-bottom surfaces
+            extrude_bridge_surface(oring, irings, gt_forward, rb, False, allsurfaces, cm)
+            extrude_bridge_bottom(oring, irings, gt_forward, rb, True, allsurfaces, cm)
+        #-- add the extruded geometry to the geometry
+            g['boundaries'] = []
+            g['boundaries'].append(allsurfaces)
+        #g['boundaries'] = allsurfaces
+        #-- add the geom to the building 
+            oneb['geometry'].append(g)
+        #-- insert the bridge as one new city object
+            cm['CityObjects'][brggeomattributes[i]['osm_id']] = oneb
+        
     #-- then sykwalk
     if skywgeom != None:
         for (i, geom) in enumerate(skywgeom):
@@ -1835,44 +1993,88 @@ def add_rd_b(T, r, acoi, allsurfaces, cm):
                              i[1]+len(cm['vertices'])-len(r)-len(acoi), 
                              i[2]+len(cm['vertices'])-len(r)-len(acoi)]])
         
-# def extrude_roof_ground(orng, irngs, height, reverse, allsurfaces, cm):
-#     oring = copy.deepcopy(orng)
-#     irings = copy.deepcopy(irngs)
-#     if reverse == True:
-#         oring.reverse()
-#         for each in irings:
-#             each.reverse()
-#     for (i, pt) in enumerate(oring):
-#         cm['vertices'].append([pt[0], pt[1], height])
-#         oring[i] = (len(cm['vertices']) - 1)
-#     for (i, iring) in enumerate(irings):
-#         for (j, pt) in enumerate(iring):
-#             cm['vertices'].append([pt[0], pt[1], height])
-#             irings[i][j] = (len(cm['vertices']) - 1)
-#     output = []
-#     output.append(oring)
-#     for each in irings:
-#         output.append(each)
-#     allsurfaces.append(output)
+def extrude_bridge_bottom(orng, irngs, gt_forward, rb, reverse, allsurfaces, cm):
+    oring = copy.deepcopy(orng)
+    irings = copy.deepcopy(irngs)
+    if reverse == True:
+        oring.reverse()
+        for each in irings:
+            each.reverse()
+    for (i, pt) in enumerate(oring):
+        z = rasterQuery2(pt[0], pt[1], gt_forward, rb)
+        z = round(float(z) + 0.5, 3)
+        cm['vertices'].append([pt[0], pt[1], z])
+        oring[i] = (len(cm['vertices']) - 1)
+    for (i, iring) in enumerate(irings):
+        for (j, pt) in enumerate(iring):
+            z = rasterQuery2(pt[0], pt[1], gt_forward, rb)
+            z = round(float(z) + 0.5, 3)
+            cm['vertices'].append([pt[0], pt[1], z])
+            irings[i][j] = (len(cm['vertices']) - 1)
+    output = []
+    output.append(oring)
+    for each in irings:
+        output.append(each)
+    allsurfaces.append(output)
 
-# def extrude_walls(ring, height, ground, allsurfaces, cm):
-#     #-- each edge become a wall, ie a rectangle
-#     for (j, v) in enumerate(ring[:-1]):
-#         l = []
-#         cm['vertices'].append([ring[j][0],   ring[j][1],   ground])
-#         cm['vertices'].append([ring[j+1][0], ring[j+1][1], ground])
-#         cm['vertices'].append([ring[j+1][0], ring[j+1][1], height])
-#         cm['vertices'].append([ring[j][0],   ring[j][1],   height])
-#         t = len(cm['vertices'])
-#         allsurfaces.append([[t-4, t-3, t-2, t-1]])    
-#     #-- last-first edge
-#     l = []
-#     cm['vertices'].append([ring[-1][0], ring[-1][1], ground])
-#     cm['vertices'].append([ring[0][0],  ring[0][1],  ground])
-#     cm['vertices'].append([ring[0][0],  ring[0][1],  height])
-#     cm['vertices'].append([ring[-1][0], ring[-1][1], height])
-#     t = len(cm['vertices'])
-#     allsurfaces.append([[t-4, t-3, t-2, t-1]])
+def extrude_bridge_surface(orng, irngs, gt_forward, rb, reverse, allsurfaces, cm):
+    oring = copy.deepcopy(orng)
+    irings = copy.deepcopy(irngs)
+    if reverse == True:
+        oring.reverse()
+        for each in irings:
+            each.reverse()
+    for (i, pt) in enumerate(oring):
+        z = rasterQuery2(pt[0], pt[1], gt_forward, rb)
+        cm['vertices'].append([pt[0], pt[1], round(float(z), 2)])
+        oring[i] = (len(cm['vertices']) - 1)
+    for (i, iring) in enumerate(irings):
+        for (j, pt) in enumerate(iring):
+            z = rasterQuery2(pt[0], pt[1], gt_forward, rb)
+            cm['vertices'].append([pt[0], pt[1], round(float(z), 2)])
+            irings[i][j] = (len(cm['vertices']) - 1)
+    output = []
+    output.append(oring)
+    for each in irings:
+        output.append(each)
+    allsurfaces.append(output)
+    
+def bridge_sides(ring, gt_forward, rb, allsurfaces, cm):
+    #-- each edge become a wall, ie a rectangle
+    for (j, v) in enumerate(ring[:-1]):
+        l = []
+        #print(ring[j][0], ring[j][1],  gt_forward[0],  gt_forward[1])
+        #break
+        z = rasterQuery2(ring[j][0], ring[j][1], gt_forward, rb)
+        z = round(float(z), 2)
+        cm['vertices'].append([ring[j][0],   ring[j][1],  z])
+        z = rasterQuery2(ring[j+1][0], ring[j+1][1], gt_forward, rb)
+        z = round(float(z), 2)
+        cm['vertices'].append([ring[j+1][0], ring[j+1][1], z])
+        z = rasterQuery2(ring[j+1][0], ring[j+1][1], gt_forward, rb)
+        z = round(float(z) + 0.5, 2)
+        cm['vertices'].append([ring[j+1][0], ring[j+1][1],z ])
+        z = rasterQuery2(ring[j][0], ring[j][1], gt_forward, rb)
+        z = round(float(z) + 0.5, 2)
+        cm['vertices'].append([ring[j][0], ring[j][1], z])
+        t = len(cm['vertices'])
+        allsurfaces.append([[t-4, t-3, t-2, t-1]])    
+    #-- last-first edge
+    l = []
+    z = rasterQuery2(ring[-1][0], ring[-1][1], gt_forward, rb)
+    z = round(float(z), 2)
+    cm['vertices'].append([ring[-1][0], ring[-1][1], z])
+    z = rasterQuery2(ring[0][0], ring[0][1], gt_forward, rb)
+    z = round(float(z), 2)
+    cm['vertices'].append([ring[0][0],  ring[0][1], z])
+    z = rasterQuery2(ring[0][0], ring[0][1], gt_forward, rb)
+    z = round(float(z) + 0.5, 2)
+    cm['vertices'].append([ring[0][0],  ring[0][1], z])
+    z = rasterQuery2(ring[-1][0], ring[-1][1], gt_forward, rb)
+    z = round(float(z) + 0.5, 2)
+    cm['vertices'].append([ring[-1][0], ring[-1][1], z])
+    t = len(cm['vertices'])
+    allsurfaces.append([[t-4, t-3, t-2, t-1]])
     
 def write275obj(jparams):
     """

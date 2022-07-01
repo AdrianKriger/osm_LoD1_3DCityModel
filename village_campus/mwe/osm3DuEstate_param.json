@@ -5,16 +5,14 @@
     
     "crs": "EPSG:32734",
 
-    "ori-gjson_out": "./data/fp_u.geojson",
-    "gjson-proj_out": "./data/fp_u_proj.geojson",
-    "gjson-z_out": "./data/fp_u_proj_z.geojson",
-    "SKYwalk_gjson-z_out": "./data/skywalk_u_z.geojson",
-    "roof_gjson-z_out": "./data/roof__uz.geojson",
+    "osm_bldings": "./data/fp_proj_z-cput.geojson",
     
     "roads": "Yes",
     "gjson-rd": "./data/rds-_ue.geojson",
     "gjson_proj-rd": "./data/rds-ue_proj.geojson",
     "gjson_rd_out": "./data/rds-ue_out.geojson",
+    "bridge": "No",
+    "brdge_gjson_out": "./data/brdg-ue_out.geojson",
     "gjson-pk": "./data/rds-uepk.geojson",
     "gjson_proj-pk": "./data/rds-uepk_proj.geojson",
     
