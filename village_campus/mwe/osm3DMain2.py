@@ -32,7 +32,7 @@ def main():
     start = time.time()
     
     try:
-        jparams = json.load(open('osm3Dcput_param.json'))
+        jparams = json.load(open('osm3DuEstate_param.json'))
     except:
         print("ERROR: something is wrong with the param.json file.")
         sys.exit()
@@ -44,9 +44,10 @@ def main():
     
     ts = requestOsmBld(jparams)
     #projVec(jparams['gjson-proj_out'], jparams['ori-gjson_out'], jparams['crs'])
-    requestOsmAoi(jparams)
-    projVec(jparams['aoi_prj'], jparams['aoi'], jparams['crs'])
-    aoi, aoibuffer, extent = getosmArea(jparams['aoi_prj'], jparams['osm_type'], jparams['crs'])
+    aoi = requestOsmAoi(jparams)
+    #projVec(jparams['aoi_prj'], jparams['aoi'], jparams['crs'])
+    #aoi, aoibuffer, extent = getosmArea(jparams['aoi_prj'], jparams['osm_type'], jparams['crs'])
+    aoi, aoibuffer, extent = getosmArea(aoi, jparams['aoi'], jparams['osm_type'], jparams['crs'])
        
     path = os.getcwd()
     r_name = 'result'

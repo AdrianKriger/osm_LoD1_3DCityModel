@@ -4,6 +4,8 @@
     "osm_type": "way",
     
     "crs": "EPSG:32734",
+    
+    "aoi": "./data/aoi_cput_proj.geojson",
 
     "osm_bldings": "./data/fp_proj_z-cput.geojson",
 
@@ -15,9 +17,6 @@
     "brdge_gjson_out": "./data/brdg-cput_out.geojson",
     "gjson-pk": "./data/rds-cputpk.geojson",
     "gjson_proj-pk": "./data/rds-cputpk_proj.geojson",
-    
-    "aoi": "./data/aoi_cput.geojson",
-    "aoi_prj": "./data/aoi_cput_proj.geojson",
     
     "in_raster": "./raster/LO19_050M_3318DC.tif",
     "nodata": 3.402823466385289e+38,

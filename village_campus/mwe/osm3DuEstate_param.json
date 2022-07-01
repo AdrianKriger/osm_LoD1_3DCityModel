@@ -4,8 +4,10 @@
     "osm_type": "relation",
     
     "crs": "EPSG:32734",
+    
+    "aoi": "./data/aoi_ue.geojson",
 
-    "osm_bldings": "./data/fp_proj_z-cput.geojson",
+    "osm_bldings": "./data/fp_proj_z-ue.geojson",
     
     "roads": "Yes",
     "gjson-rd": "./data/rds-_ue.geojson",
@@ -15,10 +17,7 @@
     "brdge_gjson_out": "./data/brdg-ue_out.geojson",
     "gjson-pk": "./data/rds-uepk.geojson",
     "gjson_proj-pk": "./data/rds-uepk_proj.geojson",
-    
-    "aoi": "./data/aoi_u.geojson",
-    "aoi_prj": "./data/aoi_u_proj.geojson",
-    
+        
     "in_raster": "./raster/LO19_050M_3318CD.tif",
     "nodata": 3.402823466385289e+38,
     "projClip_raster": "./raster/3318CD_Ueclip_utm34s.tif",

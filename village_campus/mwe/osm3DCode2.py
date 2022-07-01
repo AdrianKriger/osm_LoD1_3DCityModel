@@ -88,7 +88,8 @@ def requestOsmBld(jparams):
     ts = gpd.GeoDataFrame(shapes_with_props, crs="EPSG:4326").set_geometry('shape')
     #gdf = gdf.rename(columns={'shape':'geometry'})
     ts.to_crs(crs=jparams['crs'], inplace=True)
-    ts.rename(columns={'shape':'geometry'}, inplace=True)
+    #ts.rename(columns={'shape':'geometry'}, inplace=True)
+    ts.rename_geometry('geometry', inplace=True)
     ts['type'] = ts['properties'].apply(lambda x: x.get('type'))
     ts['tags'] = ts['properties'].apply(lambda x: x.get('tags'))
     ts['id'] = ts['properties'].apply(lambda x: x.get('id'))
@@ -126,12 +127,24 @@ def requestOsmAoi(jparams):
     
     url = "http://overpass-api.de/api/interpreter"
     r = requests.get(url, params={'data': query})
-    area = osm2geojson.json2geojson(r.json())
+    #area = osm2geojson.json2geojson(r.json())
+    area = osm2geojson.json2shapes(r.json())
     #-- store the data as GeoJSON
-    with open(jparams['aoi'], 'w') as outfile:
-        json.dump(area, outfile)
+    #with open(jparams['aoi'], 'w') as outfile:
+        #json.dump(area, outfile)
+    
+    aoi = gpd.GeoDataFrame(area, crs="EPSG:4326").set_geometry('shape')
+    #gdf = gdf.rename(columns={'shape':'geometry'})
+    aoi.to_crs(crs=jparams['crs'], inplace=True)
+    aoi['type'] = aoi['properties'].apply(lambda x: x.get('type'))
+    aoi['tags'] = aoi['properties'].apply(lambda x: x.get('tags'))
+    aoi['id'] = aoi['properties'].apply(lambda x: x.get('id'))
+    #aoi.rename(columns={'shape':'geometry'}, inplace=True)
+    aoi.rename_geometry('geometry', inplace=True)
+    aoi = aoi.explode()
+    aoi.reset_index(drop=True, inplace=True)
         
-    return area
+    return aoi
 
 def requestOsmRoads(jparams):
     """
@@ -775,12 +788,12 @@ def getosmBld(jparams):
     
     return dis, hs
 
-def getosmArea(filen, b_type, crs):
+def getosmArea(aoi, outFile, b_type, crs):
     """
     read osm area to gdf and buffer
     - get the extent for the cityjson
     """
-    aoi = gpd.read_file(filen)
+    #aoi = gpd.read_file(filen)
     
     # when relations may areas
     if b_type == 'relation' and len(aoi) > 1:
@@ -791,14 +804,16 @@ def getosmArea(filen, b_type, crs):
         trim = pd.DataFrame(focus)
         trim = trim.T
         aoi = gpd.GeoDataFrame(trim, geometry = trim['geometry'])
-        
-    aoi = aoi.set_crs(crs)
+        aoi = aoi.set_crs(crs)
                         
     aoibuffer = gpd.GeoDataFrame(aoi, geometry = aoi.geometry)
     aoibuffer['geometry'] = aoi.buffer(150, cap_style = 2, join_style = 2)
     
     extent = [aoibuffer.total_bounds[0] - 250, aoibuffer.total_bounds[1] - 250, 
               aoibuffer.total_bounds[2] + 250, aoibuffer.total_bounds[3] + 250]
+    
+    #-- store the data as GeoJSON
+    aoi.to_file(outFile, driver="GeoJSON")
     
     return aoi, aoibuffer, extent
 
