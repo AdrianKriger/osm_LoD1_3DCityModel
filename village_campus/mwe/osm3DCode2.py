@@ -390,7 +390,7 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     one.drop(one.index[one['tunnel'].isin(['yes', 'building_passage', 'avalanche_protector'])], inplace = True) #rd[rd['tunnel'].isin(['yes', 'building_passage'])]
 
     #-- groupby and dissolve -> we do this so that similar features (road segments) join together
-    one = one.dissolve(by=['name', 'highway', 'surface', 'oneway', 'lanes', 'ref', 'destination'], 
+    one = one.dissolve(by=['name', 'highway', 'surface', 'oneway', 'width', 'ref', 'destination'], 
                        as_index=False, dropna=False)
     one = one.explode()
     one.reset_index(drop=True, inplace=True)
