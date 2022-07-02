@@ -32,7 +32,7 @@ def main():
     start = time.time()
     
     try:
-        jparams = json.load(open('osm3Dcput_param.json'))
+        jparams = json.load(open('osm3DuEstate_param.json'))
     except:
         print("ERROR: something is wrong with the param.json file.")
         sys.exit()
@@ -70,8 +70,8 @@ def main():
         pk = requestOsmParking(jparams)
         #projVec(jparams['gjson_proj-pk'], jparams['gjson-pk'], jparams['crs'])
         one, bridge, hsr = prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb)
-        if jparams['bridge'] == 'Yes':
-            prep_Brdgjson(bridge, jparams)
+        if jparams['bridge'] == 'Yes' and len(bridge) > 0:
+            bridge_b = prep_Brdgjson(bridge, jparams)
     
     ts, skywalk, roof = assignZ(ts, gt_forward, rb) #jparams['projClip_raster'],
     writegjson(ts, jparams)#['gjson-z_out'])
@@ -125,7 +125,7 @@ def main():
     #writeObj(pts, t, 'wvft_cput3d.obj') ~ this will write the terrain surface only
     if jparams['roads'] == "Yes":
         output_cityjsonR(extent, minz, maxz, t, pts, t_list, rd_pts, jparams, 
-                         bridge, skywalk, roof, acoi, gt_forward, rb)
+                         bridge_b, skywalk, roof, acoi, gt_forward, rb)
     else: 
         output_cityjson(extent, minz, maxz, t, pts, jparams, skywalk, roof)
         

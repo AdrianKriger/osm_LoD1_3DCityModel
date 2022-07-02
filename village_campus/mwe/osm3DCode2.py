@@ -232,7 +232,8 @@ def requestOsmParking(jparams):
 
 def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     """
-    process ---buffer with out overlap--- the osm roads
+    process street network ---buffer with no overlap, trim back from tunnel, parking_entrance
+    and under bridge --- return .geojson
     """
     from shapely.wkt import loads
     import itertools
@@ -259,6 +260,9 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     
     def ownbuffer02(row):
         return row.geometry.buffer(round(float(row['width']) / 2, 2), cap_style=2)
+    
+    def ownbuffer03(row):
+        return row.geometry.buffer(round(float(row['width']) + 0.25 / 2, 2), cap_style=2)
        
     #rd = gpd.read_file(jparams['gjson_proj-rd'])
     rd = rd.copy()
@@ -361,7 +365,7 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     rd_b = rd_b.explode()
     
     #-- buffer the tunnel features and cut from the roads
-    t_buffer = tunnel.buffer(1, cap_style=2)
+    t_buffer = tunnel.buffer(0.5, cap_style=2)
     t_buffer = gpd.GeoDataFrame(crs=jparams['crs'], geometry=t_buffer)
     rd_b = gpd.overlay(rd_b, t_buffer, how='difference')
     rd_b = rd_b.explode()
@@ -380,6 +384,15 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     pk_buffer = gpd.GeoDataFrame(crs=jparams['crs'], geometry=pk_buffer)
     rd_b = gpd.overlay(rd_b, pk_buffer, how='difference')
     
+    #-- remove bridges and trim back roads under bridges 
+    bridge_b = bridge.copy()
+    bridge_b02 = bridge.copy()
+    bridge_b['geometry'] = bridge_b.apply(ownbuffer02, axis=1)
+    bridge_b02['geometry'] = bridge_b02.apply(ownbuffer03, axis=1)
+    bridge_b02 = bridge_b02.dissolve()
+    rd_b = gpd.overlay(rd_b, bridge_b02, how='difference')
+    rd_b = rd_b.explode()
+    
     #-- trim the roads to the aoi
     rd_b = gpd.clip(rd_b, aoi)
     one = gpd.clip(join, rd_b)
@@ -394,28 +407,7 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
                        as_index=False, dropna=False)
     one = one.explode()
     one.reset_index(drop=True, inplace=True)
-    
-    # #-- process bridge ---we want the most basic case; a bridge with two nodes either side of a span
-    # bridge['vertex_counter'] = 0
-
-    # for index, row in bridge.iterrows():
-    #     if row.bridge == 'yes':
-    #         bridge.at[index,'vertex_counter'] = len(row['geometry'].coords)
-            
-    # bridge = bridge[bridge['vertex_counter'] == 2]
-    # bridge_b = bridge.copy()
-    # bridge_b['geometry'] = bridge_b.apply(ownbuffer02, axis=1)
-    # #-- cut the one bridge from the street network
-    # for i, row in bridge_b.iterrows():
-    #     hw = row.highway
-    #     su = row.surface
-    #     second = one.loc[(one['highway'] == hw) & (one['surface'] == su)]
-    #     #idx = one.loc[(one['highway'] == hw) & (one['surface'] == su)].index.to_list()
-    #     first = gpd.GeoDataFrame(crs=jparams['crs'], geometry=[row.geometry])
-    #     second02 = gpd.GeoDataFrame(crs=jparams['crs'], geometry=second.geometry)
-    #     result = gpd.overlay(second02, first, how='difference')
-    #     one.iloc[second.index, one.columns.get_loc('geometry')] = result
-    
+       
     #-- account for null/None values
     one.dropna(subset=['geometry'], inplace=True)
     one.loc[one["id"].isnull(), "id"] = (one["id"].isnull().cumsum()).astype(float) #"Other" + 
@@ -516,9 +508,9 @@ def assignZ(ts, gt_forward, rb): # rfname,
     
 def writegjson(ts, jparams):#, fname):
     """
-    read the gdal geojson and create new attributes in osm vector
+    read the building gpd and create new attributes in osm vector
     ~ ground height, relative building height and roof height.
-    write the result to file.
+    write the result to .geojson
     """
     #-- take care of non-Polygon LineString's 
     for i, row in ts.iterrows():
@@ -619,10 +611,24 @@ def writegjson(ts, jparams):#, fname):
 
 def prep_Brdgjson(bridge, jparams):#, fname):
     """
-    read the gdal skywalk geojson and create new attributes in osm vector
-    ~ ground height, relative building min_height and roof/max height.
-    write the result to file.
+    read the bridge gpd and prepare the .geojson
     """
+    def ownbuffer02(row):
+        return row.geometry.buffer(round(float(row['width']) / 2, 2), cap_style=2)
+    
+    #-- at a most basic level we only create bridge CityObjects of straight line features 
+    #-- with two vertices either side of a span
+    
+    bridge = bridge[bridge['bridge_structure'] != 'humpback']
+    bridge['vertex_counter'] = 0
+
+    for index, row in bridge.iterrows():
+        if row.bridge == 'yes':
+            bridge.at[index,'vertex_counter'] = len(row['geometry'].coords)
+            
+    bridge = bridge[bridge['vertex_counter'] == 2]
+    bridge_b = bridge.copy()
+    bridge_b['geometry'] = bridge_b.apply(ownbuffer02, axis=1)
     
     #-- iterate through the list of buildings and create GeoJSON features rich in attributes
     _bridge = {
@@ -630,7 +636,7 @@ def prep_Brdgjson(bridge, jparams):#, fname):
         "features": []
         }
     
-    for i, row in bridge.iterrows():
+    for i, row in bridge_b.iterrows():
         f = {
         "type" : "Feature"
         }
@@ -655,14 +661,15 @@ def prep_Brdgjson(bridge, jparams):#, fname):
         _bridge['features'].append(f)
                      
     #-- store the data as GeoJSON
-    with open(jparams['brdge_gjson_out'], 'w') as outfile:
-        json.dump(_bridge, outfile)
+    #with open(jparams['brdge_gjson_out'], 'w') as outfile:
+        #json.dump(_bridge, outfile)
+        
+    return _bridge
 
 def prep_Skygjson(skywalk, jparams):#, fname):
     """
-    read the gdal skywalk geojson and create new attributes in osm vector
+    read the skywalk gpd and prepare and return the .geojson - create new attributes in osm vector
     ~ ground height, relative building min_height and roof/max height.
-    write the result to file.
     """
     # take care of non-Polygon LineString's 
     for i, row in skywalk.iterrows():
@@ -718,6 +725,10 @@ def prep_Skygjson(skywalk, jparams):#, fname):
     return skyprints
         
 def prep_roof(roof, jparams):#, fname):
+    """
+    read the roof gpd; prepare and return the .geojson - create new attributes in osm vector
+    ~ *roof_height.
+    """
     storeyheight = 2.8
     #-- iterate and create GeoJSON features
     _roof = {
@@ -858,7 +869,7 @@ def getBldVertices(dis):
     all_coords = []
     dps = 2
     segs = {}
-    geoms = {}
+    #geoms = {}
     
     for ids, row in dis.iterrows():
         oring, z = list(row.geometry.exterior.coords), row['ground_height']
@@ -1261,11 +1272,12 @@ def output_cityjsonR(extent, minz, maxz, T, pts, t_list, rd_pts, jparams, bridge
         #lsgeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
         rdattributes.append(each['properties'])
     
-    if jparams['bridge'] == 'Yes':
-        brg = fiona.open(jparams['brdge_gjson_out'])
+    if jparams['bridge'] == 'Yes' and len(bridge) > 1:
+        #brg = fiona.open(jparams['brdge_gjson_out'])
         brggeom = [] #-- list of the geometries
         brggeomattributes = [] #-- list of the attributes
-        for each in brg:
+        #for each in brg:
+        for (s, each) in enumerate(bridge['features']):
             brggeom.append(shape(each['geometry'])) #-- geom are casted to Fiona's 
             brggeomattributes.append(each['properties'])
     else:
@@ -1724,7 +1736,7 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
                      }
                  }
             },
-            {"featureIDs": ["Building"],
+            {"featureIDs": ["Building", "Road"],
              "source": [
                  {
                      "description": "OpenStreetMap contributors",
@@ -1732,7 +1744,7 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
                      "sourceCitation": "https://www.openstreetmap.org",
                  }],
              "processStep": {
-                 "description" : "Processing of building vector contributions using osm_LoD1_3DCityModel workflow",
+                 "description" : "Processing of vector contributions using osm_LoD1_3DCityModel workflow",
                  "processor": {
                      "contactName": jparams['cjsn_contactName'],
                      "contactType": jparams['cjsn_contactType'],

@@ -11,8 +11,7 @@
     
     "roads": "Yes",
     "osm_roads": "./data/rds-ue_out.geojson",
-    "bridge": "No",
-    "brdge_gjson_out": "./data/brdg-ue_out.geojson",
+    "bridge": "Yes",
         
     "in_raster": "./raster/LO19_050M_3318CD.tif",
     "nodata": 3.402823466385289e+38,
