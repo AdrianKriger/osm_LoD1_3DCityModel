@@ -251,6 +251,8 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
         if np.isnan(row['width']):
             """if nan, calculate the width based on lanes"""
             return row['lanes'] * 2.2
+        else:
+            return row['width']
     
     def ownbuffer(row):
         return row.geometry.buffer(round(float(row['width']) / 2, 2), cap_style=1)
@@ -277,21 +279,27 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     rd['tunnel'] = rd['tags'].apply(lambda x: x.get('tunnel'))
     tunnel =  rd[rd['tunnel'].isin(['yes', 'building_passage', 'avalanche_protector'])]
     
-    #-- remove pedestrian area + drop lanes with no values + calc width based on lanes when no width + drop width with no values
+    #-- remove pedestrian area + drop lanes with no values + 
+    #-- calc width based on lanes when no width + drop width with no values
     rd = rd[rd['geometry'].type != 'Polygon']#) & (rd['lanes'] != np.nan)]
-    rd.dropna(subset=['lanes'], inplace=True)
+    #rd.dropna(subset=['lanes'], inplace=True)
     rd['lanes'] = pd.to_numeric(rd['lanes'])
+    rd['lanes'] = rd['lanes'].fillna(0)
     rd['width'] = pd.to_numeric(rd['width'])
     rd['width'] = rd.apply(calc_width, axis=1)
-    rd.dropna(subset=['width'], inplace=True)
+    #rd.dropna(subset=['width'], inplace=True)
+    rd = rd[rd['width'] != 0]
     
+    #-- get the bridge
     rd['bridge'] = rd['tags'].apply(lambda x: x.get('bridge'))
     rd['bridge_structure'] = rd['tags'].apply(lambda x: x.get('bridge:structure'))
     bridge = rd[rd['bridge'] == 'yes'].copy()
     #rd.drop(rd.index[rd['bridge'] == 'yes'], inplace = True)
 
+    #-- place a vertex every x-metre
     rd['geometry'] = rd['geometry'].apply(segmentize)
     
+    #-- find the rd intersections, place a point, buffer and cut from rd network
     inters = []
     for line1, line2 in itertools.combinations(rd.geometry, 2):
         if line1.intersects(line2):
@@ -327,6 +335,7 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     rd_e = rd_e.explode()
     rd_e.reset_index(drop=True, inplace=True)
     
+    #-- Voronoi of all rd vertices without the intersections above + aoi 
     pt = [line.__geo_interface__['coordinates'] for line in rd_e.geometry]
     pt_array = np.array(np.concatenate(pt))
     
@@ -341,11 +350,14 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     polys = shapely.ops.polygonize(lines)
     vo = gpd.GeoDataFrame(geometry=gpd.GeoSeries(polys), crs=jparams['crs'])
     
+    # transfer the rd attributes to the voronoi
     join = gpd.sjoin(vo, rd_e, how="left", op="intersects")
     
+    #-- buffer the original rd network and trim the voronoi to its extent
     rd_b = rd.copy()
     rd_b['geometry'] = rd_b.apply(ownbuffer, axis=1)
-    rd_b = gpd.GeoDataFrame(geometry=gpd.GeoSeries([geom for geom in rd_b.unary_union.geoms]), crs=jparams['crs'])
+    rd_b = rd_b.dissolve()
+    #rd_b = gpd.GeoDataFrame(geometry=gpd.GeoSeries([geom for geom in rd_b.unary_union.geoms]), crs=jparams['crs'])
     rd_b = rd_b.explode()
     
     #-- buffer the tunnel features and cut from the roads
@@ -425,16 +437,11 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
         }
         f["properties"] = {}
                 
-            #-- store all OSM attributes and prefix them with osm_ 
+        #-- store all OSM attributes and prefix them with osm_ 
         f["properties"]["id"] = count #row.id
         f["properties"]["osm_id"] = row.id
         for p in row.tags:
             f["properties"]["osm_%s" % p] = row.tags[p]
-                #print(p)
-        #osm_shape = shape(row["geometry"])
-        #f["geometry"] = mapping(osm_shape)
-        #if 'width' not in row['tags']:
-            #f["properties"]['calculated_width'] = round(int(row['lanes']) * 2, 2)
     
         roads['features'].append(f)
         count += 1
@@ -561,11 +568,11 @@ def writegjson(ts, jparams):#, fname):
             f["properties"]["osm_address"] = " ".join(adr)
             
             osm_shape = shape(row["geometry"])
-                #-- a few buildings are not polygons, rather linestrings. This converts them to polygons
-                #-- rare, but if not done it breaks the code later
+            #-- a few buildings are not polygons, rather linestrings. This converts them to polygons
+            #-- rare, but if not done it breaks the code later
             if osm_shape.type == 'LineString':
                 osm_shape = Polygon(osm_shape)
-                #-- and multipolygons must be accounted for
+            #-- and multipolygons must be accounted for
             elif osm_shape.type == 'MultiPolygon':
                 #osm_shape = Polygon(osm_shape[0])
                 for poly in osm_shape.geoms:
@@ -632,7 +639,7 @@ def prep_Brdgjson(bridge, jparams):#, fname):
             
         f["properties"]["osm_id"] = row.id
         for p in row.tags:
-                #-- store other OSM attributes and prefix them with osm_
+            #-- store other OSM attributes and prefix them with osm_
             f["properties"]["osm_%s" % p] = row.tags[p]
             
         osm_shape = shape(row["geometry"])
@@ -683,16 +690,15 @@ def prep_Skygjson(skywalk, jparams):#, fname):
             f["properties"]["osm_%s" % p] = row.tags[p]
             
         osm_shape = shape(row["geometry"])
-                #-- a few buildings are not polygons, rather linestrings. This converts them to polygons
-                #-- rare, but if not done it breaks the code later
+        #-- a few buildings are not polygons, rather linestrings. This converts them to polygons
+        #-- rare, but if not done it breaks the code later
         if osm_shape.type == 'LineString':
             osm_shape = Polygon(osm_shape)
-            #-- and multipolygons must be accounted for
+        #-- and multipolygons must be accounted for
         elif osm_shape.type == 'MultiPolygon':
             #osm_shape = Polygon(osm_shape[0])
             for poly in osm_shape.geoms:
                 osm_shape = Polygon(poly)#[0])
-                #-- convert the shapely object to geojson
                 
         f["geometry"] = mapping(osm_shape)
 
@@ -713,7 +719,7 @@ def prep_Skygjson(skywalk, jparams):#, fname):
         
 def prep_roof(roof, jparams):#, fname):
     storeyheight = 2.8
-    #-- iterate through the list of buildings and create GeoJSON features rich in attributes
+    #-- iterate and create GeoJSON features
     _roof = {
         "type": "FeatureCollection",
         "features": []
@@ -726,22 +732,21 @@ def prep_roof(roof, jparams):#, fname):
 
             f["properties"] = {}
                     
-                    #-- store all OSM attributes and prefix them with osm_ 
+            #-- store all OSM attributes and prefix them with osm_ 
             f["properties"]["osm_id"] = row.id
             for p in row.tags:
                 f["properties"]["osm_%s" % p] = row.tags[p]
                     
             osm_shape = shape(row["geometry"])
-                        #-- a few buildings are not polygons, rather linestrings. This converts them to polygons
-                        #-- rare, but if not done it breaks the code later
+            #-- a few buildings are not polygons, rather linestrings. This converts them to polygons
+            #-- rare, but if not done it breaks the code later
             if osm_shape.type == 'LineString':
                 osm_shape = Polygon(osm_shape)
-                        #-- and multipolygons must be accounted for
+            #-- and multipolygons must be accounted for
             elif osm_shape.type == 'MultiPolygon':
-                        #osm_shape = Polygon(osm_shape[0])
+                #osm_shape = Polygon(osm_shape[0])
                 for poly in osm_shape.geoms:
                     osm_shape = Polygon(poly)#[0])
-                            #-- convert the shapely object to geojson
                         
             f["geometry"] = mapping(osm_shape)
                     
@@ -823,7 +828,7 @@ def getosmArea(aoi, outFile, b_type, crs):
     """
     #aoi = gpd.read_file(filen)
     
-    # when relations may areas
+    # when areas are relations
     if b_type == 'relation' and len(aoi) > 1:
         for i, row in aoi.iterrows():
             if row.tags != None and 'place' in row.tags:
@@ -931,7 +936,7 @@ def getRdVertices(one, idx01, acoi, hs, gt_forward, rb):
     dps = 2
     segs = {}
     segs02 = {}
-    geoms = {}
+    #geoms = {}
     
     idx1 = []
     arr = []
@@ -939,17 +944,17 @@ def getRdVertices(one, idx01, acoi, hs, gt_forward, rb):
     l1 = len(acoi_copy)
     Ahsr = pd.DataFrame(columns=['x', 'y', 'ground_height']) #[]
     temp_Ahsr = pd.DataFrame(columns=['x', 'y', 'ground_height']) #[]
-    pnt_df = pd.DataFrame(columns=['x', 'y', 'z'])
+    #pnt_df = pd.DataFrame(columns=['x', 'y', 'z'])
     t_list = []
     rd_pts = []
     idxAll = []
     
-    count = 0
+    #count = 0
     for ids, row in one.iterrows():
        
         oring = list(row.geometry.exterior.coords)
         coords_rounded = []
-        po = []
+        #po = []
         for x, y in oring:
             z = rasterQuery2(x, y, gt_forward, rb)
  
