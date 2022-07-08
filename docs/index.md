@@ -16,7 +16,7 @@ It takes 2D osm vector contributions (building outlines) with [`building:level`]
  <figure><center>
   <img src="{{site.baseurl | prepend: site.url}}/img/CityJSON_Ninja_cputb.png" style="width: 800px; height: 400px; border: 0px">
   <figcaption>Fig.1 - LoD1 3D Model of the Cape Peninsula University of Technology (Bellville Campus). <em>---streets are in the pipline; see <cite><a href="https://github.com/AdrianKriger/osm_LoD1_3DCityModel/issues/17"> issue #17</a></cite></em></figcaption>
-</center></figure>
+</center></figure> 
 <!-- <p align="center">
 <img src="{{site.baseurl | prepend: site.url}}/img/CityJSON_Ninja_cput.png" style="width: 800px; height: 400px; border: 0px">
 </p>
