@@ -57,7 +57,7 @@ from datetime import timedelta
 
 def requestOsmBld(jparams):
     """
-    request osm for building footprints - save
+    request osm for building footprints
     """  
     query = """
     [out:json][timeout:25];
@@ -109,7 +109,7 @@ def projVec(outfile, infile, crs):
 
 def requestOsmAoi(jparams):
     """
-    request osm area - save
+    request osm area
     """
     query = """
     [out:json][timeout:30];
@@ -148,7 +148,7 @@ def requestOsmAoi(jparams):
 
 def requestOsmRoads(jparams):
     """
-    request osm roads - save
+    request osm roads
     """
     query = """
     [out:json][timeout:25];
@@ -187,7 +187,7 @@ def requestOsmRoads(jparams):
 
 def requestOsmParking(jparams):
     """
-    request osm parking_entrance - save
+    request osm parking_entrance
     """
     query = """
     [out:json][timeout:25];
@@ -233,7 +233,7 @@ def requestOsmParking(jparams):
 def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     """
     process street network ---buffer with no overlap, trim back from tunnel, parking_entrance
-    and under bridge --- return .geojson
+    and under bridge --- save .geojson
     """
     from shapely.wkt import loads
     import itertools
@@ -242,7 +242,7 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     def segmentize(geom):
         wkt = geom.wkt  # shapely Polygon to wkt
         geom = ogr.CreateGeometryFromWkt(wkt)  # create ogr geometry
-        geom.Segmentize(5)  # densify geometry
+        geom.Segmentize(10)  # densify geometry (@-metre)
         wkt2 = geom.ExportToWkt()  # ogr geometry to wkt
         new = loads(wkt2)  # wkt to shapely Polygon
         return new
@@ -444,7 +444,7 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     hsr = one[['x', 'y', 'ground_height']].copy()
     
     return one, bridge, hsr
-
+    
 def prepareDEM(extent, jparams):
     """
     gdal.Warp to reproject and clip raster dem
@@ -454,7 +454,7 @@ def prepareDEM(extent, jparams):
                         jparams['in_raster'], 
                         dstSRS=jparams['crs'],
                         srcNodata = jparams['nodata'],
-                        #dstNodata = 0,
+                        #dstNodata = 60,
                          #-- outputBounds=[minX, minY, maxX, maxY]
                         outputBounds = [extent[0], extent[1],
                                         extent[2], extent[3]])
@@ -805,14 +805,14 @@ def getosmBld(jparams):
     dis = gpd.read_file(jparams['osm_bldings'])
     dis.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
  
-    # remove duplicate vertices within tolerance 0.2 
-    for index, row in dis.iterrows():
-        tmp_gdf = dis.copy()
-        tmp_gdf['distance'] = tmp_gdf.distance(row['geometry'])
-        closest_geom = list(tmp_gdf.sort_values('distance')['geometry'])[1]
-        # I took 1 because index 0 would be the row itself
-        snapped_geom = snap(row['geometry'], closest_geom, 0.2)
-        dis.loc[index, 'geometry'] = snapped_geom
+    # # remove duplicate vertices within tolerance 0.2 
+    # for index, row in dis.iterrows():
+    #     tmp_gdf = dis.copy()
+    #     tmp_gdf['distance'] = tmp_gdf.distance(row['geometry'])
+    #     closest_geom = list(tmp_gdf.sort_values('distance')['geometry'])[1]
+    #     # I took 1 because index 0 would be the row itself
+    #     snapped_geom = snap(row['geometry'], closest_geom, 0.2)
+    #     dis.loc[index, 'geometry'] = snapped_geom
     
      # - the following is left for reference
      #-- this serves two functions:
@@ -861,7 +861,7 @@ def getosmArea(aoi, outFile, b_type, crs):
     
     return aoi, aoibuffer, extent
 
-def getBldVertices(dis):
+def getBldVertices(dis, gt_forward, rb): #
     """
     retrieve vertices from building footprints ~ without duplicates 
     - these vertices already have a z attribute
@@ -870,36 +870,45 @@ def getBldVertices(dis):
     dps = 2
     segs = {}
     #geoms = {}
+    min_zbld = []
     
     for ids, row in dis.iterrows():
-        oring, z = list(row.geometry.exterior.coords), row['ground_height']
-        rounded_z = round(z, dps)
+        #oring, z = list(row.geometry.exterior.coords), row['ground_height']
+        #rounded_z = round(z, dps)
+        
+        oring = list(row.geometry.exterior.coords)
         coords_rounded = []
-        #po = []
+        zbld = []
         for x, y in oring:
+            z = rasterQuery2(x, y, gt_forward, rb)
             rounded_x = round(x, dps)
             rounded_y = round(y, dps)
+            rounded_z = round(z, dps)
+            zbld.append(rounded_z)
             coords_rounded.append((rounded_x, rounded_y, rounded_z))
-            all_coords.append([rounded_x, rounded_y, rounded_z])
-
+            all_coords.append([rounded_x, rounded_y, rounded_z]) 
+            
+        min_zbld.append(float(min(zbld)))  ##-- the min height of the blding.
+        
         for i in range(0, len(coords_rounded)-1):
-                    x1, y1, z1 = coords_rounded[i]
-                    x2, y2, z2 = coords_rounded[i+1]
-                    # deduplicate lines which overlap but go in different directions
-                    if (x1 < x2):
+            
+            x1, y1, z1 = coords_rounded[i]
+            x2, y2, z2 = coords_rounded[i+1]
+            # deduplicate lines which overlap but go in different directions
+            if (x1 < x2):
+                key = (x1, y1, x2, y2)
+            else:
+                if (x1 == x2):
+                    if (y1 < y2):
                         key = (x1, y1, x2, y2)
                     else:
-                        if (x1 == x2):
-                            if (y1 < y2):
-                                key = (x1, y1, x2, y2)
-                            else:
-                                key = (x2, y2, x1, y1)
-                        else:
-                            key = (x2, y2, x1, y1)
-                    if key not in segs:
-                        segs[key] = 1
-                    else:
-                        segs[key] += 1
+                        key = (x2, y2, x1, y1)
+                else:
+                    key = (x2, y2, x1, y1)
+            if key not in segs:
+                segs[key] = 1
+            else:
+                segs[key] += 1
          ##-- if polygon has interior (ground in couryard)                
         for interior in row.geometry.interiors:
             oring, z = list(interior.coords), row['ground_height']
@@ -913,23 +922,23 @@ def getBldVertices(dis):
                 all_coords.append([rounded_x, rounded_y, rounded_z])
 
             for i in range(0, len(coords_rounded)-1):
-                        x1, y1, z1 = coords_rounded[i]
-                        x2, y2, z2 = coords_rounded[i+1]
-                        # deduplicate lines which overlap but go in different directions
-                        if (x1 < x2):
+                x1, y1, z1 = coords_rounded[i]
+                x2, y2, z2 = coords_rounded[i+1]
+                # deduplicate lines which overlap but go in different directions
+                if (x1 < x2):
+                    key = (x1, y1, x2, y2)
+                else:
+                    if (x1 == x2):
+                        if (y1 < y2):
                             key = (x1, y1, x2, y2)
                         else:
-                            if (x1 == x2):
-                                if (y1 < y2):
-                                    key = (x1, y1, x2, y2)
-                                else:
-                                    key = (x2, y2, x1, y1)
-                            else:
-                                key = (x2, y2, x1, y1)
-                        if key not in segs:
-                            segs[key] = 1
-                        else:
-                            segs[key] += 1
+                            key = (x2, y2, x1, y1)
+                    else:
+                         key = (x2, y2, x1, y1)
+                if key not in segs:
+                    segs[key] = 1
+                else:
+                    segs[key] += 1
     
     c = pd.DataFrame.from_dict(segs, orient="index").reset_index()
     c.rename(columns={'index':'coords'}, inplace=True)
@@ -939,7 +948,7 @@ def getBldVertices(dis):
     ac.drop_duplicates(subset=['x','y'], keep= 'first', inplace=True)
     ac = ac.reset_index(drop=True)
         
-    return ac, c
+    return ac, c, min_zbld
 
 def getRdVertices(one, idx01, acoi, hs, gt_forward, rb):
     r_coords = []
@@ -1249,7 +1258,7 @@ def writeObj(pts, dt, obj_filename):
                                           simplex[2] + 1))
     f_out.close()
 
-def output_cityjsonR(extent, minz, maxz, T, pts, t_list, rd_pts, jparams, bridge, skywalk, 
+def output_cityjsonR(extent, minz, maxz, T, pts, t_list, rd_pts, jparams, min_zbld, bridge, skywalk, 
                      roof, acoi,
                      gt_forward, rb):
     """
@@ -1312,7 +1321,7 @@ def output_cityjsonR(extent, minz, maxz, T, pts, t_list, rd_pts, jparams, bridge
         
     cm = doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, minz, maxz, 
                        T, pts, 
-                       acoi, jparams, gt_forward, rb,
+                       acoi, jparams, min_zbld, gt_forward, rb,
                        skywgeom, skywgeomattributes, 
                        brggeom, brggeomattributes, roofgeom, roofgeomattributes)   
     
@@ -1326,7 +1335,7 @@ def output_cityjsonR(extent, minz, maxz, T, pts, t_list, rd_pts, jparams, bridge
     cm = cityjson.load(jparams['cjsn_out'])
     cityjson.save(cm, jparams['cjsn_CleanOut'])
     
-def output_cityjson(extent, minz, maxz, T, pts, jparams, skywalk, roof):
+def output_cityjson(extent, minz, maxz, T, pts, jparams, min_zbld, skywalk, roof):
     """
     basic function to produce LoD1 City Model
     - buildings and terrain
@@ -1365,7 +1374,7 @@ def output_cityjson(extent, minz, maxz, T, pts, jparams, skywalk, roof):
         roofgeom = None
         roofgeomattributes = None
         
-    cm = doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywgeom,
+    cm = doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, min_zbld, skywgeom,
                      skywgeomattributes, roofgeom, roofgeomattributes)    
     json_str = json.dumps(cm, indent=2)
     fout = open(jparams['cjsn_out'], "w")
@@ -1378,7 +1387,7 @@ def output_cityjson(extent, minz, maxz, T, pts, jparams, skywalk, roof):
     #cm.remove_duplicate_vertices()
     cityjson.save(cm, jparams['cjsn_CleanOut'])
 
-def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywgeom=None,
+def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, min_zbld, skywgeom=None,
                     skywgeomattributes=None, roofgeom=None, roofgeomattributes=None): 
     #-- create the JSON data structure for the City Model
     cm = {}
@@ -1390,7 +1399,8 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywg
     #     },
     cm["CityObjects"] = {}
     cm["vertices"] = []
-    #-- Metadata is added manually
+    
+    ##-- Metadata is added manually
     cm["metadata"] = {
     "title": jparams['cjsn_title'],
     "referenceDate": jparams['cjsn_referenceDate'],
@@ -1445,7 +1455,35 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywg
                  }
             }]
         }
-    }
+    },
+    
+    # cm["appearance"] = {
+    #     "materials": 
+    #         [
+    #             {
+    #                 "name": "roofandground",
+    #                 "ambientIntensity":  0.2000,
+    #                 "diffuseColor":  [0.9000, 0.1000, 0.7500],
+    #                 "emissiveColor": [0.9000, 0.1000, 0.7500],
+    #                 "specularColor": [0.9000, 0.1000, 0.7500],
+    #                 "shininess": 0.2,
+    #                 "transparency": 0.5,
+    #                 "isSmooth": 'false'
+    #             },
+    #             {
+    #                 "name": "wall",
+    #                 "ambientIntensity":  0.4000,
+    #                 "diffuseColor":  [0.1000, 0.1000, 0.9000],
+    #                 "emissiveColor": [0.1000, 0.1000, 0.9000],
+    #                 "specularColor": [0.9000, 0.1000, 0.7500],
+    #                 "shininess": 0.0,
+    #                 "transparency": 0.5,
+    #                 "isSmooth": 'true'
+    #             }
+    #         ],
+    #     "default-theme-material": "myDefaultTheme2"
+    #     }    
+        
       ##-- do terrain
     add_terrain_v(pts, cm)
     grd = {}
@@ -1476,6 +1514,10 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywg
             #oneb['attributes'][k] = lsattributes[i][k]
         for a in lsattributes[i]:
             oneb['attributes'][a] = lsattributes[i][a]
+            
+                                      # wall, wall, roof, foundation
+        #oneb['material'] = {} #{ "values": [[1, 1, 0, 0]] }} 
+        #mat = [] #-- list of surfaces forming the oshell of the solid
         
         oneb['geometry'] = [] #-- a cityobject can have > 1
         #-- the geometry
@@ -1483,13 +1525,14 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywg
         g['type'] = 'Solid'
         g['lod'] = 1
         allsurfaces = [] #-- list of surfaces forming the oshell of the solid
+        #mat = []
         #-- exterior ring of each footprint
         oring = list(footprint.exterior.coords)
         oring.pop() #-- remove last point since first==last
         if footprint.exterior.is_ccw == False:
             #-- to get proper orientation of the normals
             oring.reverse() 
-        extrude_walls(oring, lsattributes[i]['roof_height'], lsattributes[i]['ground_height'],
+        extrude_walls(oring, lsattributes[i]['roof_height'], min_zbld[i], #lsattributes[i]['ground_height'],
                       allsurfaces, cm)
         #-- interior rings of each footprint
         irings = []
@@ -1501,19 +1544,22 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, skywg
                 #-- to get proper orientation of the normals
                 iring.reverse() 
             irings.append(iring)
-            extrude_walls(iring, lsattributes[i]['roof_height'], lsattributes[i]['ground_height'],
+            extrude_walls(iring, lsattributes[i]['roof_height'], min_zbld[i], #lsattributes[i]['ground_height'],
                           allsurfaces, cm)
         #-- top-bottom surfaces
         extrude_roof_ground(oring, irings, lsattributes[i]['roof_height'], 
                             False, allsurfaces, cm)
-        extrude_roof_ground(oring, irings, lsattributes[i]['ground_height'], 
+        extrude_roof_ground(oring, irings, min_zbld[i], #lsattributes[i]['ground_height'], 
                             True, allsurfaces, cm)
-        #-- add the extruded geometry to the geometry
+        #-- add the extruded surfaces to the geometry
         g['boundaries'] = []
         g['boundaries'].append(allsurfaces)
         #g['boundaries'] = allsurfaces
         #-- add the geom to the building 
         oneb['geometry'].append(g)
+        
+        #oneb['material']['values'] = mat
+        
         #-- insert the building as one new city object
         cm['CityObjects'][lsattributes[i]['osm_id']] = oneb
         
@@ -1640,7 +1686,7 @@ def add_terrain_b(T, allsurfaces):
     for i in T:
         allsurfaces.append([[i[0], i[1], i[2]]]) 
     
-def extrude_roof_ground(orng, irngs, height, reverse, allsurfaces, cm):
+def extrude_roof_ground(orng, irngs, height, reverse, allsurfaces, cm):#, mat):
     oring = copy.deepcopy(orng)
     irings = copy.deepcopy(irngs)
     if reverse == True:
@@ -1655,12 +1701,13 @@ def extrude_roof_ground(orng, irngs, height, reverse, allsurfaces, cm):
             cm['vertices'].append([pt[0], pt[1], height])
             irings[i][j] = (len(cm['vertices']) - 1)
     output = []
-    output.append(oring)
+    output.append(oring)     
     for each in irings:
         output.append(each)
     allsurfaces.append(output)
+    #mat.append([[0, 0, 0, 0]])
 
-def extrude_walls(ring, height, ground, allsurfaces, cm):
+def extrude_walls(ring, height, ground, allsurfaces, cm):#, mat):
     #-- each edge become a wall, ie a rectangle
     for (j, v) in enumerate(ring[:-1]):
         #l = []
@@ -1669,7 +1716,8 @@ def extrude_walls(ring, height, ground, allsurfaces, cm):
         cm['vertices'].append([ring[j+1][0], ring[j+1][1], height])
         cm['vertices'].append([ring[j][0],   ring[j][1],   height])
         t = len(cm['vertices'])
-        allsurfaces.append([[t-4, t-3, t-2, t-1]])    
+        allsurfaces.append([[t-4, t-3, t-2, t-1]])   
+        #mat.append([[1, 1, 1, 1]])
     #-- last-first edge
     #l = []
     cm['vertices'].append([ring[-1][0], ring[-1][1], ground])
@@ -1678,10 +1726,11 @@ def extrude_walls(ring, height, ground, allsurfaces, cm):
     cm['vertices'].append([ring[-1][0], ring[-1][1], height])
     t = len(cm['vertices'])
     allsurfaces.append([[t-4, t-3, t-2, t-1]])
+    #mat.append([[1, 1, 1, 1]])
 
 def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, minz, maxz, 
                   T, pts, 
-                  acoi, jparams, gt_forward, rb, 
+                  acoi, jparams, min_zbld, gt_forward, rb, 
                   skywgeom=None, skywgeomattributes=None, 
                   brggeom=None, brggeomattributes=None,
                   roofgeom=None, roofgeomattributes=None): 
@@ -1839,7 +1888,7 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
         if footprint.exterior.is_ccw == False:
             #-- to get proper orientation of the normals
             oring.reverse() 
-        extrude_walls(oring, lsattributes[i]['roof_height'], lsattributes[i]['ground_height'],
+        extrude_walls(oring, lsattributes[i]['roof_height'], min_zbld[i], #lsattributes[i]['ground_height'],
                       allsurfaces, cm)
         #-- interior rings of each footprint
         irings = []
@@ -1851,12 +1900,12 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
                 #-- to get proper orientation of the normals
                 iring.reverse() 
             irings.append(iring)
-            extrude_walls(iring, lsattributes[i]['roof_height'], lsattributes[i]['ground_height'],
+            extrude_walls(iring, lsattributes[i]['roof_height'], min_zbld[i], #lsattributes[i]['ground_height'],
                           allsurfaces, cm)
         #-- top-bottom surfaces
         extrude_roof_ground(oring, irings, lsattributes[i]['roof_height'], 
                             False, allsurfaces, cm)
-        extrude_roof_ground(oring, irings, lsattributes[i]['ground_height'], 
+        extrude_roof_ground(oring, irings, min_zbld[i], #lsattributes[i]['ground_height'], 
                             True, allsurfaces, cm)
         #-- add the extruded geometry to the geometry
         g['boundaries'] = []
@@ -2136,13 +2185,66 @@ def bridge_sides(ring, gt_forward, rb, allsurfaces, cm):
     t = len(cm['vertices'])
     allsurfaces.append([[t-4, t-3, t-2, t-1]])
     
+def OwnXpt2obj(self):
+    from io import StringIO
+    
+    self.decompress()
+    out = StringIO()
+    #-- reference .mlt
+    out.write('mtllib wvfrntOBJ.mtl\n')
+    #-- write vertices
+    for v in self.j['vertices']:
+        out.write('v ' + str(v[0]) + ' ' + str(v[1]) + ' ' + str(v[2]) + '\n')
+    vnp = np.array(self.j["vertices"])
+    #-- translate to minx,miny
+    minx = 9e9
+    miny = 9e9
+    for each in vnp:
+        if each[0] < minx:
+                minx = each[0]
+        if each[1] < miny:
+                miny = each[1]
+    for each in vnp:
+        each[0] -= minx
+        each[1] -= miny
+    # print ("min", minx, miny)
+    # print(vnp)
+    #-- start with the CO
+    for theid in self.j['CityObjects']:
+        for geom in self.j['CityObjects'][theid]['geometry']:
+            if (self.j['CityObjects'][theid]['type'] == 'TINRelief'):
+                out.write('usemtl Terrain\n')
+            if (self.j['CityObjects'][theid]['type'] == 'Building'):
+                out.write('usemtl Building\n')
+            if (self.j['CityObjects'][theid]['type'] == 'Road'):
+                out.write('usemtl Road\n')
+            if (self.j['CityObjects'][theid]['type'] == 'Bridge'):
+                out.write('usemtl Bridge\n')
+            
+            out.write('o ' + str(theid) + '\n')
+            if ( (geom['type'] == 'MultiSurface') or (geom['type'] == 'CompositeSurface') ):
+                for face in geom['boundaries']:
+                    #re, b, n = self.triangulate_face(face, vnp)
+                    re, b = self.triangulate_face(face, vnp)
+                    if b == True:
+                        for t in re:
+                            out.write("f %d %d %d\n" % (t[0] + 1, t[1] + 1, t[2] + 1))
+            elif (geom['type'] == 'Solid'):
+                for shell in geom['boundaries']:
+                    for i, face in enumerate(shell):
+                        #re, b, n = self.triangulate_face(face, vnp)
+                        re, b = self.triangulate_face(face, vnp)
+                        if b == True:
+                            for t in re:
+                                out.write("f %d %d %d\n" % (t[0] + 1, t[1] + 1, t[2] + 1))
+    return out
+    
 def write275obj(jparams):
     """
     export 2.75D wavefront.obj surface
     """
-    
-    cm1 = cityjson.load(jparams['cjsn_out'])
+    cm1 = cityjson.load(jparams['cjsn_CleanOut'])
     with open(jparams['obj-2_75D'], 'w+') as f:
-        re = cm1.export2obj()
+        re = OwnXpt2obj(cm1)
         f.write(re.getvalue())
     
