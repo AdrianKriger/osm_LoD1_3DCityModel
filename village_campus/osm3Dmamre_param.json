@@ -4,17 +4,15 @@
     "osm_type": "relation",
     
     "crs": "EPSG:32734",
-
-    "ori-gjson_out": "./data/fp_rural.geojson",
-    "gjson-proj_out": "./data/fp_proj_rural.geojson",
-    "gjson-z_out": "./data/fp_proj_z_rural.geojson",
-    "SKYwalk_gjson-z_out": "./data/skywalk_z.geojson",
-    "roof_gjson-z_out": "./data/roof_z.geojson",
-
     
     "aoi": "./data/aoi_rural.geojson",
-    "aoi_prj": "./data/aoi_proj_rural.geojson",
+
+    "osm_bldings": "./data/fp_proj_z_rural.geojson", 
     
+    "roads": "Yes",
+    "osm_roads": "./data/rds-rural_out.geojson",
+    "bridge": "No",   
+
     "in_raster": "./raster/LO19_050M_3318CB.tif",
     "nodata": 3.402823466385289e+38,
     "projClip_raster": "./raster/3318CB_clip_utm34s.tif",
