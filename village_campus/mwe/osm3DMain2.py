@@ -32,7 +32,7 @@ def main():
     start = time.time()
     
     try:
-        jparams = json.load(open('osm3DuEstate_param.json'))
+        jparams = json.load(open('osm3Dcput_param.json'))
     except:
         print("ERROR: something is wrong with the param.json file.")
         sys.exit()
@@ -43,10 +43,7 @@ def main():
     os.makedirs(path, exist_ok=True)
     
     ts = requestOsmBld(jparams)
-    #projVec(jparams['gjson-proj_out'], jparams['ori-gjson_out'], jparams['crs'])
     aoi = requestOsmAoi(jparams)
-    #projVec(jparams['aoi_prj'], jparams['aoi'], jparams['crs'])
-    #aoi, aoibuffer, extent = getosmArea(jparams['aoi_prj'], jparams['osm_type'], jparams['crs'])
     aoi, aoibuffer, extent = getosmArea(aoi, jparams['aoi'], jparams['osm_type'], jparams['crs'])
        
     path = os.getcwd()
@@ -66,15 +63,13 @@ def main():
     
     if jparams['roads'] == "Yes":
         rd = requestOsmRoads(jparams)
-        #projVec(jparams['gjson_proj-rd'], jparams['gjson-rd'], jparams['crs'])
         pk = requestOsmParking(jparams)
-        #projVec(jparams['gjson_proj-pk'], jparams['gjson-pk'], jparams['crs'])
         one, bridge, hsr = prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb)
         if jparams['bridge'] == 'Yes' and len(bridge) > 0:
-            bridge_b = prep_Brdgjson(bridge, jparams)
+            bridge = prep_Brdgjson(bridge, jparams)
     
-    ts, skywalk, roof = assignZ(ts, gt_forward, rb) #jparams['projClip_raster'],
-    writegjson(ts, jparams)#['gjson-z_out'])
+    ts, skywalk, roof = assignZ(ts, gt_forward, rb) 
+    writegjson(ts, jparams)
     if len(skywalk) > 0:
         skywalk = prep_Skygjson(skywalk, jparams)
     if len(roof) > 0:
@@ -91,14 +86,13 @@ def main():
     else:
         gdf = getXYZ(dis, aoibuffer, jparams)
     
-    #gdf = getXYZ(dis, aoibuffer, jparams)
-    ac, c = getBldVertices(dis)
+    ac, c, min_zbld = getBldVertices(dis, gt_forward, rb)
     idx = []
     idx, idx01 = createSgmts(ac, c, gdf, idx)
     df2 = appendCoords(gdf, ac)
     
     if jparams['roads'] == "Yes":
-         acoi, ca = getAOIVertices(aoi, gt_forward, rb) # jparams['projClip_raster'],
+         acoi, ca = getAOIVertices(aoi, gt_forward, rb) 
          idx, idx01 = createSgmts(acoi, ca, df2, idx)
          df3 = appendCoords(df2, acoi)
          
@@ -106,17 +100,17 @@ def main():
          idx, idx01 = createSgmts(acr, cr, df3, idx)
          df4 = appendCoords(df3, acr)
     else:
-        acoi, ca = getAOIVertices(aoi, gt_forward, rb) # jparams['projClip_raster'],
+        acoi, ca = getAOIVertices(aoi, gt_forward, rb)
         idx, idx01 = createSgmts(acoi, ca, df2, idx)
         df4 = appendCoords(df2, acoi)
         
     pts = df4[['x', 'y', 'z']].values
-     #-- change the dtype to 'float64'
+    ##-- change the dtype to 'float64'
     pts = pts.astype('float64')
 
     t = executeDelaunay(hs, df4, idx)
     
-      #-- check terrain with a plot
+    ##-- check terrain with a plot
     pvPlot(t, pts, idx, hs)
 
     minz = df4['z'].min()
@@ -124,24 +118,21 @@ def main():
 
     #writeObj(pts, t, 'wvft_cput3d.obj') ~ this will write the terrain surface only
     if jparams['roads'] == "Yes":
-        output_cityjsonR(extent, minz, maxz, t, pts, t_list, rd_pts, jparams, 
-                         bridge_b, skywalk, roof, acoi, gt_forward, rb)
+        output_cityjsonR(extent, minz, maxz, t, pts, t_list, rd_pts, jparams, min_zbld,
+                         bridge, skywalk, roof, acoi, gt_forward, rb)
     else: 
-        output_cityjson(extent, minz, maxz, t, pts, jparams, skywalk, roof)
+        output_cityjson(extent, minz, maxz, t, pts, jparams, min_zbld, skywalk, roof)
         
     src_ds = None
     
     write275obj(jparams)
-    
-    # if jparams['inter'] == 'True':
-    #     write_interactive(area, jparams)
         
     end = time.time()
     print('runtime:', str(timedelta(seconds=(end - start))))
     
-     #-- cput runtime: 0:00:44.313927 ~ university campus: 50 buildings / with 57 roads: 0:06:35.585379
+     #-- cput runtime: 0:00:21.761134 ~ university campus: 50 buildings / with 57 roads: 0:06:35.585379
      #-- rural runtime: 0:16:30.662577 ~ rural village: population 9 000
-     #-- neighbourhood runtime: 0:01:20.869754 ~ urban neighbourhood: population ~ 1 000, 305 buildings / with 29 roads: 0:03:41.608917
+     #-- neighbourhood runtime: 0:00:41.587389 ~ urban neighbourhood: population ~ 1 000, 305 buildings / with 57 roads: 0:06:17.539262
 
 if __name__ == "__main__":
     main()

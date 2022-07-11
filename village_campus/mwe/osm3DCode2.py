@@ -86,9 +86,7 @@ def requestOsmBld(jparams):
         #json.dump(gj, outfile)
         
     ts = gpd.GeoDataFrame(shapes_with_props, crs="EPSG:4326").set_geometry('shape')
-    #gdf = gdf.rename(columns={'shape':'geometry'})
     ts.to_crs(crs=jparams['crs'], inplace=True)
-    #ts.rename(columns={'shape':'geometry'}, inplace=True)
     ts.rename_geometry('geometry', inplace=True)
     ts['type'] = ts['properties'].apply(lambda x: x.get('type'))
     ts['tags'] = ts['properties'].apply(lambda x: x.get('tags'))
@@ -134,12 +132,10 @@ def requestOsmAoi(jparams):
         #json.dump(area, outfile)
     
     aoi = gpd.GeoDataFrame(area, crs="EPSG:4326").set_geometry('shape')
-    #gdf = gdf.rename(columns={'shape':'geometry'})
     aoi.to_crs(crs=jparams['crs'], inplace=True)
     aoi['type'] = aoi['properties'].apply(lambda x: x.get('type'))
     aoi['tags'] = aoi['properties'].apply(lambda x: x.get('tags'))
     aoi['id'] = aoi['properties'].apply(lambda x: x.get('id'))
-    #aoi.rename(columns={'shape':'geometry'}, inplace=True)
     aoi.rename_geometry('geometry', inplace=True)
     aoi = aoi.explode()
     aoi.reset_index(drop=True, inplace=True)
@@ -173,12 +169,10 @@ def requestOsmRoads(jparams):
         #json.dump(gj_rd, outfile)
     
     rd = gpd.GeoDataFrame(rds, crs="EPSG:4326").set_geometry('shape')
-    #gdf = gdf.rename(columns={'shape':'geometry'})
     rd.to_crs(crs=jparams['crs'], inplace=True)
     rd['type'] = rd['properties'].apply(lambda x: x.get('type'))
     rd['tags'] = rd['properties'].apply(lambda x: x.get('tags'))
     rd['id'] = rd['properties'].apply(lambda x: x.get('id'))
-    #aoi.rename(columns={'shape':'geometry'}, inplace=True)
     rd.rename_geometry('geometry', inplace=True)
     rd = rd.explode()
     rd.reset_index(drop=True, inplace=True)
@@ -213,14 +207,12 @@ def requestOsmParking(jparams):
         #json.dump(gj_pk, outfile)
         
     pk = gpd.GeoDataFrame(gj_pk, crs="EPSG:4326").set_geometry('shape')
-    #gdf = gdf.rename(columns={'shape':'geometry'})
     pk.to_crs(crs=jparams['crs'], inplace=True)
     pk['type'] = pk['properties'].apply(lambda x: x.get('type'))
     pk['tags'] = pk['properties'].apply(lambda x: x.get('tags'))
     pk['id'] = pk['properties'].apply(lambda x: x.get('id'))
-    #aoi.rename(columns={'shape':'geometry'}, inplace=True)
     pk.rename_geometry('geometry', inplace=True)
-    #pk = pk.explode()
+    pk = pk.explode()
     pk.reset_index(drop=True, inplace=True)
         
     return pk
@@ -264,7 +256,6 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     def ownbuffer03(row):
         return row.geometry.buffer(round(float(row['width']) + 0.25 / 2, 2), cap_style=2)
        
-    #rd = gpd.read_file(jparams['gjson_proj-rd'])
     rd = rd.copy()
     rd.drop(rd.index[rd['type'] == 'node'], inplace = True)
     rd.dropna(subset=['tags'], inplace=True)
@@ -286,7 +277,6 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     #-- remove pedestrian area + drop lanes with no values + 
     #-- calc width based on lanes when no width + drop width with no values
     rd = rd[rd['geometry'].type != 'Polygon']#) & (rd['lanes'] != np.nan)]
-    #rd.dropna(subset=['lanes'], inplace=True)
     rd['lanes'] = pd.to_numeric(rd['lanes'])
     rd['lanes'] = rd['lanes'].fillna(0)
     rd['width'] = pd.to_numeric(rd['width'])
@@ -371,9 +361,6 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     rd_b = rd_b.explode()
     
     #-- buffer the parking entrance and cut from roads   
-    #pk = gpd.read_file(jparams['gjson_proj-pk'])
-    #pk.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
-    #pk.drop(rd.index[rd['type'] != 'node'], inplace = True)
     pk = pk.copy()
     pk = pk[pk['geometry'].type == 'Point']
     pk.dropna(subset=['tags'], inplace=True)
@@ -385,9 +372,9 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     rd_b = gpd.overlay(rd_b, pk_buffer, how='difference')
     
     #-- remove bridges and trim back roads under bridges 
-    bridge_b = bridge.copy()
+    #bridge_b = bridge.copy()
     bridge_b02 = bridge.copy()
-    bridge_b['geometry'] = bridge_b.apply(ownbuffer02, axis=1)
+    #bridge_b['geometry'] = bridge_b.apply(ownbuffer02, axis=1)
     bridge_b02['geometry'] = bridge_b02.apply(ownbuffer03, axis=1)
     bridge_b02 = bridge_b02.dissolve()
     rd_b = gpd.overlay(rd_b, bridge_b02, how='difference')
@@ -450,7 +437,6 @@ def prepareDEM(extent, jparams):
     gdal.Warp to reproject and clip raster dem
     """
     OutTile = gdal.Warp(jparams['projClip_raster'], 
-                        #'/vsimem/proj.tif',
                         jparams['in_raster'], 
                         dstSRS=jparams['crs'],
                         srcNodata = jparams['nodata'],
@@ -466,8 +452,7 @@ def createXYZ(fout, fin):
     """
     xyz = gdal.Translate(fout,
                          fin,
-                         format = 'XYZ')#,
-                         #noData = float(0))
+                         format = 'XYZ')
     xyz = None
     
 def rasterQuery(geom, gt_forward, rb):
@@ -487,7 +472,6 @@ def assignZ(ts, gt_forward, rb): # rfname,
     assign a height attribute - mean ground - to the osm vector 
     ~ .representative_point() used instead of .centroid
     """
-    #ts = gpd.read_file(vfname)
     ts.drop(ts.index[ts['type'] == 'node'], inplace = True)
 
     #-- skywalk --bridge
@@ -762,7 +746,6 @@ def prep_roof(roof, jparams):#, fname):
             f["geometry"] = mapping(osm_shape)
                     
             f["properties"]['ground_height'] = round(row["mean"], 2)
-            #print('id: ', f["properties"]["osm_id"], row.tags['building:levels'])
             f["properties"]['bottom_roof_height'] = round(float(row.tags['building:levels']) * storeyheight + row["mean"], 2) 
             f["properties"]['top_roof_height'] = round(f["properties"]['bottom_roof_height'] + 1, 2)
             _roof['features'].append(f)
@@ -789,9 +772,7 @@ def getXYZ(dis, aoi, jparams):
     _mask = gdf.within(_symdiff.loc[0, 'geometry'])
     gdf = gdf.loc[_mask]
                      
-    #gdf['z'] = gdf['z'].replace('None', float(0))
     gdf = gdf[gdf['z'] != jparams['nodata']]
-    #gdf['z'].fillna(value=0, inplace=True)
     gdf = gdf.round(2)
     gdf.reset_index(drop=True, inplace=True)
     
@@ -804,8 +785,9 @@ def getosmBld(jparams):
     """
     dis = gpd.read_file(jparams['osm_bldings'])
     dis.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
- 
-    # # remove duplicate vertices within tolerance 0.2 
+    
+    ##-- this might not be neccesary --- keeping it for prosperity
+    ##--  remove duplicate vertices within tolerance 0.2 
     # for index, row in dis.iterrows():
     #     tmp_gdf = dis.copy()
     #     tmp_gdf['distance'] = tmp_gdf.distance(row['geometry'])
@@ -814,16 +796,16 @@ def getosmBld(jparams):
     #     snapped_geom = snap(row['geometry'], closest_geom, 0.2)
     #     dis.loc[index, 'geometry'] = snapped_geom
     
-     # - the following is left for reference
-     #-- this serves two functions:
+     ##-- the following is left for reference
+     ##-- this serves two functions:
      #               i)  verify footprints removed
      #               ii) remove `outline` that overwrite `building:parts` 
      #                   - how does https://3dbuildings.com/data/#17.59/-33.932156/18.638025/131.2/60
      #                   - and https://demo.f4map.com/#lat=-33.9319930&lon=18.6386228&zoom=19&camera.theta=69.973&camera.phi=-126.624
      #                   - display the form correctly?      
-    #dis = dis.loc[(dis.osm_id != 13076003) & (dis.osm_id != 12405081)] 
-     #-- save
-    #dis.to_file(jparams['gjson-z_out'], driver='GeoJSON')
+     #dis = dis.loc[(dis.osm_id != 13076003) & (dis.osm_id != 12405081)] 
+     ##-- save
+     #dis.to_file(jparams['gjson-z_out'], driver='GeoJSON')
     
     # create a point representing the hole within each building  
     dis['x'] = dis.representative_point().x
@@ -837,7 +819,6 @@ def getosmArea(aoi, outFile, b_type, crs):
     read osm area to gdf and buffer
     - get the extent for the cityjson
     """
-    #aoi = gpd.read_file(filen)
     
     # when areas are relations
     if b_type == 'relation' and len(aoi) > 1:
@@ -869,12 +850,9 @@ def getBldVertices(dis, gt_forward, rb): #
     all_coords = []
     dps = 2
     segs = {}
-    #geoms = {}
     min_zbld = []
     
     for ids, row in dis.iterrows():
-        #oring, z = list(row.geometry.exterior.coords), row['ground_height']
-        #rounded_z = round(z, dps)
         
         oring = list(row.geometry.exterior.coords)
         coords_rounded = []
@@ -964,7 +942,6 @@ def getRdVertices(one, idx01, acoi, hs, gt_forward, rb):
     l1 = len(acoi_copy)
     Ahsr = pd.DataFrame(columns=['x', 'y', 'ground_height']) #[]
     temp_Ahsr = pd.DataFrame(columns=['x', 'y', 'ground_height']) #[]
-    #pnt_df = pd.DataFrame(columns=['x', 'y', 'z'])
     t_list = []
     rd_pts = []
     idxAll = []
@@ -1087,7 +1064,7 @@ def getRdVertices(one, idx01, acoi, hs, gt_forward, rb):
         t = Tr.get('triangles').tolist()
         t_list.append(t)
         
-        arr = [] #np.empty((0,2), int)
+        arr = [] 
         segs02 = {}
         r_coords02 = []
         idx1 = []
@@ -1113,7 +1090,7 @@ def rasterQuery2(mx, my, gt_forward, rb):
 
     return intval[0][0]
 
-def getAOIVertices(aoi, gt_forward, rb): #fname,
+def getAOIVertices(aoi, gt_forward, rb): 
     """
     retrieve vertices from aoi ~ without duplicates 
     - these vertices are assigned a z attribute
@@ -1130,10 +1107,6 @@ def getAOIVertices(aoi, gt_forward, rb): #fname,
         for x, y in oring:
             #[z] = point_query(Point(x, y), raster=fname)#, interpolate='nearest', nodata=0)
             z = rasterQuery2(x, y, gt_forward, rb)
-            # if z == None:
-            #     rounded_z = float(0)
-            # if z != None:
-            #     rounded_z = round(z, 2)
     
             rounded_x = round(x, dps)
             rounded_y = round(y, dps)
@@ -1282,7 +1255,6 @@ def output_cityjsonR(extent, minz, maxz, T, pts, t_list, rd_pts, jparams, min_zb
         rdattributes.append(each['properties'])
     
     if jparams['bridge'] == 'Yes' and len(bridge) > 1:
-        #brg = fiona.open(jparams['brdge_gjson_out'])
         brggeom = [] #-- list of the geometries
         brggeomattributes = [] #-- list of the attributes
         #for each in brg:
@@ -1306,9 +1278,7 @@ def output_cityjsonR(extent, minz, maxz, T, pts, t_list, rd_pts, jparams, min_zb
         skywgeom = None
         skywgeomattributes = None
            
-    #if len(roof) > 0:
     if len(roof) > 1: #['features']
-        #_roof = fiona.open(jparams['roof_gjson-z_out'])
         roofgeom = [] #-- list of the geometries
         roofgeomattributes = [] #-- list of the attributes
         #for each in _roof:
@@ -1328,10 +1298,10 @@ def output_cityjsonR(extent, minz, maxz, T, pts, t_list, rd_pts, jparams, min_zb
     json_str = json.dumps(cm, indent=2)
     fout = open(jparams['cjsn_out'], "w")
     fout.write(json_str)  
-         ##- close fiona object
+    ##-- close fiona object
     c.close() 
 
-    #clean cityjson
+    ##-- clean cityjson
     cm = cityjson.load(jparams['cjsn_out'])
     cityjson.save(cm, jparams['cjsn_CleanOut'])
     
@@ -1350,7 +1320,6 @@ def output_cityjson(extent, minz, maxz, T, pts, jparams, min_zbld, skywalk, roof
         
     ##- open skywalk ---fiona object
     if len(skywalk) > 1:
-        #sky = fiona.open(jparams['SKYwalk_gjson-z_out'])
         skywgeom = [] #-- list of the geometries
         skywgeomattributes = [] #-- list of the attributes
         #for each in sky:
@@ -1361,9 +1330,7 @@ def output_cityjson(extent, minz, maxz, T, pts, jparams, min_zbld, skywalk, roof
         skywgeom = None
         skywgeomattributes = None
            
-    #if len(roof) > 0:
     if len(skywalk) > 1:
-        #_roof = fiona.open(jparams['roof_gjson-z_out'])
         roofgeom = [] #-- list of the geometries
         roofgeomattributes = [] #-- list of the attributes
         #for each in _roof:
@@ -1456,35 +1423,8 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, min_z
             }]
         }
     },
-    
-    # cm["appearance"] = {
-    #     "materials": 
-    #         [
-    #             {
-    #                 "name": "roofandground",
-    #                 "ambientIntensity":  0.2000,
-    #                 "diffuseColor":  [0.9000, 0.1000, 0.7500],
-    #                 "emissiveColor": [0.9000, 0.1000, 0.7500],
-    #                 "specularColor": [0.9000, 0.1000, 0.7500],
-    #                 "shininess": 0.2,
-    #                 "transparency": 0.5,
-    #                 "isSmooth": 'false'
-    #             },
-    #             {
-    #                 "name": "wall",
-    #                 "ambientIntensity":  0.4000,
-    #                 "diffuseColor":  [0.1000, 0.1000, 0.9000],
-    #                 "emissiveColor": [0.1000, 0.1000, 0.9000],
-    #                 "specularColor": [0.9000, 0.1000, 0.7500],
-    #                 "shininess": 0.0,
-    #                 "transparency": 0.5,
-    #                 "isSmooth": 'true'
-    #             }
-    #         ],
-    #     "default-theme-material": "myDefaultTheme2"
-    #     }    
         
-      ##-- do terrain
+    ##-- do terrain
     add_terrain_v(pts, cm)
     grd = {}
     grd['type'] = 'TINRelief'
@@ -1496,12 +1436,12 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, min_z
     allsurfaces = [] #-- list of surfaces
     add_terrain_b(T, allsurfaces)
     g['boundaries'] = allsurfaces
-      #-- add the geom 
+    #-- add the geom 
     grd['geometry'].append(g)
-      #-- insert the terrain as one new city object
+    #-- insert the terrain as one new city object
     cm['CityObjects']['terrain01'] = grd
     
-     #-- then buildings
+    ##-- then buildings
     for (i, geom) in enumerate(lsgeom):
         footprint = geom
         #-- one building
@@ -1514,10 +1454,6 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, min_z
             #oneb['attributes'][k] = lsattributes[i][k]
         for a in lsattributes[i]:
             oneb['attributes'][a] = lsattributes[i][a]
-            
-                                      # wall, wall, roof, foundation
-        #oneb['material'] = {} #{ "values": [[1, 1, 0, 0]] }} 
-        #mat = [] #-- list of surfaces forming the oshell of the solid
         
         oneb['geometry'] = [] #-- a cityobject can have > 1
         #-- the geometry
@@ -1525,15 +1461,13 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, min_z
         g['type'] = 'Solid'
         g['lod'] = 1
         allsurfaces = [] #-- list of surfaces forming the oshell of the solid
-        #mat = []
         #-- exterior ring of each footprint
         oring = list(footprint.exterior.coords)
         oring.pop() #-- remove last point since first==last
         if footprint.exterior.is_ccw == False:
             #-- to get proper orientation of the normals
             oring.reverse() 
-        extrude_walls(oring, lsattributes[i]['roof_height'], min_zbld[i], #lsattributes[i]['ground_height'],
-                      allsurfaces, cm)
+        extrude_walls(oring, lsattributes[i]['roof_height'], min_zbld[i], allsurfaces, cm)
         #-- interior rings of each footprint
         irings = []
         interiors = list(footprint.interiors)
@@ -1544,22 +1478,16 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, min_z
                 #-- to get proper orientation of the normals
                 iring.reverse() 
             irings.append(iring)
-            extrude_walls(iring, lsattributes[i]['roof_height'], min_zbld[i], #lsattributes[i]['ground_height'],
-                          allsurfaces, cm)
+            extrude_walls(iring, lsattributes[i]['roof_height'], min_zbld[i], allsurfaces, cm)
         #-- top-bottom surfaces
-        extrude_roof_ground(oring, irings, lsattributes[i]['roof_height'], 
-                            False, allsurfaces, cm)
-        extrude_roof_ground(oring, irings, min_zbld[i], #lsattributes[i]['ground_height'], 
-                            True, allsurfaces, cm)
+        extrude_roof_ground(oring, irings, lsattributes[i]['roof_height'], False, allsurfaces, cm)
+        extrude_roof_ground(oring, irings, min_zbld[i], True, allsurfaces, cm)
         #-- add the extruded surfaces to the geometry
         g['boundaries'] = []
         g['boundaries'].append(allsurfaces)
         #g['boundaries'] = allsurfaces
         #-- add the geom to the building 
         oneb['geometry'].append(g)
-        
-        #oneb['material']['values'] = mat
-        
         #-- insert the building as one new city object
         cm['CityObjects'][lsattributes[i]['osm_id']] = oneb
         
@@ -1567,14 +1495,13 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, min_z
     if skywgeom != None:
         for (i, geom) in enumerate(skywgeom):
             skyprint = geom
-            #-- one building
+            #-- one skywalk
             oneb = {}
             oneb['type'] = 'Bridge'
             oneb['attributes'] = {}
             for k, v in list(skywgeomattributes[i].items()):
                 if v is None:
                     del skywgeomattributes[i][k]
-                #oneb['attributes'][k] = lsattributes[i][k]
             for a in skywgeomattributes[i]:
                 oneb['attributes'][a] = skywgeomattributes[i][a]
             
@@ -1622,57 +1549,56 @@ def doVcBndGeom(lsgeom, lsattributes, extent, minz, maxz, T, pts, jparams, min_z
     if roofgeom != None:
         for (i, geom) in enumerate(roofgeom):
             roofprint = geom
-        #-- one building
+        #-- one building=roof
             oneb = {}
             oneb['type'] = 'Building'
             oneb['attributes'] = {}
             for k, v in list(roofgeomattributes[i].items()):
                 if v is None:
                     del roofgeomattributes[i][k]
-            #oneb['attributes'][k] = lsattributes[i][k]
             for a in roofgeomattributes[i]:
                 oneb['attributes'][a] = roofgeomattributes[i][a]
         
             oneb['geometry'] = [] #-- a cityobject can have > 1
-        #-- the geometry
+            #-- the geometry
             g = {} 
             g['type'] = 'Solid'
             g['lod'] = 1
             allsurfaces = [] #-- list of surfaces forming the oshell of the solid
-        #-- exterior ring of each footprint
+            #-- exterior ring of each footprint
             oring = list(roofprint.exterior.coords)
             oring.pop() #-- remove last point since first==last
             if roofprint.exterior.is_ccw == False:
-            #-- to get proper orientation of the normals
+                #-- to get proper orientation of the normals
                 oring.reverse() 
             extrude_walls(oring, roofgeomattributes[i]['top_roof_height'], 
                           roofgeomattributes[i]['bottom_roof_height'],
                           allsurfaces, cm)
-        #-- interior rings of each footprint
+            #-- interior rings of each footprint
             irings = []
             interiors = list(roofprint.interiors)
             for each in interiors:
                 iring = list(each.coords)
                 iring.pop() #-- remove last point since first==last
                 if each.is_ccw == True:
-                #-- to get proper orientation of the normals
+                    #-- to get proper orientation of the normals
                     iring.reverse() 
                 irings.append(iring)
                 extrude_walls(iring, roofgeomattributes[i]['top_roof_height'], 
                               roofgeomattributes[i]['bottom_roof_height'],
                               allsurfaces, cm)
-        #-- top-bottom surfaces
+            #-- top-bottom surfaces
             extrude_roof_ground(oring, irings, roofgeomattributes[i]['top_roof_height'], 
                                 False, allsurfaces, cm)
             extrude_roof_ground(oring, irings, roofgeomattributes[i]['bottom_roof_height'], 
                                 True, allsurfaces, cm)
-        #-- add the extruded geometry to the geometry
+            #-- add the extruded geometry to the geometry
             g['boundaries'] = []
             g['boundaries'].append(allsurfaces)
-        #g['boundaries'] = allsurfaces
-        #-- add the geom to the building 
+            #g['boundaries'] = allsurfaces
+            #-- add the geom to the building 
             oneb['geometry'].append(g)
-        #-- insert the building as one new city object
+            #-- insert the building as one new city object
             cm['CityObjects'][roofgeomattributes[i]['osm_id']] = oneb
 
     return cm
@@ -1705,7 +1631,6 @@ def extrude_roof_ground(orng, irngs, height, reverse, allsurfaces, cm):#, mat):
     for each in irings:
         output.append(each)
     allsurfaces.append(output)
-    #mat.append([[0, 0, 0, 0]])
 
 def extrude_walls(ring, height, ground, allsurfaces, cm):#, mat):
     #-- each edge become a wall, ie a rectangle
@@ -1716,8 +1641,8 @@ def extrude_walls(ring, height, ground, allsurfaces, cm):#, mat):
         cm['vertices'].append([ring[j+1][0], ring[j+1][1], height])
         cm['vertices'].append([ring[j][0],   ring[j][1],   height])
         t = len(cm['vertices'])
-        allsurfaces.append([[t-4, t-3, t-2, t-1]])   
-        #mat.append([[1, 1, 1, 1]])
+        allsurfaces.append([[t-4, t-3, t-2, t-1]])  
+        
     #-- last-first edge
     #l = []
     cm['vertices'].append([ring[-1][0], ring[-1][1], ground])
@@ -1726,7 +1651,6 @@ def extrude_walls(ring, height, ground, allsurfaces, cm):#, mat):
     cm['vertices'].append([ring[-1][0], ring[-1][1], height])
     t = len(cm['vertices'])
     allsurfaces.append([[t-4, t-3, t-2, t-1]])
-    #mat.append([[1, 1, 1, 1]])
 
 def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, minz, maxz, 
                   T, pts, 
@@ -1749,8 +1673,6 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
     cm["metadata"] = {
     "title": jparams['cjsn_title'],
     "referenceDate": jparams['cjsn_referenceDate'],
-    #"dataSource": jparams['cjsn_source'],
-    #"geographicLocation": jparams['cjsn_Locatn'],
     "referenceSystem": jparams['cjsn_referenceSystem'],
     "geographicalExtent": [
         extent[0],
@@ -1802,15 +1724,13 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
                  }
             }]
         }
-    #"metadataStandard": jparams['metaStan'],
-    #"metadataStandardVersion": jparams['metaStanV']
     }
-      ##-- do terrain
+    ##-- do terrain
     add_terrain_v(pts, cm)
     grd = {}
     grd['type'] = 'TINRelief'
     grd['geometry'] = [] #-- a cityobject can have >1 
-      #-- the geometry
+    #-- the geometry
     g = {} 
     g['type'] = 'CompositeSurface'
     g['lod'] = 1
@@ -1820,23 +1740,19 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
     g['boundaries'] = allsurfaces
     #print(g['boundaries'])
     #g['boundaries'].append(allsurfaces)
-      #-- add the geom 
+    #-- add the geom 
     grd['geometry'].append(g)
-      #-- insert the terrain as one new city object
+    #-- insert the terrain as one new city object
     cm['CityObjects']['terrain01'] = grd
     
     ##-- do roads
-    #for (i, t) in zip(enumerate(rd_pts), t_list):
-    #count = 1
-    #for (rp, tinR) in zip(rd_pts, t_list):
     for i, (rp, tinR) in enumerate(zip(rd_pts, t_list)):
-        #rp = rd_pts[count]
         rp = rp[len(acoi):, :]
         add_rd_v(rp, cm)
         onerd = {}
         onerd['type'] = 'Road'
         onerd['geometry'] = [] #-- a cityobject can have >1 
-          #-- the geometry
+        #-- the geometry
         g = {} 
         g['type'] = 'MultiSurface'
         g['lod'] = 1    
@@ -1844,7 +1760,6 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
         g['boundaries'] = []
         allsurfaces = [] #-- list of surfaces
         add_rd_b(tinR, rp, acoi, allsurfaces, cm)
-        #add_rd_b(t_list[count], rp, acoi, allsurfaces, cm)
         onerd['attributes'] = {}
         for k, v in list(rdattributes[i].items()):
             if v is None:
@@ -1854,15 +1769,13 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
             
         g['boundaries'] = allsurfaces
         #g['boundaries'].append(allsurfaces)
-          #-- add the geom 
+        #-- add the geom 
         onerd['geometry'].append(g)
         #onerd['geometry'] = g
-          #-- insert one road as one new city object
+        #-- insert one road as one new city object
         cm['CityObjects'][rdattributes[i]['id']] = onerd
-        #count = count + 1
-        #break
     
-     #-- then buildings
+    ##-- then buildings
     for (i, geom) in enumerate(lsgeom):
         footprint = geom
         #-- one building
@@ -1872,7 +1785,6 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
         for k, v in list(lsattributes[i].items()):
             if v is None:
                 del lsattributes[i][k]
-            #oneb['attributes'][k] = lsattributes[i][k]
         for a in lsattributes[i]:
             oneb['attributes'][a] = lsattributes[i][a]
         
@@ -1888,8 +1800,7 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
         if footprint.exterior.is_ccw == False:
             #-- to get proper orientation of the normals
             oring.reverse() 
-        extrude_walls(oring, lsattributes[i]['roof_height'], min_zbld[i], #lsattributes[i]['ground_height'],
-                      allsurfaces, cm)
+        extrude_walls(oring, lsattributes[i]['roof_height'], min_zbld[i], allsurfaces, cm)
         #-- interior rings of each footprint
         irings = []
         interiors = list(footprint.interiors)
@@ -1900,13 +1811,10 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
                 #-- to get proper orientation of the normals
                 iring.reverse() 
             irings.append(iring)
-            extrude_walls(iring, lsattributes[i]['roof_height'], min_zbld[i], #lsattributes[i]['ground_height'],
-                          allsurfaces, cm)
+            extrude_walls(iring, lsattributes[i]['roof_height'], min_zbld[i], allsurfaces, cm)
         #-- top-bottom surfaces
-        extrude_roof_ground(oring, irings, lsattributes[i]['roof_height'], 
-                            False, allsurfaces, cm)
-        extrude_roof_ground(oring, irings, min_zbld[i], #lsattributes[i]['ground_height'], 
-                            True, allsurfaces, cm)
+        extrude_roof_ground(oring, irings, lsattributes[i]['roof_height'], False, allsurfaces, cm)
+        extrude_roof_ground(oring, irings, min_zbld[i], True, allsurfaces, cm)
         #-- add the extruded geometry to the geometry
         g['boundaries'] = []
         g['boundaries'].append(allsurfaces)
@@ -1916,11 +1824,11 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
         #-- insert the building as one new city object
         cm['CityObjects'][lsattributes[i]['osm_id']] = oneb
         
-    #-- then bridge
+    ##-- then bridge
     if brggeom != None:
         for (i, geom) in enumerate(brggeom):
             brgprint = geom
-        #-- one building
+            #-- one bridge
             oneb = {}
             oneb['type'] = 'Bridge'
             oneb['attributes'] = {}
@@ -1931,19 +1839,19 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
             for a in brggeomattributes[i]:
                 oneb['attributes'][a] = brggeomattributes[i][a]
             oneb['geometry'] = [] #-- a cityobject can have > 1
-        #-- the geometry
+            #-- the geometry
             g = {} 
             g['type'] = 'Solid'
             g['lod'] = 1
             allsurfaces = [] #-- list of surfaces forming the oshell of the solid
-        #-- exterior ring of each footprint
+            #-- exterior ring of each footprint
             oring = list(brgprint.exterior.coords)
             oring.pop() #-- remove last point since first==last
             if brgprint.exterior.is_ccw == False:
             #-- to get proper orientation of the normals
                 oring.reverse() 
             bridge_sides(oring, gt_forward, rb, allsurfaces, cm)
-        #-- interior rings of each footprint
+            #-- interior rings of each footprint
             irings = []
             interiors = list(brgprint.interiors)
             for each in interiors:
@@ -1954,23 +1862,23 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
                     iring.reverse() 
                 irings.append(iring)
                 bridge_sides(iring, gt_forward, rb, allsurfaces, cm)
-        #-- top-bottom surfaces
+                #-- top-bottom surfaces
             extrude_bridge_surface(oring, irings, gt_forward, rb, False, allsurfaces, cm)
             extrude_bridge_bottom(oring, irings, gt_forward, rb, True, allsurfaces, cm)
-        #-- add the extruded geometry to the geometry
+            #-- add the extruded geometry to the geometry
             g['boundaries'] = []
             g['boundaries'].append(allsurfaces)
-        #g['boundaries'] = allsurfaces
-        #-- add the geom to the building 
+            #g['boundaries'] = allsurfaces
+            #-- add the geom to the structure 
             oneb['geometry'].append(g)
-        #-- insert the bridge as one new city object
+            #-- insert the bridge as one new city object
             cm['CityObjects'][brggeomattributes[i]['osm_id']] = oneb
         
-    #-- then sykwalk
+    ##-- then sykwalk
     if skywgeom != None:
         for (i, geom) in enumerate(skywgeom):
             skyprint = geom
-        #-- one building
+            #-- one skywalk
             oneb = {}
             oneb['type'] = 'Bridge'
             oneb['attributes'] = {}
@@ -1982,12 +1890,12 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
                 oneb['attributes'][a] = skywgeomattributes[i][a]
         
             oneb['geometry'] = [] #-- a cityobject can have > 1
-        #-- the geometry
+            #-- the geometry
             g = {} 
             g['type'] = 'Solid'
             g['lod'] = 1
             allsurfaces = [] #-- list of surfaces forming the oshell of the solid
-        #-- exterior ring of each footprint
+            #-- exterior ring of each footprint
             oring = list(skyprint.exterior.coords)
             oring.pop() #-- remove last point since first==last
             if skyprint.exterior.is_ccw == False:
@@ -1995,7 +1903,7 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
                 oring.reverse() 
             extrude_walls(oring, skywgeomattributes[i]['max_height'], skywgeomattributes[i]['min_height'],
                           allsurfaces, cm)
-        #-- interior rings of each footprint
+            #-- interior rings of each footprint
             irings = []
             interiors = list(skyprint.interiors)
             for each in interiors:
@@ -2007,26 +1915,25 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
                 irings.append(iring)
                 extrude_walls(iring, skywgeomattributes[i]['max_height'], skywgeomattributes[i]['min_height'],
                               allsurfaces, cm)
-        #-- top-bottom surfaces
+                #-- top-bottom surfaces
             extrude_roof_ground(oring, irings, skywgeomattributes[i]['max_height'], 
                                 False, allsurfaces, cm)
             extrude_roof_ground(oring, irings, skywgeomattributes[i]['min_height'], 
                                 True, allsurfaces, cm)
-        #-- add the extruded geometry to the geometry
+            #-- add the extruded geometry to the geometry
             g['boundaries'] = []
             g['boundaries'].append(allsurfaces)
-        #g['boundaries'] = allsurfaces
-        #-- add the geom to the building 
+            #g['boundaries'] = allsurfaces
+            #-- add the geom to the building 
             oneb['geometry'].append(g)
-        #-- insert the building as one new city object
+            #-- insert the building as one new city object
             cm['CityObjects'][skywgeomattributes[i]['osm_id']] = oneb
-    #return cm
 
     #-- then roof
     if roofgeom != None:
         for (i, geom) in enumerate(roofgeom):
             roofprint = geom
-        #-- one building
+            #-- one building=roof
             oneb = {}
             oneb['type'] = 'Building'
             oneb['attributes'] = {}
@@ -2038,12 +1945,12 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
                 oneb['attributes'][a] = roofgeomattributes[i][a]
         
             oneb['geometry'] = [] #-- a cityobject can have > 1
-        #-- the geometry
+            #-- the geometry
             g = {} 
             g['type'] = 'Solid'
             g['lod'] = 1
             allsurfaces = [] #-- list of surfaces forming the oshell of the solid
-        #-- exterior ring of each footprint
+            #-- exterior ring of each footprint
             oring = list(roofprint.exterior.coords)
             oring.pop() #-- remove last point since first==last
             if roofprint.exterior.is_ccw == False:
@@ -2052,7 +1959,7 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
             extrude_walls(oring, roofgeomattributes[i]['top_roof_height'], 
                           roofgeomattributes[i]['bottom_roof_height'],
                           allsurfaces, cm)
-        #-- interior rings of each footprint
+            #-- interior rings of each footprint
             irings = []
             interiors = list(roofprint.interiors)
             for each in interiors:
@@ -2065,39 +1972,28 @@ def doVcBndGeomRd(lsgeom, lsattributes, rdattributes, t_list, rd_pts, extent, mi
                 extrude_walls(iring, roofgeomattributes[i]['top_roof_height'], 
                               roofgeomattributes[i]['bottom_roof_height'],
                               allsurfaces, cm)
-        #-- top-bottom surfaces
+                #-- top-bottom surfaces
             extrude_roof_ground(oring, irings, roofgeomattributes[i]['top_roof_height'], 
                                 False, allsurfaces, cm)
             extrude_roof_ground(oring, irings, roofgeomattributes[i]['bottom_roof_height'], 
                                 True, allsurfaces, cm)
-        #-- add the extruded geometry to the geometry
+            #-- add the extruded geometry to the geometry
             g['boundaries'] = []
             g['boundaries'].append(allsurfaces)
-        #g['boundaries'] = allsurfaces
-        #-- add the geom to the building 
+            #g['boundaries'] = allsurfaces
+            #-- add the geom to the structure 
             oneb['geometry'].append(g)
-        #-- insert the building as one new city object
+            #-- insert the building as one new city object
             cm['CityObjects'][roofgeomattributes[i]['osm_id']] = oneb
 
     return cm
-
-# def add_terrain_v(pts, cm):
-#     for p in pts:
-#         cm['vertices'].append([p[0], p[1], p[2]])
-    
-# def add_terrain_b(T, allsurfaces):
-#     for i in T:
-#         allsurfaces.append([[i[0], i[1], i[2]]]) 
-        
+       
 def add_rd_v(pts, cm):
-    #cm['vertices'] = pts
     for p in pts:
         cm['vertices'].append([p[0], p[1], p[2]])
-        #print(cm['vertices'])
 
 def add_rd_b(T, r, acoi, allsurfaces, cm):
     for i in T:
-        #allsurfaces.append([[i[0], i[1], i[2]]]) 
         allsurfaces.append([[i[0]+len(cm['vertices'])-len(r)-len(acoi), 
                              i[1]+len(cm['vertices'])-len(r)-len(acoi), 
                              i[2]+len(cm['vertices'])-len(r)-len(acoi)]])
@@ -2111,13 +2007,13 @@ def extrude_bridge_bottom(orng, irngs, gt_forward, rb, reverse, allsurfaces, cm)
             each.reverse()
     for (i, pt) in enumerate(oring):
         z = rasterQuery2(pt[0], pt[1], gt_forward, rb)
-        z = round(float(z) + 0.5, 3)
+        z = round(float(z) + 0.2, 3)
         cm['vertices'].append([pt[0], pt[1], z])
         oring[i] = (len(cm['vertices']) - 1)
     for (i, iring) in enumerate(irings):
         for (j, pt) in enumerate(iring):
             z = rasterQuery2(pt[0], pt[1], gt_forward, rb)
-            z = round(float(z) + 0.5, 3)
+            z = round(float(z) + 0.2, 3)
             cm['vertices'].append([pt[0], pt[1], z])
             irings[i][j] = (len(cm['vertices']) - 1)
     output = []
