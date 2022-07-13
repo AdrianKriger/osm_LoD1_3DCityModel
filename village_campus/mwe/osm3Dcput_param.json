@@ -11,7 +11,6 @@
 
     "roads": "Yes",
     "osm_roads": "./data/rds-cput_out.geojson",
-    "bridge": "No",
     
     "in_raster": "./raster/LO19_050M_3318DC.tif",
     "nodata": 3.402823466385289e+38,
@@ -34,5 +33,5 @@
     "cjsn_+meta-sourceCitation":"http://www.ngi.gov.za/",
     
     "cjsn_CleanOut": "./result/citjsnClean_cput3d-str.json",
-    "obj-2_75D": "./result/obj275D_cput3d.obj"
+    "obj-2_75D": "./result/obj275D_cput3d-str.obj"
 }

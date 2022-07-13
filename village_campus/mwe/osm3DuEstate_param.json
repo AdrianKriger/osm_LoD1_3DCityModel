@@ -11,7 +11,6 @@
     
     "roads": "Yes",
     "osm_roads": "./data/rds-ue_out.geojson",
-    "bridge": "Yes",
         
     "in_raster": "./raster/LO19_050M_3318CD.tif",
     "nodata": 3.402823466385289e+38,
@@ -33,7 +32,7 @@
     "cjsn_+meta-sourceReferenceSystem": "urn:ogc:def:crs:EPSG:20481",
     "cjsn_+meta-sourceCitation":"http://www.ngi.gov.za/",
     
-    "cjsn_CleanOut": "./result/citjsnClean_uEstate3d.json",
-    "obj-2_75D": "./result/obj275D_uEstate3d.obj"
+    "cjsn_CleanOut": "./result/citjsnClean_uEstate_str.json",
+    "obj-2_75D": "./result/obj275D_uEstate3d-str.obj"
 
 }
