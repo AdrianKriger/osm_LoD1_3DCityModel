@@ -1,7 +1,7 @@
 <h1 align="center">LoD1 3D City Model from volunteered public data and a raster Digital Elevation Model.
 </h1> 
 <p align="center">
-  <img width="650" height="370" src="https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/img/CityJSON_Ninja_cput.png">
+  <img width="650" height="370" src="https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/docs/img/CityJSON_Ninja_cputb.png">
 </p>
 
 This repository is inspired by [3dfier](https://tudelft3d.github.io/3dfier/minimal_data_requirements.html); product of the [3D geoinformation group](https://3d.bk.tudelft.nl/) at [TUDelft](https://www.tudelft.nl/)
