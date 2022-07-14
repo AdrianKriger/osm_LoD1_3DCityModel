@@ -1,0 +1,47 @@
+{
+    "LargeArea": "Western Cape",
+    "FocusArea": "Cape Peninsula University of Technology (Bellville Campus)",
+    "osm_type": "way",
+    
+    "crs": "EPSG:32734",
+
+    "ori-gjson_out": "./data/fp-test.geojson",
+    "gjson-proj_out": "./data/fp_proj-test.geojson",
+    "osm_bldings": "./data/fp_proj_z-test.geojson",
+    "SKYwalk_gjson-z_out": "./data/skywalk_z-cput.geojson",
+    "roof_gjson-z_out": "./data/roof_z-cput.geojson",
+    
+    "roads": "Yes",
+    "gjson-rd": "./data/rds-test.geojson",
+    "gjson_proj-rd": "./data/rds-test_proj.geojson",
+    "gjson_rd_out": "./data/rds-test_out.geojson",
+
+    "gjson-pk": "./data/rds-testpk.geojson",
+    "gjson_proj-pk": "./data/rds-testpk_proj.geojson",
+    
+    "aoi": "./data/aoi_cput.geojson",
+    "aoi_prj": "./data/aoi_cput_proj.geojson",
+    
+    "in_raster": "./raster/LO19_050M_3318DC.tif",
+    "nodata": 3.402823466385289e+38,
+    "projClip_raster": "./raster/3318DCtest_clip_utm34s.tif",
+
+    "xyz": "./raster/rasElevTest.xyz",
+    
+    "cjsn_out": "./result/citjsn_test3d.json",
+    
+    "cjsn_title": "LoD1 City Model of Cape Peninsula University of Technology (Bellville Campus)",
+    "cjsn_referenceDate": "2022-01-31",
+    "cjsn_referenceSystem": "https://www.opengis.net/def/crs/EPSG/0/32734",
+    "cjsn_contactName": "arkriger", 
+    "cjsn_emailAddress": "adrian8kriger@gmail.com", 
+    "cjsn_website": "www.linkedin.com/in/adrian-kriger", 
+    "cjsn_contactType": "private",
+	"cjsn_+meta-description": "Chief Directorate: National Geo-spatial Information",
+	"cjsn_+meta-sourceSpatialResolution": "25 meter raster DEM",
+    "cjsn_+meta-sourceReferenceSystem": "urn:ogc:def:crs:EPSG:20481",
+    "cjsn_+meta-sourceCitation":"http://www.ngi.gov.za/",
+    
+    "cjsn_CleanOut": "./result/citjsnClean_test3d-str.json",
+    "obj-2_75D": "./result/obj275D_test3d.obj"
+}
