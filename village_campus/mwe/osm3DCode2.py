@@ -235,7 +235,7 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     def segmentize(geom):
         wkt = geom.wkt  # shapely Polygon to wkt
         geom = ogr.CreateGeometryFromWkt(wkt)  # create ogr geometry
-        geom.Segmentize(10)  # densify geometry (@-metre)
+        geom.Segmentize(5)  # densify geometry (@-metre)
         wkt2 = geom.ExportToWkt()  # ogr geometry to wkt
         new = loads(wkt2)  # wkt to shapely Polygon
         return new
