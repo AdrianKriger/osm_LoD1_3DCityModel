@@ -235,7 +235,7 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     def segmentize(geom):
         wkt = geom.wkt  # shapely Polygon to wkt
         geom = ogr.CreateGeometryFromWkt(wkt)  # create ogr geometry
-        geom.Segmentize(5)  # densify geometry (@-metre)
+        geom.Segmentize(10)  # densify geometry (@-metre)
         wkt2 = geom.ExportToWkt()  # ogr geometry to wkt
         new = loads(wkt2)  # wkt to shapely Polygon
         return new
@@ -533,6 +533,8 @@ def writegjson(ts, jparams):#, fname):
                     adr.append(row.tags['addr:street'])
                 if 'addr:suburb' in row.tags:
                     adr.append(row.tags['addr:suburb'])
+                if 'addr:town' in row.tags:
+                    adr.append(row.tags['addr:town'])
                 if 'addr:postcode' in row.tags:
                     adr.append(row.tags['addr:postcode'])
                 if 'addr:city' in row.tags:
@@ -583,6 +585,8 @@ def writegjson(ts, jparams):#, fname):
             del value["properties"]["osm_addr:street"]
         if 'osm_addr:suburb' in value["properties"]:
             del value["properties"]["osm_addr:suburb"]
+        if 'osm_addr:town' in value["properties"]:
+            del value["properties"]["osm_addr:town"]
         if 'osm_addr:postcode' in value["properties"]:
             del value["properties"]["osm_addr:postcode"]
         if 'osm_addr:city' in value["properties"]:
