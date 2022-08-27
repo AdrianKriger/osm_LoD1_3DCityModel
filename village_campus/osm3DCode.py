@@ -264,7 +264,7 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     
     #-- extract values
     rd['lanes'] = rd['tags'].apply(lambda x: x.get('lanes'))
-    rd['width'] = rd['tags'].apply(lambda x: x.get('width'))
+    rd['width'] = rd['tags'].apply(lambda x: x.get('width:carriageway'))
     rd['name'] = rd['tags'].apply(lambda x: x.get('name'))# if pd.isnull(fillna(np.nan)))
     rd['ref'] = rd['tags'].apply(lambda x: x.get('ref'))
     rd['destination'] = rd['tags'].apply(lambda x: x.get('destination'))
@@ -533,8 +533,6 @@ def writegjson(ts, jparams):#, fname):
                     adr.append(row.tags['addr:street'])
                 if 'addr:suburb' in row.tags:
                     adr.append(row.tags['addr:suburb'])
-                if 'addr:town' in row.tags:
-                    adr.append(row.tags['addr:town'])
                 if 'addr:postcode' in row.tags:
                     adr.append(row.tags['addr:postcode'])
                 if 'addr:city' in row.tags:
@@ -585,8 +583,6 @@ def writegjson(ts, jparams):#, fname):
             del value["properties"]["osm_addr:street"]
         if 'osm_addr:suburb' in value["properties"]:
             del value["properties"]["osm_addr:suburb"]
-        if 'osm_addr:town' in value["properties"]:
-            del value["properties"]["osm_addr:town"]
         if 'osm_addr:postcode' in value["properties"]:
             del value["properties"]["osm_addr:postcode"]
         if 'osm_addr:city' in value["properties"]:
