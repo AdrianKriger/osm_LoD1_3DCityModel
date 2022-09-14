@@ -39,7 +39,7 @@ It is necessary to verify whether the building footprints have been removed from
 
 ### Spikes
 
-An additional quality check is for a spike or two. Generally the root of this challenge are buildings crossing each other ~ Fig.2. The [constrained Delaunay triangulation](https://rufat.be/triangle/definitions.html) knows there are lines (walls) and expects a vertex where they intersect. There is none and the result is a spike. **Open an [osm editor](https://wiki.openstreetmap.org/wiki/Editors) and correct the topology please**. *We are transforming volunteered public data into a value-added product. Alchemy is a process. Please be patient.*
+An additional quality check is for a spike or two. Generally the root of this challenge are buildings crossing each other ~ Fig.2. The [constrained Delaunay triangulation](https://rufat.be/triangle/definitions.html) knows there are lines (walls) and expects a vertex where they intersect. There is none and the result is a spike. **Open an [osm editor](https://wiki.openstreetmap.org/wiki/Editors) and correct the topology please**. *We are transforming volunteered public data into a value-added product. Alchemy is a process. Please be patient.<sup>*</sup>)**
 
 <p align="center">
   <img src="{{site.baseurl | prepend: site.url}}/img/sp01.png" alt="alt text" width="350" height="250">  <img src="{{site.baseurl | prepend: site.url}}/img/sp02.png" alt="alt text" width="350" height="250">
@@ -47,6 +47,8 @@ An additional quality check is for a spike or two. Generally the root of this ch
 <p align="center">
     Fig 2. - left illustrates a spike. - right traces the challenge to the root.
 </p>
+
+<sup>* ***If `osm_LoD1_3DCityModel` completely fails in your area have a look at [CityJSONwalkthrough](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/extra/CityJSONwalkthrough.ipynb).***
 
 ## Licencing
 
