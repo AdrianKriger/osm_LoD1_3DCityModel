@@ -25,7 +25,7 @@ A selection of [osm tags](https://wiki.openstreetmap.org/wiki/Map_features#Build
 <img src="{{site.baseurl | prepend: site.url}}/img/CityJSON_Ninja_mamre_semantics-i.png" style="width: 650px; height: 350px; border: 0px">
 </p>
 <p align="center">
-    The typical semantic data connected to the [Building City Object](https://www.cityjson.org/specs/1.1.2/#building).
+    The typical semantic data connected to the Building City Object.
 </p>
 
 ## Google Plus Codes
@@ -41,5 +41,5 @@ Google ['plus codes'](https://maps.google.com/pluscodes/) are included at a prec
 <img src="{{site.baseurl | prepend: site.url}}/img/CityJSON_Ninja_mamre_semantics-ii.png" style="width: 650px; height: 350px; border: 0px">
 </p>
 <p align="center">
-    The typical semantic data connected to the [Transportation City Object](https://www.cityjson.org/specs/1.1.2/#transportation).
+    The typical semantic data connected to the Transportation City Object.
 </p>
