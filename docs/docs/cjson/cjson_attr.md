@@ -35,7 +35,9 @@ Google ['plus codes'](https://maps.google.com/pluscodes/) are included at a prec
 ## Streets
 <!-- {: .d-inline-block } -->
 
-*This is currently only available for [village/campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus).* Similar to [Key:addr](https://wiki.openstreetmap.org/wiki/Key:addr#Detailed_subkeys); [Key:highway](https://wiki.openstreetmap.org/wiki/Key:highway) are simply copied to the [CityJSON Transportation Object](https://www.cityjson.org/specs/1.1.2/#transportation).
+*Right now; streets are only available with [village/campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus).* 
+
+Similar to [Key:addr](https://wiki.openstreetmap.org/wiki/Key:addr#Detailed_subkeys); the osm [Key:highway](https://wiki.openstreetmap.org/wiki/Key:highway) are simply copied to the [CityJSON Transportation Object](https://www.cityjson.org/specs/1.1.2/#transportation).
 
 <p align="center">
 <img src="{{site.baseurl | prepend: site.url}}/img/CityJSON_Ninja_mamre_semantics-ii.png" style="width: 650px; height: 350px; border: 0px">
