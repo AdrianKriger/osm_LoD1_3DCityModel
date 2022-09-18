@@ -22,12 +22,24 @@ nav_order: 1
 A selection of [osm tags](https://wiki.openstreetmap.org/wiki/Map_features#Building) are simply copied to the 3D Building Models verbatim; with the exception of the address. To reduce the complexty of the osm [Key:addr](https://wiki.openstreetmap.org/wiki/Key:addr#Detailed_subkeys) each component is concatenated into one [string](https://en.wikibooks.org/wiki/Python_Programming/Variables_and_Strings#String) following, as closely as possible, the [ISO 19160-1:2015(en) Addressing](https://www.iso.org/obp/ui/#iso:std:iso:19160:-1:ed-1:v1:en) standard. A typical address will thus read: `housenumber street suburb postalcode city province`. If the [Key:addr:flats](https://wiki.openstreetmap.org/wiki/Key:addr:flats) is present the unit range will prepend the address.
 
 <p align="center">
-<img src="{{site.baseurl | prepend: site.url}}/img/CityJSON_Ninja_mamre_semantics.png" style="width: 650px; height: 350px; border: 0px">
+<img src="{{site.baseurl | prepend: site.url}}/img/CityJSON_Ninja_mamre_semantics_i.png" style="width: 650px; height: 350px; border: 0px">
 </p>
 <p align="center">
-    The typical semantic data connected to the 3D City Model.
+    The typical semantic data connected to the [Building City Object](https://www.cityjson.org/specs/1.1.2/#building).
 </p>
 
 ## Google Plus Codes
 
 Google ['plus codes'](https://maps.google.com/pluscodes/) are included at a precision of [11 characters - 3.5-meter block size](https://en.wikipedia.org/wiki/Open_Location_Code) (e.g. 4FRW3J9R+892Q); referenced to the [`representative_point()`](https://shapely.readthedocs.io/en/stable/manual.html) of buildings.
+
+## Streets
+<!-- {: .d-inline-block } -->
+
+*This is currently only available for [village/campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus).* Similar to [Key:addr](https://wiki.openstreetmap.org/wiki/Key:addr#Detailed_subkeys); [Key:highway](https://wiki.openstreetmap.org/wiki/Key:highway) are simply copied to the [CityJSON Transportation Object](https://www.cityjson.org/specs/1.1.2/#transportation).
+
+<p align="center">
+<img src="{{site.baseurl | prepend: site.url}}/img/CityJSON_Ninja_mamre_semantics_ii.png" style="width: 650px; height: 350px; border: 0px">
+</p>
+<p align="center">
+    The typical semantic data connected to the [Transportation City Object](https://www.cityjson.org/specs/1.1.2/#transportation).
+</p>
