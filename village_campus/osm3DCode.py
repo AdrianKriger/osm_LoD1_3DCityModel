@@ -235,7 +235,7 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     def segmentize(geom):
         wkt = geom.wkt  # shapely Polygon to wkt
         geom = ogr.CreateGeometryFromWkt(wkt)  # create ogr geometry
-        geom.Segmentize(10)  # densify geometry (@-metre)
+        geom.Segmentize(5)  # densify geometry (@-metre)
         wkt2 = geom.ExportToWkt()  # ogr geometry to wkt
         new = loads(wkt2)  # wkt to shapely Polygon
         return new
@@ -287,9 +287,9 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     
     #-- get the bridge
     rd['bridge'] = rd['tags'].apply(lambda x: x.get('bridge'))
-    rd['bridge_structure'] = rd['tags'].apply(lambda x: x.get('bridge:structure'))
-    bridge = rd[rd['bridge'] == 'yes'].copy()
-    #rd.drop(rd.index[rd['bridge'] == 'yes'], inplace = True)
+    #rd['bridge_structure'] = rd['tags'].apply(lambda x: x.get('bridge:structure'))
+    #bridge = rd[rd['bridge'] == 'yes'].copy()
+    rd.drop(rd.index[rd['bridge'] == 'yes'], inplace = True)
 
     #-- place a vertex every x-metre
     rd['geometry'] = rd['geometry'].apply(segmentize)
@@ -366,7 +366,7 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     pk = pk[pk['geometry'].type == 'Point']
     pk.dropna(subset=['tags'], inplace=True)
     pk['entrance'] = pk['tags'].apply(lambda x: x.get('amenity'))
-    pk =  pk[pk['entrance'].isin(['parking_entrance'])]
+    pk = pk[pk['entrance'].isin(['parking_entrance'])]
     pk_buffer = pk.buffer(2.4, cap_style=3)
     pk_buffer = pk_buffer.geometry.rotate(45)                           ### --- I don't know why???
     pk_buffer = gpd.GeoDataFrame(crs=jparams['crs'], geometry=pk_buffer)
@@ -374,12 +374,12 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     
     #-- remove bridges and trim back roads under bridges 
     #bridge_b = bridge.copy()
-    bridge_b02 = bridge.copy()
+    #bridge_b02 = bridge.copy()
     #bridge_b['geometry'] = bridge_b.apply(ownbuffer02, axis=1)
-    bridge_b02['geometry'] = bridge_b02.apply(ownbuffer03, axis=1)
-    bridge_b02 = bridge_b02.dissolve()
-    rd_b = gpd.overlay(rd_b, bridge_b02, how='difference')
-    rd_b = rd_b.explode()
+    #bridge_b02['geometry'] = bridge_b02.apply(ownbuffer03, axis=1)
+    #bridge_b02 = bridge_b02.dissolve()
+    #rd_b = gpd.overlay(rd_b, bridge_b02, how='difference')
+    #rd_b = rd_b.explode()
     
     #-- trim the roads to the aoi
     rd_b = gpd.clip(rd_b, aoi)
@@ -387,7 +387,7 @@ def prepareRoads(jparams, rd, pk, aoi, aoibuffer, gt_forward, rb):
     one.set_crs(epsg=int(jparams['crs'][-5:]), inplace=True, allow_override=True)
     
     #-- bridges and tunnels
-    one.drop(one.index[one['bridge'] == 'yes'], inplace = True)
+    #one.drop(one.index[one['bridge'] == 'yes'], inplace = True)
     one.drop(one.index[one['tunnel'].isin(['yes', 'building_passage', 'avalanche_protector'])], inplace = True) #rd[rd['tunnel'].isin(['yes', 'building_passage'])]
 
     #-- groupby and dissolve -> we do this so that similar features (road segments) join together
