@@ -48,7 +48,7 @@ An additional quality check is for a spike or two. Generally the root of this ch
     Fig 2. - left illustrates a spike. - right traces the challenge to the root.
 </p>
 
-<sup>* ***if [osm_LoD1_3DCityModel](https://github.com/AdrianKriger/osm_LoD1_3DCityModel) completely fails in your area have a look at [CityJSONwalkthrough](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/extra/CityJSONwalkthrough.ipynb).***
+<sup>* ***if [osm_LoD1_3DCityModel](https://github.com/AdrianKriger/osm_LoD1_3DCityModel) completely fails in your area have a look at [osm_LoD13DCityModel Walkthorugh](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/extra/osm_LoD13DCityModel-walkthrough.ipynb).***
 
 ## Licencing
 
