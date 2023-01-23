@@ -24,7 +24,7 @@ We generate a Level-of-Detail 1 (LoD1) 3D City Model (buildings and terrain) fro
 &nbsp;
 
 &nbsp;
-[Documentation](https://adriankriger.github.io/osm_LoD1_3DCityModel/) is available.
+[Documentation](https://adriankriger.github.io/osm_LoD1_3DCityModel/) is available. The [announcement](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/discussions/22#discussion-4781443) is noteworthy.
 
 ---
 
