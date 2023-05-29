@@ -33,7 +33,10 @@ It takes 2D osm vector contributions (building outlines) with [`building:level`]
 
 ---
 
-The purpose of this work is to provide resource constrained communities with an array of high-quality 3D products---at a much lower cost. Its participatory nature seeks to enable effective communication, community advocacy and facilitate broadly-based decision-making processes at a grassroots level. The tool can also be customized to meet basic education (citizen science, geography and coding) needs. Please see the [Discussion](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/discussions/22).
+The purpose of this work is to provide resource constrained communities with an array of high-quality 3D products---at a much lower cost. Its participatory nature seeks to enable effective communication, community advocacy and facilitate broadly-based decision-making processes at a grassroots level. 
+
+The tool can also be customized to meet basic education (citizen science, geography and coding) needs. 
+Please see the [Discussion](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/discussions/22).
 
 ---
 
