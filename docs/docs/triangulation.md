@@ -39,7 +39,7 @@ Before a City Model is created the user will be presented with a basic `matplotl
 </p> --> 
  <figure><center>
   <img src="{{site.baseurl | prepend: site.url}}/img/ue.png" alt="alt text" width="350" height="350">  <img src="{{site.baseurl | prepend: site.url}}/img/ue-error.png" alt="alt text" width="350" height="350">
-  <figcaption>Fig.1 - left illustrates the building footprint removed from the terrain. - right shows the vertices accounted for; but the ground remains.</figcaption>
+  <figcaption>Fig 2. - left illustrates an area with no topological challenges . - right shows the same area with errors that need investigation.</figcaption>
 </center></figure>
 
 <!--### Spikes
