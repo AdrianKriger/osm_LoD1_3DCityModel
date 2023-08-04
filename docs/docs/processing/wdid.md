@@ -50,7 +50,7 @@ MultiSurface outputs are the walls and rooves of buildings, along with the terra
 -->
 ### Solids
 
-Solid objects are walls and rooves stored as rectangular surfaces. In the [CityJSON](https://www.cityjson.org/) format these are separate [Building](https://www.cityjson.org/specs/1.0.1/#building) and [TINRelief](https://www.cityjson.org/specs/1.0.1/#tinrelief) [CityObjects](https://www.cityjson.org/specs/1.0.1/#cityjson-object) that enabling spatial analyses.
+Solid objects are walls, floors and rooves stored as rectangular faces. In the [CityJSON](https://www.cityjson.org/) format these are [Building](https://www.cityjson.org/specs/1.0.1/#building) [City Ojects](https://www.cityjson.org/specs/1.0.1/#cityjson-object) separate from the [TINRelief](https://www.cityjson.org/specs/1.0.1/#tinrelief).
 
 <figure><center>
   <img src="{{site.baseurl | prepend: site.url}}/img/objects_horizontal_view_solid_tuDelft.png" alt="alt text" width="650" height="350">
