@@ -42,8 +42,8 @@ Please see the [Discussion](https://github.com/AdrianKriger/osm_LoD1_3DCityModel
 
 **Input** a raster DEM. Script will call for the [osm contributions](https://www.openstreetmap.org/about#:~:text=OpenStreetMap%20is%20built%20by%20a,more%2C%20all%20over%20the%20world.).  
 **Output** includes:  
-<!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i. a 2.75D surface mesh *(buildings connected to terrain)*;-->  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i. a semantically rich LoD1 City Model *(information rich building models seperate from the ground; but when connected to the terrain   form a water-tight surface<sup>*</sup>)*; and  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ii. an interactive .html which you can navigate and query.
+<!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i. a 2.75D surface mesh *(buildings connected to terrain)*;-->  
 
 <sup>* ***the goal is a topologically correct surface. A model that conforms to the ISO 19107 standard [connecting and planar surfaces, correct orientation of the surfaces and watertight volumes] I have not tested this for all possibilities. If the result you achieve is not; you are welcome to raise an [issue](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/issues). I depend on you to help me improve.*** 
