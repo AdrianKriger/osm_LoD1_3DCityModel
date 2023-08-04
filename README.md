@@ -20,7 +20,7 @@ We generate a Level-of-Detail 1 (LoD1) 3D City Model (buildings and terrain) fro
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i. a topologically correct LoD1 City Model *(information rich building models seperate from the ground; but when connected to the terrain   form a water-tight surface<sup>*</sup>)*; and  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ii. an interactive .html which you can navigate and query.
 
-<sup>*</sup> *the goal is a an error-free water-tight surface with no holes or gaps, no duplicate points nor overlapping and intersecting faces. i.e.: conform to the ISO 19107 standard [connecting and planar surfaces, correct orientation of the surfaces and watertight volumes]. I have not tested this for all possibilities. If the result you achieve is not; you are welcome to raise an issue. I depend on you to help me improve.* 
+<sup>*</sup> *the goal is a model that conforms to the ISO 19107 standard [connecting and planar surfaces, correct orientation of the surfaces and watertight volumes]. I have not tested this for all possibilities. If the result you achieve is not; you are welcome to raise an issue. I depend on you to help me improve.* 
 &nbsp;
 
 &nbsp;
