@@ -39,7 +39,7 @@ Fig 1 illustrates the process where the osm *proxy `building:level` height*  is 
 
 ## `osm_LoD1_3DCityModel` products
 
->!--### Trianglated MultiSurfaces
+<!--### Trianglated MultiSurfaces
 
 MultiSurface outputs are the walls and rooves of buildings, along with the terrain, as a collection of connected triangles. This surface is created in the [Wavefront OBJ](https://en.wikipedia.org/wiki/Wavefront_.obj_file) format. An accompanying [material file](https://en.wikipedia.org/wiki/Wavefront_.obj_file#Material_template_library) (.mtl) to associate objects with a respective color is [available](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/result/osm_LoD1_3DCityModel.mtl). 
 
