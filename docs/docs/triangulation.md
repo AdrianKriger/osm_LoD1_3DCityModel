@@ -11,7 +11,7 @@ The 3D Model is based on a [triangulated irregular network](https://en.wikipedia
 &nbsp;&nbsp;
 
 <figure><center>
-  <img src="{{site.baseurl | prepend: site.url}}/img/fp01.png" alt="alt text" width="650" height="350">
+  <img src="{{site.baseurl | prepend: site.url}}/img/fp01.png" alt="alt text" width="450" height="250">
   <figcaption>Fig.1 - illustrates the typical constrained Delaunay triangulation with holes.</figcaption>
 </center></figure> 
 
