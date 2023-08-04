@@ -18,7 +18,7 @@ We generate a Level-of-Detail 1 (LoD1) 3D City Model (buildings and terrain) fro
 **Output** includes:  
 <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i. a 2.75D surface mesh *(buildings connected to terrain)*;-->  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i. a semantically rich LoD1 City Model *(information rich building models seperate from the ground; but when connected to the terrain   form a water-tight surface<sup>*</sup>)*; and  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i. an interactive .html which you can navigate and query.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ii. an interactive .html which you can navigate and query.
 
 <sup>*</sup> *the goal is a topologically correct surface. I have not tested this for all possibilities. If the result you achieve is not; you are welcome to raise an issue. I depend on you to help me improve.* 
 &nbsp;
