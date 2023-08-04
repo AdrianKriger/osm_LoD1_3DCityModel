@@ -28,8 +28,8 @@ The 3D Model is based on a [triangulated irregular network](https://en.wikipedia
 <!--[PyVista](https://www.pyvista.org/) is built-in and will execute after the triangulation; before the 3D City Model is created. This is to visualize the terrain and allow the user to perform two quality checks.-->
 
 ### Building Footprints
-
-Before a City Model is created the user will be presented with a basic `matplotlib` figure and a choice; to iether continue (with Enter) or exit (with `Esc`).  Topological errors *(crossing buildings)* are highlight and the user is encouraged to fix the challanges at the source. i.e.: [Edit OpenStreetMap](https://www.openstreetmap.org/about).
+&nbsp;
+Before a City Model is created the user will be presented with a basic `matplotlib` figure and a choice; to iether continue (with `Enter`) or exit (with `Esc`).  Topological errors *(crossing buildings)* are highlight and the user is encouraged to fix the challanges at the source. i.e.: [Edit OpenStreetMap](https://www.openstreetmap.org/about).
 
 <!-- <p align="center">
   <img src="{{site.baseurl | prepend: site.url}}/img/ue.png" alt="alt text" width="350" height="350">  <img src="{{site.baseurl | prepend: site.url}}/img/ue-error.png" alt="alt text" width="350" height="350">
