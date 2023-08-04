@@ -39,7 +39,7 @@ Fig 1 illustrates the process where the osm *proxy `building:level` height*  is 
 
 ## `osm_LoD1_3DCityModel` products
 
-### Trianglated MultiSurfaces
+>!--### Trianglated MultiSurfaces
 
 MultiSurface outputs are the walls and rooves of buildings, along with the terrain, as a collection of connected triangles. This surface is created in the [Wavefront OBJ](https://en.wikipedia.org/wiki/Wavefront_.obj_file) format. An accompanying [material file](https://en.wikipedia.org/wiki/Wavefront_.obj_file#Material_template_library) (.mtl) to associate objects with a respective color is [available](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/result/osm_LoD1_3DCityModel.mtl). 
 
@@ -47,14 +47,14 @@ MultiSurface outputs are the walls and rooves of buildings, along with the terra
   <img src="{{site.baseurl | prepend: site.url}}/img/objects_horizontal_view_multisurface_tuDelft.png" alt="alt text" width="650" height="350">
   <figcaption>Fig.2 - illustrates a horizontal view of the 2.75D surface with the exterior of all features together. <em>--image </em><cite><a href="https://github.com/tudelft3d/3dfier"> 3dfier</a></cite> by the<cite><a href="https://3d.bk.tudelft.nl/"> 3D geoinformation research group at TU Delft</a></cite>.</figcaption>
 </center></figure>   
-
+-->
 ### Solids
 
 Solid objects are walls and rooves stored as rectangular surfaces. In the [CityJSON](https://www.cityjson.org/) format these are separate [Building](https://www.cityjson.org/specs/1.0.1/#building) and [TINRelief](https://www.cityjson.org/specs/1.0.1/#tinrelief) [CityObjects](https://www.cityjson.org/specs/1.0.1/#cityjson-object) that enabling spatial analyses.
 
 <figure><center>
   <img src="{{site.baseurl | prepend: site.url}}/img/objects_horizontal_view_solid_tuDelft.png" alt="alt text" width="650" height="350">
-  <figcaption>Fig.3 - solid Building CityObjects's connected to the terrain. <em>--image </em><cite><a href="https://github.com/tudelft3d/3dfier"> 3dfier</a></cite> by the<cite><a href="https://3d.bk.tudelft.nl/"> 3D geoinformation research group at TU Delft</a></cite>.</figcaption>
+  <figcaption>Fig.2 - solid Building CityObjects's connected to the terrain. <em>--image </em><cite><a href="https://github.com/tudelft3d/3dfier"> 3dfier</a></cite> by the<cite><a href="https://3d.bk.tudelft.nl/"> 3D geoinformation research group at TU Delft</a></cite>.</figcaption>
 </center></figure>
 
 ### Interactive Visualisation
