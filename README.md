@@ -10,7 +10,7 @@ We generate a Level-of-Detail 1 (LoD1) 3D City Model (buildings and terrain) fro
 
 | [Village/Campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus) | [District](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts)  |
 | :-----: | :-----: |
-| If your Area-of-Interest (aoi) has a population of 10 000 or <br /> less you are welcome to choose [village/campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus)| Please choose [District](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts) should you aoi have a population of more than 10 000|
+| If your Area-of-Interest (aoi) has a population of 10 000 or <br /> less you are welcome to choose [village/campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus)| Please choose [District](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts) should you aoi have a population of <br /> more than 10 000|
 
 ---
 
