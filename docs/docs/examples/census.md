@@ -1,11 +1,11 @@
 ---
 layout: default
-title: Census Tract/Ward *[on Hold]*
+title: Census Tract/Ward
 parent: Examples
 nav_order: 5
 ---
 
-# Census Tract/Ward
+# Census Tract/Ward *[on hold]*
 {: .no_toc }
 
 ## Table of contents
