@@ -30,7 +30,7 @@ Due to the nature of the processing strategies aoi's are defined differently
  ```
 With the village/campus strategy an aoi is defined `Large area -> focus area` or `State (Province) -> village / campus`. The area must exist in osm as either a [way or relation](https://wiki.openstreetmap.org/wiki/Elements). A number of variations are available as [Examples](https://adriankriger.github.io/osm_LoD1_3DCityModel/docs/docs/examples)
 
-#### district
+<!--#### district
 ```json
     "osm-pbf": "South Africa",
     "update": "True",
@@ -51,7 +51,7 @@ An extensive range of [osm.poly](https://wiki.openstreetmap.org/wiki/Osmosis/Pol
 
 `"FocusArea"` must exist in osm as a defined [`boundary=administrative`](https://wiki.openstreetmap.org/wiki/Tag:boundary%3Dadministrative). It can be one or comma seperated (e.g.: `"FocusArea": "Cape Town Ward 18,Cape Town Ward 87,Cape Town Ward 86",`).
 
-`"update": "True"` to access a fresh `osm.pbf`. `"False"` will use an existing `osm.pbf`.
+`"update": "True"` to access a fresh `osm.pbf`. `"False"` will use an existing `osm.pbf`.-->
 
 A number of `param.json` are available as [Examples](https://adriankriger.github.io/osm_LoD1_3DCityModel/docs/docs/examples) to illustrate its usage.
 
@@ -78,12 +78,12 @@ The [districts](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/d
 
 While [village/campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus) and [districts](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts) `interactive.ipynb` should execute successfully in any area; the [CityJSON](https://www.cityjson.org/) will not when an aoi extend's into `NoData` (typically the ocean). This means [these types of areas](https://www.openstreetmap.org/relation/2034620#map=14/-33.9128/18.4430) will fail to produce a LoD1 3D City Model while [these](https://www.openstreetmap.org/way/689159965) will pass. 
 
-### CityJSON and 2.75D.obj
+### CityJSON
 ```json
     "cjsn_out": "./result/citjsn_cput3d.json",
     ...
-    "cjsn_CleanOut": "./result/citjsnClean_cput3d.json",
-    "obj-2_75D": "./result/obj275D_cput3d.obj"
+    "cjsn_CleanOut": "./result/citjsnClean_cput3d.json"<!--,
+    "obj-2_75D": "./result/obj275D_cput3d.obj"-->
 ```
 The `"cjsn_out"` City Model is parsed through a basic cleaning operation to remove duplicate and orphan vertices. `"cjsn_CleanOut"` thus has no superfluous features.   
 
