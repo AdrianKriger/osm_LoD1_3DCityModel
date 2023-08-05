@@ -57,9 +57,9 @@ Solid objects are walls, floors and rooves stored as rectangular faces. In the [
   <figcaption>Fig.2 - solid Building CityObjects's connected to the terrain. <em>--image </em><cite><a href="https://github.com/tudelft3d/3dfier"> 3dfier</a></cite> by the<cite><a href="https://3d.bk.tudelft.nl/"> 3D geoinformation research group at TU Delft</a></cite>.</figcaption>
 </center></figure>
 
-### Interactive Visualisation
+### Interactive Visualisation and Spatial Data Science
 
-A dynamic visualisation is possible through a Jupyter notebook. [Interactive Visualization](https://adriankriger.github.io/osm_LoD1_3DCityModel/docs/interactive/) discusses this further.
+A dynamic visualisation and spatial analysis is possible through a Jupyter notebook. [Interactive Visualization](https://adriankriger.github.io/osm_LoD1_3DCityModel/docs/interactive/) discusses this further.
 
 ## Is it useful?
 
