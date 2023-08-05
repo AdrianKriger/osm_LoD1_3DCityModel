@@ -28,7 +28,7 @@ Due to the nature of the processing strategies aoi's are defined differently
     "FocusArea": "Mamre",
     "osm_type": "relation",
  ```
-With the village/campus strategy an aoi is defined `Large area -> focus area` or `State (Province) -> village / campus`. The area must exist in osm as either a [way or relation](https://wiki.openstreetmap.org/wiki/Elements). A number of variations are available as [Examples](https://adriankriger.github.io/osm_LoD1_3DCityModel/docs/docs/examples)
+With the village/campus strategy an aoi is defined `Large area -> focus area` or `State (Province) -> village / campus`. The area must exist in osm as either a [way or relation](https://wiki.openstreetmap.org/wiki/Elements). <!--A number of variations are available as [Examples](https://adriankriger.github.io/osm_LoD1_3DCityModel/docs/docs/examples)-->
 
 <!--#### district
 ```json
@@ -71,8 +71,8 @@ Coordinate Reference System (crs) of the City Model. The workflow will project t
 ```
 One raster DEM will be enough for the [village/campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus) strategy. Larger areas might require more.
 &nbsp;
-
-The [districts](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts) ```"in_raster"``` parameter will accept one or many (e.g.: ```"in_raster": "./raster/LO19_050M_3418BA.tif ./raster/LO19_050M_3318DC.tif",```). `NoData` values are recommend and the workflow will mosaic where necessary, clip and project an input raster DEM to the defined crs.
+The ```"in_raster"``` parameter will accept one or many (e.g.: ```"in_raster": "./raster/LO19_050M_3418BA.tif ./raster/LO19_050M_3318DC.tif",```). `NoData` values are recommend and the workflow will mosaic where necessary, clip and project an input raster DEM to the defined crs.
+<!--The [districts](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts) ```"in_raster"``` parameter will accept one or many (e.g.: ```"in_raster": "./raster/LO19_050M_3418BA.tif ./raster/LO19_050M_3318DC.tif",```). `NoData` values are recommend and the workflow will mosaic where necessary, clip and project an input raster DEM to the defined crs.-->
 
 #### NoData
 
