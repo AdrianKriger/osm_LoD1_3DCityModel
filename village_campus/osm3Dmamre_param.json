@@ -8,20 +8,17 @@
     "aoi": "./data/aoi_rural.geojson",
 
     "osm_bldings": "./data/fp_proj_z_rural.geojson", 
-    
-    "roads": "Yes",
-    "osm_roads": "./data/rds-rural_out.geojson",
 
     "in_raster": "./raster/LO19_050M_3318CB.tif",
     "nodata": 3.402823466385289e+38,
     "projClip_raster": "./raster/3318CB_clip_utm34s.tif",
 
-    "xyz": "./raster/rasElev_ru.xyz",
+    "xyz": "./data/rasElev_ru.xyz",
         
     "cjsn_out": "./result/citjsn_rural3d.json",
         
     "cjsn_title": "LoD1 City Model of rural village, Western Cape, South Africa",
-    "cjsn_referenceDate": "2022-05-15",
+    "cjsn_referenceDate": "2023-08-01",
     "cjsn_referenceSystem": "https://www.opengis.net/def/crs/EPSG/0/32733",
     "cjsn_contactName": "arkriger", 
     "cjsn_emailAddress": "adrian8kriger@gmail.com", 
@@ -32,7 +29,5 @@
     "cjsn_+meta-sourceReferenceSystem": "urn:ogc:def:crs:EPSG:20481",
     "cjsn_+meta-sourceCitation":"http://www.ngi.gov.za/",
        
-    "cjsn_CleanOut": "./result/citjsnClean_rural3d-str.json",
-    "obj-2_75D": "./result/obj275D_rural3d-str.obj"
-    
+    "cjsn_solid": "./result/citjsnClean_rural3D.json" 
 }
