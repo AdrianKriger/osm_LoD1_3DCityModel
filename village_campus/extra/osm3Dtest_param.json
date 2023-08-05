@@ -32,5 +32,5 @@
     "cjsn_+meta-sourceReferenceSystem": "urn:ogc:def:crs:EPSG:20481",
     "cjsn_+meta-sourceCitation":"http://www.ngi.gov.za/",
     
-    "cjsn_solid": "./result/citjsnClean_cput3d_25m-str_solid.json"
+    "cjsn_solid": "./result/citjsnClean_cput3d.json"
 }

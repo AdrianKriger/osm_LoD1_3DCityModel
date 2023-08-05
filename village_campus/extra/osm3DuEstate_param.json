@@ -15,7 +15,7 @@
 
     "xyz": "./data/rasElev_UE.xyz",
     
-    "cjsn_out": "./data/citjsn_uEstate3D.json",
+    "cjsn_out": "./result/citjsn_uEstate3D.json",
     
     "cjsn_title": "LoD1 City Model of urban neighbourhood, Walmer Estate, Cape Town",
     "cjsn_referenceDate": "2023-08-01",
@@ -29,5 +29,5 @@
     "cjsn_+meta-sourceReferenceSystem": "urn:ogc:def:crs:EPSG:20481",
     "cjsn_+meta-sourceCitation":"http://www.ngi.gov.za/",
     
-    "cjsn_solid": "./data/citjsnClean_uEstate3D.json"
+    "cjsn_solid": "./result/citjsnClean_uEstate3D.json"
 }
