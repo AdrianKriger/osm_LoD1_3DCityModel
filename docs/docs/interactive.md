@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Interactive Visualization and Spatial Data Science
+title: Interactive Visualization
 nav_order: 4
 ---
 
@@ -23,4 +23,4 @@ The visualisation above employs the default [Carto Dark Matter](https://github.c
 
 **Spatial Data Science**
 
-The [Jupyter](https://eis n.wikipedia.org/wiki/Project_Jupyter#Jupyter_Notebook) environment allows for extensive customization and deep analysis through *spatial data science*. [interactiveOnly.ipynb](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/interactiveOnly.ipynb) offers a basic example of population estimation and the calculation on [Building VOlume per Capita (Ghosh, T.; et. al.)](https://www.frontiersin.org/articles/10.3389/frsc.2020.00037/full).
+The [Jupyter](https://eis n.wikipedia.org/wiki/Project_Jupyter#Jupyter_Notebook) environment allows for extensive customization and deep analysis through *spatial data science*. [interactiveOnly.ipynb](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/interactiveOnly.ipynb) offers a basic example of population estimation and the calculation on [Building Volume per Capita (Ghosh, T.; et. al.)](https://www.frontiersin.org/articles/10.3389/frsc.2020.00037/full).
