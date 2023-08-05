@@ -4,26 +4,21 @@
     "osm_type": "relation",
     
     "crs": "EPSG:32734",
+    
+    "aoi": "./data/aoi_ue.geojson",
 
-    "ori-gjson_out": "./data/fp.geojson",
-    "gjson-proj_out": "./data/fp_proj.geojson",
-    "gjson-z_out": "./data/fp_proj_z.geojson",
-    "SKYwalk_gjson-z_out": "./data/skywalk_z.geojson",
-    "roof_gjson-z_out": "./data/roof_z.geojson",
-    
-    "aoi": "./data/aoi.geojson",
-    "aoi_prj": "./data/aoi_proj.geojson",
-    
+    "osm_bldings": "./data/fp_proj_z-ue.geojson",
+        
     "in_raster": "./raster/LO19_050M_3318CD.tif",
     "nodata": 3.402823466385289e+38,
-    "projClip_raster": "./raster/3318CD_clip_utm34s.tif",
+    "projClip_raster": "./raster/3318CD_Ueclip_utm34s.tif",
 
-    "xyz": "./raster/rasElev.xyz",
+    "xyz": "./data/rasElev_UE.xyz",
     
-    "cjsn_out": "./result/citjsn_uEstate3d.json",
+    "cjsn_out": "./data/citjsn_uEstate3D.json",
     
     "cjsn_title": "LoD1 City Model of urban neighbourhood, Walmer Estate, Cape Town",
-    "cjsn_referenceDate": "2022-05-15",
+    "cjsn_referenceDate": "2023-08-01",
     "cjsn_referenceSystem": "https://www.opengis.net/def/crs/EPSG/0/32734",
     "cjsn_contactName": "arkriger", 
     "cjsn_emailAddress": "adrian8kriger@gmail.com", 
@@ -34,7 +29,5 @@
     "cjsn_+meta-sourceReferenceSystem": "urn:ogc:def:crs:EPSG:20481",
     "cjsn_+meta-sourceCitation":"http://www.ngi.gov.za/",
     
-    "cjsn_CleanOut": "./result/citjsnClean_uEstate3d.json",
-    "obj-2_75D": "./result/obj275D_uEstate3d.obj"
-
+    "cjsn_solid": "./data/citjsnClean_uEstate3D.json"
 }
