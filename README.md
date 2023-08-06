@@ -12,46 +12,16 @@ We generate a Level-of-Detail 1 (LoD1) 3D City Model (buildings and terrain) fro
 | :-----: | :-----: |
 | If your Area-of-Interest (aoi) has a population of <br /> 10 000 or less you are welcome to choose [village/campus](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus)| Please choose [District](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts) should you aoi have a population of <br /> more than 10 000|-->
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Hatch Pattern Table</title>
-    <style>
-        /* CSS for the table */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-        }
-        th {
-            background-color: lightgray;
-        }
-
-        /* CSS for the hatch pattern */
-        .hatch {
-            background-image: linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black), 
-                              linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black);
-            background-size: 8px 8px;
-            background-position: 0 0, 4px 4px;
-        }
-    </style>
-</head>
-<body>
-    <table>
-        <tr>
-            <th>Village/Campus</th>
-            <th class="hatch">District<br /><em>[This is on hold]</em></th>
-        </tr>
-        <tr>
-            <td>If your Area-of-Interest (aoi) has a population of<br />10,000 or less, you are welcome to choose <a href="https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus">village/campus</a></td>
-            <td>Please choose <a href="https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts">District</a> should your AOI have a population of<br />more than 10,000</td>
-        </tr>
-    </table>
-</body>
-</html>
+<table>
+  <tr>
+    <td><a href="https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus">Village/Campus</a></td>
+    <td><a href="https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts">District</a><br /><em>[This is on hold]</em></td>
+  </tr>
+  <tr>
+    <td>If your Area-of-Interest (aoi) has a population of<br />10,000 or less, you are welcome to choose <a href="https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus">village/campus</a></td>
+    <td style="background-image: repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(0, 0, 0, 0.1) 2px, rgba(0, 0, 0, 0.1) 4px);">Please choose <a href="https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts">District</a> should your aoi have a population of<br />more than 10,000</td>
+  </tr>
+</table>
 ---
 
 **Input** a raster DEM. Script will call for the [osm contributions](https://www.openstreetmap.org/about#:~:text=OpenStreetMap%20is%20built%20by%20a,more%2C%20all%20over%20the%20world.).  
