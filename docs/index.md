@@ -45,7 +45,7 @@ It takes 2D osm vector contributions (building outlines) with [`building:level`]
     <td>
       If your Area-of-Interest (aoi) has a population of <br> 10,000 or less you are welcome to choose <a href="https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/village_campus">village/campus</a>
     </td>
-    <td>
+    <td style="text-align: center;">
       Please choose <a href="https://github.com/AdrianKriger/osm_LoD1_3DCityModel/tree/main/districts">District</a> should your aoi have a population of <br> more than 10,000
     </td>
   </tr>
