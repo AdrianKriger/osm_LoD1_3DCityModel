@@ -16,18 +16,17 @@ from osgeo import gdal
 import time
 from datetime import timedelta
 
-from osm3DCode_sagc_v01a import (requestOsmBld, requestOsmAoi, getOsmArea, 
-                                 prepareDEM, createXYZ, 
-                                 assignZ, writegjson, 
-                                 getXYZ, 
-                                 mtPlot02, getOsmBld,
-                                 getBldVertices, createSgmts, concatCoords, getAOIVertices, 
-                                 executeDelaunay, 
-                                 outputCityjsonB)
+from osm3DCode import (requestOsmBld, requestOsmAoi, getOsmArea, 
+                       prepareDEM, createXYZ, 
+                       assignZ, writegjson, 
+                       getXYZ, 
+                       mtPlot02, getOsmBld,
+                       getBldVertices, createSgmts, concatCoords, getAOIVertices, 
+                       executeDelaunay, 
+                       outputCityjsonB)
     
 def main():
     start = time.time()
-    
     
     try:
 
