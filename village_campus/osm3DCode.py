@@ -283,6 +283,7 @@ def writegjson(ts, jparams):
                     osm_shape = Polygon(poly)#[0])
             
             f["geometry"] = mapping(osm_shape)
+            f["properties"]["footprint"] = osm_shape
             
             #-- google plus_code
             wgs84 = pyproj.CRS('EPSG:4326')
