@@ -69,5 +69,5 @@ Please see the [Discussion](https://github.com/AdrianKriger/osm_LoD1_3DCityModel
  B --> C{Decision}
  C -->|One| D[Population estimation;
  C -->|Two| E[Building Volume per Capita];
- C -->|Three| E[Interactive visualization];
+ C -->|Three| F[Interactive visualization];
 </div>
