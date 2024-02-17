@@ -59,8 +59,3 @@ Please see the [Discussion](https://github.com/AdrianKriger/osm_LoD1_3DCityModel
 <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i. a 2.75D surface mesh *(buildings connected to terrain)*;-->  
 
 <sup>* ***the goal is a model that conforms to the ISO 19107 standard [connecting and planar surfaces, correct orientation of the surfaces and watertight volumes] I have not tested this for all possibilities. If the result you achieve is not; you are welcome to raise an [issue](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/issues). I depend on you to help me improve.*** 
-
-**For a quickstart** *(and to see the value and usefulness of 3D City Models)*:
-<figure><center>
-  <img src="{{site.baseurl | prepend: site.url}}/img/flow.png" style="width: 800px; height: 300px; border: 0px">
-</center></figure> 
