@@ -26,6 +26,7 @@ We generate a Level-of-Detail 1 (LoD1) 3D City Model (buildings and terrain) fro
 &nbsp;
 [Documentation](https://adriankriger.github.io/osm_LoD1_3DCityModel/) is available. The [announcement](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/discussions/22#discussion-4781443) is noteworthy.
 
+**For a quickstart** *(and to see the value and usefulness of a 3D City Model)*:
 ```mermaid
  flowchart LR
  A[osm_LoD1_3DCityModel-walkthrough.ipynb] -->B(CityJSONspatialDataScience.ipynb)
