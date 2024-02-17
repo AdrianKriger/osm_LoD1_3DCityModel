@@ -65,6 +65,7 @@ Please see the [Discussion](https://github.com/AdrianKriger/osm_LoD1_3DCityModel
 graph LR
 A[**osm_LoD1_3DCityModel-walkthrough.ipynb**] -->B([CityJSONspatialDataScience.ipynb](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/CityJSONspatialDataScience.ipynb))
     B --> C{Decision}
-    C -->|One| D[Result one]
-    C -->|Two| E[Result two]
+    C -->|One| D[Population estimation]
+    C -->|Two| E[Building Volume per Capita]
+    C -->|Three| E[Interactive visualization]
 ```
