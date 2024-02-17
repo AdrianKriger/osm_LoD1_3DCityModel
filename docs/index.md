@@ -63,7 +63,7 @@ Please see the [Discussion](https://github.com/AdrianKriger/osm_LoD1_3DCityModel
 
 ```mermaid
 graph LR
-A[[osm_LoD1_3DCityModel-walkthrough.ipynb](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/extra/osm_LoD1_3DCityModel-walkthrough.ipynb)] -->B(Round edge)
+A[[osm_LoD1_3DCityModel-walkthrough.ipynb](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/extra/osm_LoD1_3DCityModel-walkthrough.ipynb)] -->B([CityJSONspatialDataScience.ipynb](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/CityJSONspatialDataScience.ipynb))
     B --> C{Decision}
     C -->|One| D[Result one]
     C -->|Two| E[Result two]
