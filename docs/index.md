@@ -61,12 +61,7 @@ Please see the [Discussion](https://github.com/AdrianKriger/osm_LoD1_3DCityModel
 
 <sup>* ***the goal is a model that conforms to the ISO 19107 standard [connecting and planar surfaces, correct orientation of the surfaces and watertight volumes] I have not tested this for all possibilities. If the result you achieve is not; you are welcome to raise an [issue](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/issues). I depend on you to help me improve.*** 
 
-
-<div class="mermaid">
- flowchart LR
- A[osm_LoD1_3DCityModel-walkthrough.ipynb] -->B(CityJSONspatialDataScience.ipynb)
- B --> C{Decision}
- C -->|One| D[Population estimation];
- C -->|Two| E[Building Volume per Capita];
- C -->|Three| F[Interactive visualization];
-</div>
+**For a quickstart** *(and the potential value and usefulness of 3D City Models)*:
+<figure><center>
+  <img src="{{site.baseurl | prepend: site.url}}/img/flow.png" style="width: 800px; height: 400px; border: 0px">
+</center></figure> 
