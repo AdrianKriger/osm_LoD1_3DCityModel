@@ -66,7 +66,7 @@ Please see the [Discussion](https://github.com/AdrianKriger/osm_LoD1_3DCityModel
  flowchart LR
  A[osm_LoD1_3DCityModel-walkthrough.ipynb] -->B(CityJSONspatialDataScience.ipynb)
  B --> C{Decision}
- C -->|One| D[Population estimation;
+ C -->|One| D[Population estimation];
  C -->|Two| E[Building Volume per Capita];
  C -->|Three| F[Interactive visualization];
 </div>
