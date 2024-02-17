@@ -26,6 +26,13 @@ We generate a Level-of-Detail 1 (LoD1) 3D City Model (buildings and terrain) fro
 &nbsp;
 [Documentation](https://adriankriger.github.io/osm_LoD1_3DCityModel/) is available. The [announcement](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/discussions/22#discussion-4781443) is noteworthy.
 
+```mermaid
+ flowchart LR
+ A[osm_LoD1_3DCityModel-walkthrough.ipynb] -->B(CityJSONspatialDataScience.ipynb)
+ B --> D[Population estimation];
+ B --> E[Building Volume per Capita];
+ B --> F[Interactive visualization];
+```
 ---
 
 This repository is inspired by [3dfier](https://tudelft3d.github.io/3dfier/minimal_data_requirements.html); product of the [3D geoinformation group](https://3d.bk.tudelft.nl/) at [TUDelft](https://www.tudelft.nl/)
