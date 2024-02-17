@@ -4,7 +4,6 @@ title: Home
 nav_order: 1
 description: "A python-based workflow for creation of Level-of-Detail 1 3D City Models."
 permalink: /
-mermaid: true
 ---
 
 # Level-of-Detail 1 (LoD1) 3D City Models
@@ -63,5 +62,5 @@ Please see the [Discussion](https://github.com/AdrianKriger/osm_LoD1_3DCityModel
 
 **For a quickstart** *(and to see the value and usefulness of 3D City Models)*:
 <figure><center>
-  <img src="{{site.baseurl | prepend: site.url}}/img/flow.png" style="width: 500px; height: 300px; border: 0px">
+  <img src="{{site.baseurl | prepend: site.url}}/img/flow.png" style="width: 800px; height: 300px; border: 0px">
 </center></figure> 
