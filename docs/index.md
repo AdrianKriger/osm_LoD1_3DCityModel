@@ -63,10 +63,10 @@ Please see the [Discussion](https://github.com/AdrianKriger/osm_LoD1_3DCityModel
 
 
 <div class="mermaid">
- flowchart LR;
+ flowchart LR
  A[**osm_LoD1_3DCityModel-walkthrough.ipynb**] -->B([CityJSONspatialDataScience.ipynb](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/CityJSONspatialDataScience.ipynb))
  B --> C{Decision}
  C -->|One| D[Population estimation]
  C -->|Two| E[Building Volume per Capita]
- C -->|Three| E[Interactive visualization]
+ C -->|Three| E[Interactive visualization];
 </div>
