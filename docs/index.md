@@ -61,11 +61,14 @@ Please see the [Discussion](https://github.com/AdrianKriger/osm_LoD1_3DCityModel
 <sup>* ***the goal is a model that conforms to the ISO 19107 standard [connecting and planar surfaces, correct orientation of the surfaces and watertight volumes] I have not tested this for all possibilities. If the result you achieve is not; you are welcome to raise an [issue](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/issues). I depend on you to help me improve.*** 
 
 
-```mermaid
+<div class="mermaid">
 flowchart LR
 A[**osm_LoD1_3DCityModel-walkthrough.ipynb**] -->B([CityJSONspatialDataScience.ipynb](https://github.com/AdrianKriger/osm_LoD1_3DCityModel/blob/main/village_campus/CityJSONspatialDataScience.ipynb))
     B --> C{Decision}
     C -->|One| D[Population estimation]
     C -->|Two| E[Building Volume per Capita]
     C -->|Three| E[Interactive visualization]
+</div>
+
+
 ```
