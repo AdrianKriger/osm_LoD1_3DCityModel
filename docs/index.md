@@ -4,7 +4,6 @@ title: Home
 nav_order: 1
 description: "A python-based workflow for creation of Level-of-Detail 1 3D City Models."
 permalink: /
-tags: [Mermaid]
 mermaid: true
 ---
 
