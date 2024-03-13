@@ -2,7 +2,7 @@
 #-- conda-forge then pip
 
 #conda
-#python==3.8.18
+python==3.8.18
 geopandas==0.13.2
 mapbox_earcut==1.0.1
 pydeck==0.8.0	
