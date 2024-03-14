@@ -10,11 +10,13 @@ pydeck==0.8.0
 topojson==1.7
 
 #-- I went in the easiest way possible. Miniconda in (base)
-#-- then like so: conda create -n {env-name} -c conda-forge python=3.8 fiona geopandas mapbox_earcut pydeck topojson
+#--    first: conda create -n {env-name} -c conda-forge python=3.8 fiona geopandas mapbox_earcut pydeck topojson
+#--   second: conda active {env-name}
 
-#then
+#--     then:
 ipython kernel install --user --name={env-name}-kernel. #- so that Jupyter in (base) can access this env kernel
 
+#-- and finally
 #pip
 triangle==20230923	 #- python wrapper around Jonathan Richard Shewchuk's at rufat.be/triangle
 cjio==0.7.3	         #- python CLI to process and manipulate CityJSON files
