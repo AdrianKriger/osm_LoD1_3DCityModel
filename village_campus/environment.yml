@@ -1,0 +1,13 @@
+### conda-forge requirements for binder ###
+name: binder-env
+dependencies:
+- python==3.8.18
+- fiona==1.9.4
+- geopandas==0.13.2
+- mapbox_earcut==1.0.1
+- pydeck==0.8.0
+- topojson==1.7
+- pip
+- pip:
+  # works for regular pip packages
+  - -r requirements.txt
