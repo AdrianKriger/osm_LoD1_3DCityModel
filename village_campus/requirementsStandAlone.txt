@@ -1,4 +1,4 @@
-#### ESSENTIAL LIBRARIES FOR MAIN FUNCTIONALITY ####
+#### ESSENTIAL LIBRARIES FOR MAIN FUNCTIONALITY -- requirements if you want to execute on a (local) computer ####
 #-- conda-forge then pip. 
 
 #conda
