@@ -76,9 +76,10 @@ def requestOsmBld(jparams):
         // and relation type=multipolygon ~ to removed courtyards from buildings
         relation['building']["type"="multipolygon"](area.a);
     );
-    out body;
-    >;
-    out skel qt;
+    out geom 2500;
+    //out body;
+    //>;
+    //out skel qt;
     """.format(jparams['LargeArea'], jparams['osm_type'], jparams['FocusArea'])
     
     url = "http://overpass-api.de/api/interpreter"
@@ -115,19 +116,14 @@ def requestOsmAoi(jparams):
     """
     request osm area
     """
-    query = """
-    [out:json][timeout:30];
-    area[name='{0}']->.a;
-    //gather results
-    (
-    // query part for: “university”
-    {1}['name'='{2}'](area.a);
-    );
-    //print results
-    out body;
-    >;
-    out skel qt;
-    """.format(jparams['LargeArea'], jparams['osm_type'], jparams['FocusArea'])
+    query ="""[out:json][timeout:30];
+        area[boundary=administrative][name='{0}'] -> .a;
+        (
+        {1}[amenity='university'][name='{2}'](area.a);
+        relation[place][place~"sub|town|city|count|state|village|borough|quarter|neighbourhood"][name='{2}'](area.a);
+        );
+        out geom;
+        """.format(jparams['LargeArea'], jparams['osm_type'], jparams['FocusArea'])
     
     url = "http://overpass-api.de/api/interpreter"
     r = requests.get(url, params={'data': query})
@@ -546,7 +542,8 @@ def executeDelaunay(hs, df4, idx):
     pts = df4[['x', 'y']].values #, 'z']].values
         
     A = dict(vertices=pts, segments=idx, holes=holes)
-    Tr = tr.triangulate(A, 'pVV')  # the VV will print stats in the cmd
+    #Tr = tr.triangulate(A, 'pVV')  # the VV will print stats in the cmd
+    Tr = tr.triangulate(A) 
     t = Tr.get('triangles').tolist()
     
      #-- matplotlib for basic 2D plot
