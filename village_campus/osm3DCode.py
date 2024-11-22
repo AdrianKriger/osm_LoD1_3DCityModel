@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# env/osm3D_vc-env
+# env/osm3D_v3
 #########################
 # code to create LoD1 3D City Model from volunteered public data (OpenStreetMap) with elevation via a raster DEM.
 
@@ -543,7 +543,7 @@ def executeDelaunay(hs, df4, idx):
         
     A = dict(vertices=pts, segments=idx, holes=holes)
     #Tr = tr.triangulate(A, 'pVV')  # the VV will print stats in the cmd
-    Tr = tr.triangulate(A) 
+    Tr = tr.triangulate(A, 'p') 
     t = Tr.get('triangles').tolist()
     
      #-- matplotlib for basic 2D plot
