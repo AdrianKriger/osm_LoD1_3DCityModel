@@ -42,4 +42,3 @@ Its [paper](https://joss.theoj.org/papers/10.21105/joss.02866): `Ledoux H, Bilje
 
 <!--Paper currently under review with the [South African Journal of Geomatics](http://www.sajg.org.za/index.php/sajg/issue/archive)-->
 
----
